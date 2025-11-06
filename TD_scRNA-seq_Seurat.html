@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille Université" />
+
+
+<title>TD Analyse de données Single Cell RNA-seq sous R/Bioconductor - Package Seurat</title>
+
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Formation Single Cell RNA-seq sous R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Accueil</a>
+</li>
+<li>
+  <a href="Introduction_Formation.html">Introduction</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">TD Analyse de données Single Cell RNA-seq
+sous R/Bioconductor - Package Seurat</h1>
+<h4 class="author">Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille
+Université</h4>
+<h4 class="date">Novembre 2025</h4>
+
+</div>
+
+
+<p><br> <br></p>
+<p><img src="Maxi_Logo_Formation_Bioinfo.png" width="3000" /></p>
+<p><br> <br> <br> <br></p>
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>Dans ce TD, nous allons faire une <strong>analyse de données Single
+Cell</strong> sous <strong>R/Bioconductor</strong>.</p>
+<p>Ces données sont présentées dans la publication par Steele <em>et
+al</em>: Multimodal mapping of the tumor and peripheral blood immune
+landscape in human pancreatic cancer. <em>Nature Cancer</em> 1, pp
+1097–1112 (2020).</p>
+<p><strong>L’objectif de l’analyse</strong> est <strong>d’identifier le
+paysage immunitaire dans les adénocarcinomes ductal pancréatiques
+(PDAC)</strong>.</p>
+<p>Nous allons voir comment utiliser <strong>Seurat</strong> pour les
+étapes d’analyse</p>
+<ul>
+<li><p>Chargement et Contrôle qualité d’un échantillon</p></li>
+<li><p>Extraction des clusters et visualisation UMAP</p></li>
+<li><p>Interpretation des clusters - analyse interactive</p></li>
+<li><p>Comparaison Normal/PDAC</p></li>
+<li><p>Intégration de plusieurs échantillons</p></li>
+<li><p>Clusterisation hiérarchique</p></li>
+<li><p>Extraction des gènes différentiellement exprimés - visualistion
+de clusters</p></li>
+<li><p>Analyses avancées (si le temps le permet)</p>
+<ul>
+<li>Compensation du cycle cellulaire</li>
+<li>Analyse de sa propre liste de gènes</li>
+<li>Analyse en pseudotime</li>
+</ul></li>
+</ul>
+</div>
+<div id="données" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Données</h1>
+<p>Les données relatives à cette publication sont disponibles sur le
+site de <strong>GEO</strong> sous le numéro d’accession
+<strong>GSE155698</strong>: <a
+href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE155698"
+class="uri">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE155698</a></p>
+<div id="tableau-récapitulatif-des-données" class="section level2"
+number="2.1">
+<h2><span class="header-section-number">2.1</span> Tableau récapitulatif
+des données</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="left">GEO</th>
+<th align="right">Sample</th>
+<th align="right">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">GSM4710689</td>
+<td align="right">PDAC_TISSUE_1</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710690</td>
+<td align="right">PDAC_TISSUE_2</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710691</td>
+<td align="right">PDAC_TISSUE_3</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710692</td>
+<td align="right">PDAC_TISSUE_4</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710693</td>
+<td align="right">PDAC_TISSUE_5</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710694</td>
+<td align="right">PDAC_TISSUE_6</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710695</td>
+<td align="right">PDAC_TISSUE_7</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710696</td>
+<td align="right">PDAC_TISSUE_8</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710697</td>
+<td align="right">PDAC_TISSUE_9</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710698</td>
+<td align="right">PDAC_TISSUE_10</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710699</td>
+<td align="right">PDAC_TISSUE_11A</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710700</td>
+<td align="right">PDAC_TISSUE_11B</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710701</td>
+<td align="right">PDAC_TISSUE_12</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710702</td>
+<td align="right">PDAC_TISSUE_13</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710703</td>
+<td align="right">PDAC_TISSUE_14</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710704</td>
+<td align="right">PDAC_TISSUE_15</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710705</td>
+<td align="right">PDAC_TISSUE_16</td>
+<td align="right">PDAC</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710706</td>
+<td align="right">AdjNorm_TISSUE_1</td>
+<td align="right">Norm</td>
+</tr>
+<tr class="odd">
+<td align="left">GSM4710707</td>
+<td align="right">AdjNorm_TISSUE_2</td>
+<td align="right">Norm</td>
+</tr>
+<tr class="even">
+<td align="left">GSM4710708</td>
+<td align="right">AdjNorm_TISSUE_3</td>
+<td align="right">Norm</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>THP0</strong>: Pas de traitement</li>
+<li><strong>M</strong>: Cellules traités avec Monensin.</li>
+</ul>
+</div>
+<div id="environment" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Environment</h2>
+<p>Charger les librairies suivantes.</p>
+<p>Importance du <code>set.seed()</code> pour les étapes stochastiques
+(PCA, clustering)!</p>
+<pre class="r"><code>library(Seurat)
+set.seed(1234) # pour reproductibilité</code></pre>
+</div>
+<div id="récupération-des-données-de-comptage" class="section level2"
+number="2.3">
+<h2><span class="header-section-number">2.3</span> Récupération des
+données de comptage</h2>
+<p>Les données de steel sont disponible sur le chemin:
+<code>/shared/projects/tp_2529_ngs_amu_181496/data/TP_Datasets/Steele_et_al_GSE155698</code>.</p>
+</div>
+</div>
+<div id="première-analyse---échantillon-pdac-1" class="section level1"
+number="3">
+<h1><span class="header-section-number">3</span> Première analyse -
+échantillon PDAC 1</h1>
+<p>Dans cette première partie, nous allons analyse uniquemeent
+l’échantillon <strong>PDAC_TISSUE_1</strong>.</p>
+<div id="td-charger-les-données-de-léchantillon-pdac-1-avec-seurat."
+class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> TD: Charger les
+données de l’échantillon PDAC 1 avec Seurat.</h2>
+<ol style="list-style-type: decimal">
+<li><p>Créer un objet Seurat et garder - les cellules ayant au
+<strong>moins 200 gènes exprimés</strong> - les gènes exprimés au moins
+<strong>dans 3 cellules</strong></p></li>
+<li><p>Examiner la matrice de comptage: Examiner les gènes
+<code>NKG7</code>, <code>KRT18</code> et <code>PRSS1</code> ainsi que le
+marqueur <code>CD45</code> sur les 30 premières cellules.</p></li>
+</ol>
+<div id="solution" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Solution</h3>
+<pre class="r"><code># Set the path to the input data directory
+input_dir_pdac &lt;- &quot;GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot;
+
+# Load the data using Read10X function
+pdac.data &lt;- Read10X(data.dir = input_dir_pdac)
+
+# Create seurat objects
+pdac.seurat &lt;- CreateSeuratObject(counts = pdac.data, project = &quot;PDAC&quot;, min.cells = 3, min.features = 200)
+
+# Examination of the count matrix
+pdac.data[c(&quot;PTPRC&quot;, &quot;NKG7&quot;, &quot;KRT18&quot;, &quot;PRSS1&quot;), 1:30]</code></pre>
+</div>
+</div>
+<div id="td-faire-un-contrôle-qualité" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> TD: Faire un contrôle
+qualité</h2>
+<p>Seurat permet de faire un controle qualité (QC) sur</p>
+<ul>
+<li>Le <strong>nombre de gènes par cellules</strong>. Un nombre de gènes
+aberrant peut etre un marqueur de “doublets” ou de gouttes vides</li>
+<li>De manière similaire, le <strong>nombre de molécules
+uniques</strong> associée à une cellule</li>
+<li>Le poucentage de gènes associés avec la
+<strong>mitochondrie</strong>.</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Afficher les distributions de ces 3 valeurs</li>
+<li>Fixer les seuils acceptables sur ces distributions</li>
+<li>Les appliquer aux données.</li>
+</ol>
+<pre class="r"><code># The [[ operator can add columns to object metadata. This is a great place to stash QC stats
+pdac.seurat[[&quot;percent.mt&quot;]] &lt;- PercentageFeatureSet(pdac.seurat, pattern = &quot;^MT-&quot;)
+VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
+<pre class="r"><code>pdac.seurat &lt;- subset(pdac.seurat, subset = nFeature_RNA &gt; 200 &amp; nFeature_RNA &lt; 5000 &amp; percent.mt &lt; 15)
+VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
+<div id="normalisation" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Normalisation</h3>
+<ul>
+<li><strong>Normalisez les données</strong> avec la méthode
+<em>LogNormalize</em>, en multipliant les valeurs par un facteur 10000
+et prenant le log du résultat.</li>
+</ul>
+<pre class="r"><code>pdac.seurat &lt;- NormalizeData(pdac.seurat, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000)</code></pre>
+</div>
+</div>
+<div id="préparation-acp-étape-1-idebntification-des-gènes-variables"
+class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Préparation ACP étape
+1: idebntification des gènes variables</h2>
+<p><strong>Objectif:</strong> Il faut identifier les gènes présentant la
+plus grande <strong>variation</strong> entre cellules.</p>
+<ol style="list-style-type: decimal">
+<li>Utiliser la fonction <code>FindVariableFeatures</code> avec la
+méthode “vst” en partiant de 2000 “features” (gènes).</li>
+<li>Faire une représentation des gènes les plus variables en identifiant
+les 10 gènes les plus variables en les labellisant sur le
+graphique.</li>
+</ol>
+<div id="solution-1" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Solution:</h3>
+<pre class="r"><code>pdac.seurat &lt;- FindVariableFeatures(pdac.seurat, selection.method = &quot;vst&quot;, nfeatures = 2000)
+
+top10 &lt;- head(VariableFeatures(pdac.seurat), 10)
+
+plot &lt;- VariableFeaturePlot(pdac.seurat)
+plot &lt;- LabelPoints(plot = plot, points = top10, repel = TRUE)
+plot</code></pre>
+</div>
+</div>
+<div id="td-préparation-acp-étape-2-mise-à-léchelle-des-données"
+class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> TD Préparation ACP
+étape 2: Mise à l’échelle des données</h2>
+<p>Nous avons besoin de <strong>standardiser</strong>: centrer et
+réduire l’expression de chaque gène dans la matrice de comptage. Pour
+cela, nous utilisons <code>ScaleData</code>.</p>
+<pre class="r"><code>pdac.seurat &lt;- ScaleData(pdac.seurat) </code></pre>
+</div>
+<div id="réduction-de-dimensions-avec-acp" class="section level2"
+number="3.5">
+<h2><span class="header-section-number">3.5</span> Réduction de
+dimensions avec ACP</h2>
+<ol style="list-style-type: decimal">
+<li><strong>Faire une réduction de dimensions</strong> par ACP sur les
+gènes variables (fonction <code>VariableFeatures</code>)</li>
+<li><strong>Afficher</strong> les 5 plus fortes contributions pour les 5
+composants principaux</li>
+<li>Faire une représentation des <em>loadings</em> des 2 composants
+principaux (fonction <code>VizDimLoadings</code>)</li>
+<li>Faire une représentation des données dans l’espace
+<strong>PC_1</strong> vs <strong>PC_2</strong></li>
+<li>Faire une représentation des données sous forme de Heatmap dans
+l’espace des composants principaux grâce à <code>DimHeatmap</code></li>
+</ol>
+<div id="solution-2" class="section level3" number="3.5.1">
+<h3><span class="header-section-number">3.5.1</span> Solution</h3>
+<pre class="r"><code>pdac.seurat &lt;- RunPCA(pdac.seurat, features = VariableFeatures(object = pdac.seurat))
+print(pdac.seurat[[&quot;pca&quot;]], dims = 1:5, nfeatures = 5)
+VizDimLoadings(pdac.seurat, dims = 1:2, reduction = &quot;pca&quot;)
+DimPlot(pdac.seurat, reduction = &quot;pca&quot;)
+DimHeatmap(pdac.seurat, dims = 1:10, cells = 500, balanced = TRUE)</code></pre>
+</div>
+<div id="estimation-de-la-dimensionalité" class="section level3"
+number="3.5.2">
+<h3><span class="header-section-number">3.5.2</span> Estimation de la
+Dimensionalité</h3>
+<p>Nous utilisons la méthode des valeurs propres obtenues à partie de
+l’ACP.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Faire un graphe</strong> des valeurs propres</li>
+<li><strong>Estimer et discuter</strong> de la dimensionalité</li>
+</ol>
+<pre class="r"><code>ElbowPlot(pdac.seurat)</code></pre>
+</div>
+</div>
+<div id="clusteriser-les-cellules" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Clusteriser les
+cellules</h2>
+<ol style="list-style-type: decimal">
+<li><strong>Trouver les plus proches voisins</strong> en construisant un
+graphe <em>K-nearest neighbors</em> à l’aide de la fonction
+<code>FindNeighbors</code></li>
+<li><strong>Clusteriser les cellules</strong> en utilisant l’algorithme
+de Louvain pour grouper les cellules (fonction
+<code>FindClusters</code>)</li>
+<li>Examinez les resultats pour les 5 premières cellules</li>
+</ol>
+<div id="solution-3" class="section level3" number="3.6.1">
+<h3><span class="header-section-number">3.6.1</span> Solution:</h3>
+<pre class="r"><code>pdac.seurat &lt;- FindNeighbors(pdac.seurat, reduction = &quot;pca&quot;, dims = 1:15)
+pdac.seurat &lt;- FindClusters(pdac.seurat, resolution = 0.5)
+head(Idents(pdac.seurat), 5)</code></pre>
+</div>
+</div>
+<div id="exploration-des-clusters-par-umap" class="section level2"
+number="3.7">
+<h2><span class="header-section-number">3.7</span> Exploration des
+clusters par UMAP</h2>
+<p>Seurat propose plusieurs techniques de réduction de dimension non
+linéaires, telles que <strong>t-SNE</strong> et <strong>UMAP</strong>,
+pour visualiser et explorer ces jeux de données. L’objectif de ces
+algorithmes est d’identifier la <strong>structure sous-jacente</strong>
+du jeu de données, afin de <strong>positionner des cellules similaires
+les unes près des autres</strong> dans un espace de faible dimension.
+Ainsi, les cellules regroupées dans les clusters définis par les
+méthodes de regroupement basées sur les graphes devraient “<strong>se
+retrouver proches</strong>” les unes des autres sur ces représentations
+réduites.</p>
+<ol style="list-style-type: decimal">
+<li>Utiliser <code>RunUMAP</code> sur 10 clusters puis
+<code>Dimplot</code></li>
+<li>Que pensez vous du nombre de clusters choisis ?</li>
+<li>Sauver l’objet <code>pdac.seurat</code>dans un fichier RDS pour
+pouvoir le réutiliser plus tard.</li>
+</ol>
+<div id="solution-4" class="section level4" number="3.7.0.1">
+<h4><span class="header-section-number">3.7.0.1</span> Solution:</h4>
+<pre class="r"><code>pdac.seurat &lt;- RunUMAP(pdac.seurat, dims = 1:15)
+DimPlot(pdac.seurat, reduction = &quot;umap&quot;)
+saveRDS(pdac.seurat, file = &quot;pdac_1.rds&quot;)</code></pre>
+</div>
+</div>
+<div id="visualisation-des-marqueurs" class="section level2"
+number="3.8">
+<h2><span class="header-section-number">3.8</span> Visualisation des
+marqueurs</h2>
+<p>Cette étape permets de découvrir les types cellulaires les plus
+connus. Plusieurs outils de visualisation sont pertinents pour cela: Les
+<em>Violin plots</em> (fonction <code>VlnPlot</code>) et
+<strong>Superposition de l’expression d’un marqueur</strong> sur l’UMAP
+(Fonction <code>Featureplot</code>).</p>
+<ol style="list-style-type: decimal">
+<li>Mettez en avant les <strong>cellules immunitaires</strong> par la
+visualisation du marqueur <em>CD45</em></li>
+<li>Mettez en avant les types cellulaires suivants, caractérisés par les
+marqeurs suivants:</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th>Type cellulaire</th>
+<th>Marqueur</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dendritic cells</td>
+<td>CLU, PRSS1, HLA-DRA</td>
+</tr>
+<tr class="even">
+<td>B Cells</td>
+<td>HLA-DRA, CD79A, MS4A1</td>
+</tr>
+<tr class="odd">
+<td>Macrophages</td>
+<td>CD14, HLA-DRA, LYZ</td>
+</tr>
+<tr class="even">
+<td>CD8+ T cells</td>
+<td>CD3E, NKG7, CD3D</td>
+</tr>
+<tr class="odd">
+<td>CD4+ T cells</td>
+<td>CD3E, CD3D</td>
+</tr>
+<tr class="even">
+<td>Epithelial cells</td>
+<td>KRT18, KRT19,</td>
+</tr>
+<tr class="odd">
+<td>NK cells</td>
+<td>NKG7, GZMB</td>
+</tr>
+</tbody>
+</table>
+<ol start="3" style="list-style-type: decimal">
+<li>Faites un <code>Dotplot</code> avec l’ensemble de ces marqueurs</li>
+</ol>
+<div id="solution-5" class="section level3" number="3.8.1">
+<h3><span class="header-section-number">3.8.1</span> Solution</h3>
+<pre class="r"><code># plots for CD45
+VlnPlot(pdac.seurat, features = &quot;PTPRC&quot;)
+FeaturePlot(pdac.seurat, features = &quot;PTPRC&quot;)
+
+# On peut aussi mettre en place une analyse interactive
+#FeaturePlot(pdac.seurat, features = &quot;PTPRC&quot;, interactive = TRUE)
+
+
+# plots with all genes
+
+genes_markers &lt;- c(
+  &quot;CLU&quot;, &quot;PRSS1&quot;, &quot;HLA-DRA&quot;,
+  &quot;CD79A&quot;, &quot;MS4A1&quot;,
+  &quot;CD14&quot;, &quot;LYZ&quot;,
+  &quot;CD3E&quot;, &quot;NKG7&quot;, &quot;CD3D&quot;,
+  &quot;KRT18&quot;, &quot;KRT19&quot;,
+  &quot;GZMB&quot;
+)
+
+
+VlnPlot(pdac.seurat, features = genes_markers)
+FeaturePlot(pdac.seurat, features = genes_markers)
+
+
+dtplot &lt;- DotPlot(pdac.seurat, features = genes_markers) + RotatedAxis()
+plot(dtplot)</code></pre>
+</div>
+</div>
+<div id="identifier-les-marqueurs-différentiellement-exprimés"
+class="section level2" number="3.9">
+<h2><span class="header-section-number">3.9</span> Identifier les
+marqueurs différentiellement exprimés</h2>
+<ol style="list-style-type: decimal">
+<li>Créer une table avec la liste des marquers
+<strong>différentiellement exprimés</strong> (DE) entre le cluster 2
+(désigné sous le nom de <code>ìdent.1 = 2</code>) et le reste des
+clusters.</li>
+<li>afficher les <strong>10 premiers</strong> marqueurs</li>
+<li>Identifier les marquers DE entre le <strong>cluster 2</strong> et le
+<strong>cluster 3</strong> et afficher les <strong>10</strong> premiers
+marqueurs.</li>
+<li>Identifier les marqueurs de différentiation pour l’ensemble des
+clusters</li>
+</ol>
+<div id="solution-6" class="section level3" number="3.9.1">
+<h3><span class="header-section-number">3.9.1</span> Solution:</h3>
+<pre class="r"><code># On vérifie les données
+table(Idents(pdac.seurat))
+
+cluster2.markers &lt;- FindMarkers(pdac.seurat, ident.1 = 2)
+head(cluster2.markers, n = 10)
+
+cluster2.3.markers &lt;- FindMarkers(pdac.seurat, ident.1 = 2, ident.2 = 3)
+head (cluster2.3.markers, n = 10)
+
+library(dplyr)
+pdac.all.markers &lt;- FindAllMarkers(pdac.seurat, only.pos = TRUE)
+pdac.all.markers  %&gt;% group_by(cluster) %&gt;% dplyr::filter(avg_log2FC &gt; 1)</code></pre>
+</div>
+</div>
+<div id="representation-sous-forme-de-heatmap" class="section level2"
+number="3.10">
+<h2><span class="header-section-number">3.10</span> Representation sous
+forme de heatmap</h2>
+<ol style="list-style-type: decimal">
+<li>Faire une <strong>représentation heatmap</strong> des gènes de notre
+liste <code>genes_markers</code> (fonction <code>DoHeatmap</code>)</li>
+<li>Faire une représentation des <strong>top gènes</strong> caratérisant
+chaque cluster</li>
+</ol>
+<div id="solution-7" class="section level3" number="3.10.1">
+<h3><span class="header-section-number">3.10.1</span> Solution:</h3>
+<pre class="r"><code># heapmap gene list
+DoHeatmap(pdac.seurat, features = genes_markers) + NoLegend()
+
+# heatmap top10 DE genes for all clusters
+pdac.all.markers %&gt;%
+    group_by(cluster) %&gt;%
+    dplyr::filter(avg_log2FC &gt; 1) %&gt;%
+    slice_head(n = 10) %&gt;%
+    ungroup() -&gt; top10
+
+DoHeatmap(pdac.seurat, features = top10$gene) + NoLegend()</code></pre>
+</div>
+</div>
+</div>
+<div id="etude-norm_tissue_1pdac_tissue_1" class="section level1"
+number="4">
+<h1><span class="header-section-number">4</span> Etude
+Norm_tissue_1/PDAC_Tissue_1</h1>
+<p>Nous allons comparer deux échantillons, l’un normal et l’autre PDAC,
+en terme de <strong>population cellulaires présentes</strong> et de
+<strong>différentiel d’expression</strong>.</p>
+<p>Nous allons nous intéresser notamment à la population des macrophages
+et les comparer entre les tissus normaux et PDAC.</p>
+<div id="chargement-des-données" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Chargement des
+données:</h2>
+<ol style="list-style-type: decimal">
+<li>Charger l’échantillon <code>AdjNorm_Tissue_1</code> de la même
+manière que l’échantillon précédent.</li>
+<li>Examiner la matrice de comptage: Examiner les gènes
+<code>NKG7</code>, <code>KRT18</code> et <code>PRSS1</code> ainsi que le
+marqueur <code>CD45</code> sur les 30 premières cellules.</li>
+</ol>
+<pre class="r"><code># Set the path to the input data directory
+input_dir_norm_1 &lt;- &quot;GSE155698_RAW/AdjNorm_TISSUE_1//filtered_feature_bc_matrix/&quot;
+
+# Load the data using Read10X function
+norm_1.data &lt;- Read10X(data.dir = input_dir_norm_1)
+
+# Create seurat objects
+norm_1.seurat &lt;- CreateSeuratObject(counts = norm_1.data, project = &quot;Norm&quot;, min.cells = 3, min.features = 200)
+
+# Examination of the count matrix
+norm_1.data[c(&quot;PTPRC&quot;, &quot;NKG7&quot;, &quot;KRT18&quot;, &quot;PRSS1&quot;), 1:30]
+
+
+# set the path to the input data directory
+input_dir_pdac_1 &lt;- &quot;GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot;
+
+# Load the data using Read10X function
+pdac_1.data &lt;- Read10X(data.dir = input_dir_pdac_1)
+
+# Create seurat objects
+pdac_1.seurat &lt;- CreateSeuratObject(counts = pdac_1.data, project = &quot;PDAC&quot;, min.cells = 3, min.features = 200)
+
+# Examination of the count matrix
+pdac_1.data[c(&quot;PTPRC&quot;, &quot;NKG7&quot;, &quot;KRT18&quot;, &quot;PRSS1&quot;), 1:30]</code></pre>
+</div>
+<div id="créer-un-objet-seurat-groupant-les-deux-échantillions"
+class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Créer un objet seurat
+groupant les deux échantillions</h2>
+<ol style="list-style-type: decimal">
+<li>Créer l’objet Seurat par merging</li>
+<li>Refaire une analyse similaire, avec les opérations suivantes:
+<strong>Normalisation, Scaling, FindVariableFeatures, Scaling, RunPCA,
+Dimplot et ElbowPlot</strong></li>
+<li>Estimer le nombre de clusters à partir de
+l’<strong>ElbowPlot</strong>.</li>
+</ol>
+<div id="solution-8" class="section level3" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Solution</h3>
+</div>
+</div>
+<div id="intégrer-les-échantillons-avec-harmony" class="section level2"
+number="4.3">
+<h2><span class="header-section-number">4.3</span> Intégrer les
+échantillons avec Harmony</h2>
+<p>Nous allons maintenant faire une étape d’intégration avec le package
+<code>harmony</code>. Visualisons les variables associées aux
+cellules:</p>
+<pre class="r"><code>head(seurat.norm1.pdac1@meta.data)
+table(seurat.norm1.pdac1$orig.ident)</code></pre>
+<p>Puis on applique <strong>harmony</strong> pour l(intégration),</p>
+<p>Puis faisons un <code>DimPlot</code> et un
+<code>ElbowPlot</code>.</p>
+<p><strong>Question:</strong> Que peut t’on en conclure ?</p>
+<pre class="r"><code>library(harmony)
+seurat.norm1.pdac1 &lt;- RunHarmony(seurat.norm1.pdac1, group.by.vars =  &quot;orig.ident&quot;, plot_convergence = TRUE)
+
+DimPlot(seurat.norm1.pdac1, reduction = &quot;harmony&quot;)
+DimPlot(seurat.norm1.pdac1, reduction = &quot;harmony&quot;, split.by = &quot;orig.ident&quot;)
+
+ElbowPlot(seurat.norm1.pdac1, reduction = &quot;harmony&quot;)</code></pre>
+</div>
+<div id="clustering-et-umap" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Clustering et
+UMAP</h2>
+<p><strong>Exercice: </strong>: Appliquez les étapes suivantes sur le
+reste de nos données: <code>FindNeighbors</code>,
+<code>FindClusters</code> <code>RunUmap</code>, et <code>DimPlot</code>.
+<strong>Attention!</strong>. Utiliser la <strong>nouvelle réduction
+“harmony”</strong>.</p>
+<div id="solution-9" class="section level3" number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Solution</h3>
+</div>
+</div>
+<div id="assignation-des-types-cellulaires" class="section level2"
+number="4.5">
+<h2><span class="header-section-number">4.5</span> Assignation des types
+cellulaires</h2>
+<ol style="list-style-type: decimal">
+<li>De la même manière que précédemment, assignez les types cellulaires
+avec les marqeurs pertinents par l’utilisation de FeaturePlot en mode
+<strong>interactif</strong>.</li>
+<li>Labellisez la carte <strong>UMAP</strong>.</li>
+</ol>
+<p>Solution</p>
+</div>
+<div id="analyse-différentielle-entre-pdac-et-normal"
+class="section level2" number="4.6">
+<h2><span class="header-section-number">4.6</span> Analyse
+différentielle entre PDAC et Normal</h2>
+<p>On veut comparer l’échantillon PDAC avec le Normal.</p>
+<ol style="list-style-type: decimal">
+<li><p>Comme à chaque fois que l’on utilise <code>FindMarkers</code>, il
+faut spécifier l’<strong>Identité</strong> de ce que l’on va comparer
+(la colonne de la matrice <code>meta.data</code>de l’objet Seurat) grâce
+à l’instruction <code>Idents</code>.</p></li>
+<li><p>De plus, vu que l’on est en présence d’un objet <strong>Seurat
+V5</strong>, il faut <strong>combiner</strong> les layers sous peine
+d’obtenir un message d’erreur.</p></li>
+<li><p>Puis on applique <code>FindMarkers</code> et on affiche la liste
+des 40 gènes le splus différentiellement exprimés.</p></li>
+</ol>
+<div id="solution-10" class="section level3" number="4.6.1">
+<h3><span class="header-section-number">4.6.1</span> Solution</h3>
+</div>
+</div>
+<div id="visualisation" class="section level2" number="4.7">
+<h2><span class="header-section-number">4.7</span> Visualisation</h2>
+<ol style="list-style-type: decimal">
+<li>Faire une visualisation par <strong>volcano plot</strong></li>
+<li>Faire une visualisation des 20 gènes les plus différentiellement
+exprimés par <strong>heatmap</strong>.</li>
+</ol>
+<div id="solution-11" class="section level3" number="4.7.1">
+<h3><span class="header-section-number">4.7.1</span> Solution</h3>
+</div>
+</div>
+</div>
+<div id="session-info" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Session Info</h1>
+<pre class="r"><code>sessionInfo()</code></pre>
+<hr />
+<div style="text-align: center">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img src="https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png" alt="Licence Creative Commons" style="border-width:0"/></a><br></p>
+<p>Cette œuvre est mise à disposition selon les termes de la
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Licence
+Creative Commons:</a> <br>Attribution - Pas d’Utilisation Commerciale -
+Pas de Modification 4.0 International (CC BY-NC-ND 4.0).</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

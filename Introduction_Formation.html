@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bioinformatique Module 2</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Bioinformatique Module 2',
+                        subtitle: 'Analyser ses données de séquençage NGS RNA-seq sous R/Bioconductor',
+                useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Introduction_Formation_files/logo.png',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille Université' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    details > summary > p:only-child {
+      display: inline;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Introduction_Formation_files/logo.png) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body style="opacity: 0">
+
+<slides>
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Introduction_Formation_files/logo.png"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Novembre 2025</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Je me présente</h2></hgroup><article  id="je-me-présente" class="smaller ">
+
+<p><strong>Ghislain BIDAUT</strong>, IR AMU, responsable de la <strong>Plateforme Bioinformatique Cibi du CRCM</strong>.</p>
+
+<p><a href='mailto:ghislain.bidaut@inserm.fr' title=''>ghislain.bidaut@inserm.fr</a></p>
+
+<p><img width="300px" src='Logo_Cibi_classic.png' title=''/> <img width="400px" src='logo_AMU.png' title=''/></p>
+
+</article></slide><slide class=""><hgroup><h2>Objectifs</h2></hgroup><article  id="objectifs" class="smaller ">
+
+<p>Savoir mener une analyse de données de <strong>single-cell RNA-seq</strong> sous <code>R</code>.</p>
+
+<ul class = 'build'>
+<li><p>Dans l’environnement <strong><em>utilisé</em> par les bioinformaticiens</strong>: à savoir <code>Rstudio</code>.</p></li>
+<li><p><strong>Travailler de manière participative</strong> pour se familiariser avec les technologies utilisées en bioinformatique pour le traitement de données NGS et <strong>communiquer plus <em>efficacement</em> avec les bioinformaticiens!</strong></p></li>
+<li><p>Lors de cette formation, nous mettrons l’accent sur les technologies <strong>open-source</strong> mises au point et utilisées dans le monde de la recherche.</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Présentation des participants</h2></hgroup><article  id="présentation-des-participants" class="smaller ">
+
+<ul class = 'build'>
+<li><p><strong>Dans quel domaine travaillez vous ?</strong></p></li>
+<li><p><strong>Quelle est votre expérience en analyse de données bioinformatique et RNA-seq ?</strong></p></li>
+<li><p><strong>Qu’attendez vous de cette formation ?</strong></p></li>
+</ul>
+
+<center>
+
+<img width="300px" src='Badge_pour_presentation.jpg' title=''/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Au menu</h2></hgroup><article  id="au-menu" class="smaller ">
+
+<ol class = 'build'>
+<li><p><strong>Prendre en main les éléments du langage R</strong> nécessaires aux analyses NGS sous l’environnement <strong>RStudio</strong>. <strong>Chercher et installer</strong> les bibliothèques appropriées</p></li>
+<li><p>Savoir automatiser ses analyses en <strong>écrivant des scripts R</strong></p></li>
+<li><p><strong>Ouvrir les données et faire un contrôle qualité</strong> d’une analyse scRNA-seq</p></li>
+<li><p>Prise en main de <code>Seurat</code> pour <strong>clusteriser des cellules</strong></p></li>
+<li><p><strong>Intégrer plusieurs échantillons</strong></p></li>
+<li><p>Identifier les gènes <strong>Différentiellement exprimés</strong></p></li>
+<li><p><strong>Comprendre la biologie des clusters obtenus</strong> par l’annotation</p></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Pratique</h2></hgroup><article  id="pratique" class="smaller ">
+
+<ul class = 'build'>
+<li><p>Mise à disposition de comptes de formation sur le <strong>cluster IFB-core</strong> de <a href='https://www.france-bioinformatique.fr/' title=''>l’Institut Français de bioinformatique (IFB)</a></p></li>
+<li><p>Les supports de cours à jour sont accessibles sur ce lien:</p></li>
+</ul>
+
+<p><a href='https://reposgb.github.io/formation_single_cell_rnaseq_r' title=''>https://reposgb.github.io/formation_single_cell_rnaseq_r</a></p>
+
+</article></slide><slide class=""><hgroup><h2>Licence</h2></hgroup><article  id="licence" class="smaller ">
+
+<div style="text-align: center">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png"></a><br></p>
+
+<p>Cette œuvre est mise à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Licence Creative Commons:</a> <br>Attribution - Pas d’Utilisation Commerciale - Pas de Modification 4.0 International (CC BY-NC-ND 4.0).</p></div></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+    if (window.Shiny) {
+      // Initialize slides when this script appears on the page, since it
+      // indicates that the <slides> markup has been fully loaded.
+      window.loadDeck();
+    }
+  })();
+</script>
+
+</body>
+</html>

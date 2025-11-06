@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="G Bidaut" />
+
+<meta name="date" content="2025-10-30" />
+
+<title>Pipe Test</title>
+
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Formation Single Cell RNA-seq sous R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Accueil</a>
+</li>
+<li>
+  <a href="Introduction_Formation.html">Introduction</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Pipe Test</h1>
+<h4 class="author">G Bidaut</h4>
+<h4 class="date">2025-10-30</h4>
+
+</div>
+
+
+<p><br> <br></p>
+<p><img src="Maxi_Logo_Formation_Bioinfo.png" width="3000" /></p>
+<p><br> <br> <br> <br></p>
+<div id="etude-multi-échantillons-par-harmony" class="section level1">
+<h1>Etude multi échantillons par <em>Harmony</em></h1>
+<p>Dans ce TD, nous allons maintenant intégrer l’<strong>ensemble des
+échantillons disponibles</strong> pour obtenir un objet Seurat
+permettant une analyse intégrée avec la librairie <em>Harmony</em>.</p>
+<div id="chargement-des-librairies" class="section level2">
+<h2>Chargement des librairies</h2>
+<pre class="r"><code>library(Seurat)
+library(harmony)</code></pre>
+</div>
+<div id="chargement-des-données" class="section level2">
+<h2>Chargement des données</h2>
+<p>On importe les données d’entrée.</p>
+<p>Les échantillons 14 et 16 étant à des <strong>formats non
+standards</strong>, je les ai supprimés.</p>
+<p>Pour finir, on fait une <strong>table récapitulative</strong> du
+nombre de cellules pour chaque échantillon.</p>
+<pre class="r"><code># Répertoire racine contenant tous les échantillons
+input_dir &lt;- &quot;GSE155698_RAW&quot;
+
+# Liste des sous-répertoires (échantillons)
+sample_dirs &lt;- list.dirs(input_dir, recursive = FALSE)
+
+# Créer une liste d’objets Seurat
+seurat_list &lt;- lapply(sample_dirs, function(dir) {
+  
+  sample_name &lt;- basename(dir)  # nom de l’échantillon = nom du dossier
+
+  print(paste(&quot;read sample &quot;, sample_name))
+  
+  cur_data &lt;- Read10X(data.dir = file.path(dir, &#39;filtered_feature_bc_matrix&#39;))
+
+  seu &lt;- CreateSeuratObject(counts = cur_data, project = sample_name, min.cells = 3, min.features = 200)
+  
+  seu$orig.ident &lt;- sample_name
+  
+  return(seu)
+})</code></pre>
+<pre><code>## [1] &quot;read sample  AdjNorm_TISSUE_1&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  AdjNorm_TISSUE_2&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  AdjNorm_TISSUE_3&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_1&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_10&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_11A&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_11B&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_12&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_13&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_15&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_2&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_3&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_4&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_5&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_6&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_7&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_8&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_9&quot;</code></pre>
+<pre class="r"><code># Fusionner tous les objets en un seul
+seurat.norm_3.pdac_15 &lt;- Reduce(function(x, y) merge(x, y), seurat_list)
+
+# Ajout d&#39;une matadata pour le type d&#39;échantillon (normal ou PDAC)
+seurat.norm_3.pdac_15$condition &lt;- ifelse(
+  grepl(&quot;PDAC&quot;, seurat.norm_3.pdac_15$orig.ident, ignore.case = TRUE),
+  &quot;PDAC&quot;,
+  &quot;Norm&quot;
+)
+
+# Vérifier combien de cellules par échantillon
+table(seurat.norm_3.pdac_15$orig.ident)</code></pre>
+<pre><code>## 
+## AdjNorm_TISSUE_1 AdjNorm_TISSUE_2 AdjNorm_TISSUE_3    PDAC_TISSUE_1 
+##             4326             3174             1098             1410 
+##   PDAC_TISSUE_10  PDAC_TISSUE_11A  PDAC_TISSUE_11B   PDAC_TISSUE_12 
+##             1387             4236             2237             1523 
+##   PDAC_TISSUE_13   PDAC_TISSUE_15    PDAC_TISSUE_2    PDAC_TISSUE_3 
+##             5029             3067             1782             2390 
+##    PDAC_TISSUE_4    PDAC_TISSUE_5    PDAC_TISSUE_6    PDAC_TISSUE_7 
+##             2338             1645             2153             7702 
+##    PDAC_TISSUE_8    PDAC_TISSUE_9 
+##             4544             4162</code></pre>
+<pre class="r"><code>table(seurat.norm_3.pdac_15$condition)</code></pre>
+<pre><code>## 
+##  Norm  PDAC 
+##  8598 45605</code></pre>
+<pre class="r"><code># On sauve l&#39;objet pour le réutiliser sur d&#39;autres méthodes plus tard dans le TD
+#saveRDS(seurat.norm_3.pdac_15, file=&quot;seurat.norm_3.pdac_15_ORIG.RDS&quot;)</code></pre>
+</div>
+<div id="appliquer-le-pipeline-stanard-seurat-incluant-harmony"
+class="section level2">
+<h2>Appliquer le pipeline stanard Seurat incluant Harmony</h2>
+<p>Appliquer l’ensemble des étapes et visualiser l’UMAP finale avec
+l’ensemble des clusters.</p>
+<pre class="r"><code>seurat.norm_3.pdac_15 &lt;- NormalizeData(seurat.norm_3.pdac_15, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000) 
+seurat.norm_3.pdac_15 &lt;- FindVariableFeatures(seurat.norm_3.pdac_15, selection.method = &quot;vst&quot;, nfeatures = 2000)
+seurat.norm_3.pdac_15 &lt;- ScaleData(seurat.norm_3.pdac_15) 
+seurat.norm_3.pdac_15 &lt;- RunPCA(seurat.norm_3.pdac_15, features = VariableFeatures(object = seurat.norm_3.pdac_15))
+DimPlot(seurat.norm_3.pdac_15, reduction = &quot;pca&quot;)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/full_harmony_pipeline-1.png" width="672" /></p>
+<pre class="r"><code>seurat.norm_3.pdac_15 &lt;- RunHarmony(seurat.norm_3.pdac_15, group.by.vars =  &quot;orig.ident&quot;, plot_convergence = TRUE)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/full_harmony_pipeline-2.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm_3.pdac_15, reduction = &quot;harmony&quot;)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/full_harmony_pipeline-3.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm_3.pdac_15, reduction = &quot;harmony&quot;, split.by = &quot;orig.ident&quot;)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/full_harmony_pipeline-4.png" width="672" /></p>
+<pre class="r"><code>ElbowPlot(seurat.norm_3.pdac_15, reduction = &quot;harmony&quot;)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/full_harmony_pipeline-5.png" width="672" /></p>
+<pre class="r"><code>seurat.norm_3.pdac_15 &lt;- RunUMAP(seurat.norm_3.pdac_15, reduction = &quot;harmony&quot;, dims = 1:30)
+seurat.norm_3.pdac_15 &lt;- FindNeighbors(seurat.norm_3.pdac_15, reduction = &quot;harmony&quot;, dims = 1:30)
+seurat.norm_3.pdac_15 &lt;- FindClusters(seurat.norm_3.pdac_15, resolution = 0.1)</code></pre>
+<pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+## 
+## Number of nodes: 54203
+## Number of edges: 2197584
+## 
+## Running Louvain algorithm...
+## Maximum modularity in 10 random starts: 0.9803
+## Number of communities: 13
+## Elapsed time: 11 seconds</code></pre>
+<pre class="r"><code>DimPlot(seurat.norm_3.pdac_15, reduction = &quot;umap&quot;)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/full_harmony_pipeline-6.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm_3.pdac_15, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/full_harmony_pipeline-7.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm_3.pdac_15, reduction = &quot;umap&quot;, split.by = &quot;orig.ident&quot;)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/full_harmony_pipeline-8.png" width="672" /></p>
+<p>Je sauve l’objet UMAP pour pouvoir le réutiliser plus tard.</p>
+<pre class="r"><code>saveRDS(object = seurat.norm_3.pdac_15, file = &quot;seurat.norm_3.pdac_15.rds&quot;)
+#seurat.norm_3.pdac_15 &lt;- readRDS(file = &quot;seurat.norm_3.pdac_15.rds&quot;)</code></pre>
+</div>
+<div id="analyse-différentielle-pdac-vs-normal" class="section level2">
+<h2>Analyse différentielle PDAC vs Normal</h2>
+<ol style="list-style-type: decimal">
+<li>Identifier les gènes <strong>différentiellement exprimés</strong>
+entre les échantillons PDAC et Normal de la même manière que
+précédemment.</li>
+</ol>
+<div id="solution" class="section level3">
+<h3>Solution:</h3>
+<ol start="2" style="list-style-type: decimal">
+<li>Faire une représentation des 20 gènes les plus différentiellement
+exprimés en <strong>Volcano plot</strong> et <strong>Heatmap</strong>
+.</li>
+</ol>
+</div>
+<div id="solution-1" class="section level3">
+<h3>Solution</h3>
+</div>
+</div>
+<div id="detection-automatisée-des-types-cellulaires---méthode-singler"
+class="section level2">
+<h2>Detection automatisée des types cellulaires - Méthode “SingleR”</h2>
+<p>Nous allons utiliser le package <strong>SingleR</strong>.</p>
+<p>Charger les librairies suivantes:</p>
+<pre class="r"><code>library(SingleCellExperiment)
+library(SingleR)
+library(celldex) # celldex fournit des jeux de référence annotés de transcriptomes de types cellulaires humains ou murins.</code></pre>
+<p>SingleR attend des données <strong>log-normalisées</strong> au format
+<strong>SinGleCellExperiment</strong>. On transforme notre objet
+<strong>Seurat</strong> en objet <strong>SinGleCellExperiment</strong>
+grace à la fonction <code>as.SingleCellExperiment</code>.</p>
+<p>Vu qu’il y a des warnings, on vérifie bien que l’objet
+<code>sce</code>contient bien des données.</p>
+<pre class="r"><code>sce &lt;- as.SingleCellExperiment(seurat.norm_3.pdac_15, assay = &quot;RNA&quot;)
+assayNames(sce)</code></pre>
+<pre><code>## [1] &quot;counts&quot;    &quot;logcounts&quot;</code></pre>
+<pre class="r"><code>colnames(colData(sce))</code></pre>
+<pre><code>## [1] &quot;orig.ident&quot;      &quot;nCount_RNA&quot;      &quot;nFeature_RNA&quot;    &quot;condition&quot;      
+## [5] &quot;RNA_snn_res.0.1&quot; &quot;seurat_clusters&quot; &quot;ident&quot;</code></pre>
+<p>Chargement d’un Atlas de référence:</p>
+<p>Le package <code>celldex</code> fournit plusieurs références annotées
+: - <strong>HumanPrimaryCellAtlasData()</strong> : référence humaine
+générale (souvent la plus utilisée) -
+<strong>BlueprintEncodeData()</strong> : sang + lignées épithéliales
+humaines - <strong>HumanMonacoImmuneData()</strong> : uniquement
+immunitaire - <strong>MouseRNAseqData()</strong> : pour souris</p>
+<pre class="r"><code>ref &lt;- celldex::HumanPrimaryCellAtlasData()</code></pre>
+<ol style="list-style-type: decimal">
+<li>Ecrire la fonction <code>singleR</code> pour annoter des
+cellules.</li>
+<li>Afficher les résultats de l’objet obtenu avec
+<code>table</code>.</li>
+</ol>
+<div id="solution-2" class="section level3">
+<h3>Solution</h3>
+</div>
+</div>
+<div
+id="intégration-des-résultats-dans-lobjet-seurat-dans-une-colonne-singler.labels."
+class="section level2">
+<h2>Intégration des résultats dans l’objet <code>Seurat</code> dans une
+colonne <code>SingleR.labels</code>.</h2>
+<ol style="list-style-type: decimal">
+<li>Ajouter les résultats aux méta données de l’objet Seurat</li>
+<li>Vérifier que la matrice <code>metadata</code>est bien à jour.</li>
+</ol>
+<div id="solution-3" class="section level3">
+<h3>Solution</h3>
+<p>Faire une visualisation avec <code>DimPlot</code>.</p>
+<pre class="r"><code>DimPlot(
+  seurat.norm_3.pdac_15,
+  group.by = &quot;SingleR.labels&quot;,
+  label = TRUE,
+  repel = TRUE
+) + ggtitle(&quot;Annotation automatique (SingleR + HumanPrimaryCellAtlas)&quot;)</code></pre>
+<p><img src="Pipe_Test_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Analyse d’expression par RNA-seq Bulk et Single Cell</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Analyse d’expression par RNA-seq Bulk et Single Cell',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Intro_Analyse_RNA-seq_Bulk_Single_files/logo.png',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille Université' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    details > summary > p:only-child {
+      display: inline;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Intro_Analyse_RNA-seq_Bulk_Single_files/logo.png) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body style="opacity: 0">
+
+<slides>
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Intro_Analyse_RNA-seq_Bulk_Single_files/logo.png"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Novembre 2025</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Plan</h2></hgroup><article  id="plan" class="smaller ">
+
+<ul>
+<li><p><strong>Partie 1:</strong> Analyse du <strong>transcriptome</strong> par RNA-seq</p>
+
+<ul>
+<li><p>Pipeline RNA-seq</p></li>
+<li><p>Analyse en Composantes Principales (ACP)</p></li>
+<li><p>Analyse Fonctionnelle, enrichissement GO</p></li>
+<li><p>Quelques banques publiques utiles (Génomes, annotations, ontologies)</p></li>
+</ul></li>
+<li><p><strong>Partie 2:</strong> scRNA-seq</p>
+
+<ul>
+<li><p>Pipeline</p></li>
+<li><p>Analyse différentielle</p></li>
+<li><p>Intégration de plusieurs échantillons</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Partie 1: Analyse d’expression des gènes: RNA-seq</h2></hgroup><article  id="partie-1-analyse-dexpression-des-gènes-rna-seq" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Analyse RNA-seq - principe</h2></hgroup><article  id="analyse-rna-seq---principe" class="smaller ">
+
+<p>Analyse de l’expression des gènes = le Transcriptome. C’est une grandeur dynamique.</p>
+
+<ul>
+<li>Technologie à haut débit précédente: les <strong>Puces à ADN</strong>.</li>
+<li>Technologie basée sur le NGS: Le <strong>RNA-seq</strong>.</li>
+</ul>
+
+<p><strong>Beaucoup d’outils sont communs à ces technologies</strong>.</p>
+
+<p>Le NGS appliqué à l’analyse du transcriptome permet:</p>
+
+<ul>
+<li>Une meilleure concordance entre plateformes</li>
+<li>Une forte sensibilité et meilleure dynamique</li>
+<li>Toutes espèces, toutes régions transcrites</li>
+<li>Une variété d’applications (Analyse diférentielle, analyse de l’épissage alternatif, analyse des gènes de fusion, séquençage <em>de novo</em>)</li>
+</ul>
+
+<p><strong>Mais…</strong>: Complexité et coût calculatoire accrus = <strong>pipeline bioinformatique plus complexe</strong> par rapport aux microarrays.</p>
+
+</article></slide><slide class=""><hgroup><h2>Déroulement d’une analyse RNA-seq</h2></hgroup><article  id="déroulement-dune-analyse-rna-seq" class="smaller ">
+
+<ul>
+<li><strong>Séquençage</strong></li>
+<li><strong>Contrôle qualité</strong></li>
+<li><strong>Alignement</strong> sur génome de référence</li>
+<li><strong>Quantification des valeurs d’expression</strong> (comptage) et normalisation</li>
+<li><strong>Analyse différentielle</strong> entre conditions expérimentales</li>
+<li><strong>Visualisation des données</strong> (&ldquo;diagrammes de chaleur&rdquo;, &ldquo;volcano plots&rdquo;).</li>
+<li><strong>Analyse fonctionnelle</strong> des gènes (&ldquo;Enrichment Analysis&rdquo;)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Principe du RNA-seq (1)</h2></hgroup><article  id="principe-du-rna-seq-1" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/rna-seq-principle.png" height="400" width="700"/>
+
+</center>
+
+<p><br> Source: Thomas Girke, Analysis of RNA-Seq Data with R/Bioconductor, December 14, 2013)</p>
+
+</article></slide><slide class=""><hgroup><h2>Principe du RNA-seq (2)</h2></hgroup><article  id="principe-du-rna-seq-2" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/rna-seq-alignment.png" height="400" width="500"/>
+
+</center>
+
+<p><br> Source: Wikipedia</p>
+
+</article></slide><slide class=""><hgroup><h2>Départ: les fichiers issus du séquenceur (Fichiers FASTQ)</h2></hgroup><article  id="départ-les-fichiers-issus-du-séquenceur-fichiers-fastq" class="smaller ">
+
+<p>Ils contiennent les <em><strong>reads</strong></em>: petite séquence d’un fragment d’ADN de longueurs plus ou mons fixe.</p>
+
+<ul>
+<li><strong>Single-end</strong>
+
+<ul>
+<li>Chaque read est indépendant</li>
+</ul></li>
+<li><strong>Paired-end</strong>
+
+<ul>
+<li>Le séquençage est fait par chaque extrémité de chaque brin. Dans ce cas, les reads sont organisés par paires.</li>
+</ul></li>
+</ul>
+
+<pre>
+@HWI-ST865:166:D0C4KACXX:2:1101:1042:1954 1:Y:0:
+CNANAAATNAANNNNGNNNNNNNNNANNNNNAAANNNTNNNNNNNNNTNNTGNNNNTTGTTTNNTTGTGGGTTTCTCTGTCCCCN
++
+#####################################################################################
+@HWI-ST865:166:D0C4KACXX:2:1101:1241:1970 1:N:0:
+CCAGCGACACTTGCAGCTTAGGGGCAAGAGGCTCCCACAACACCCTGTGCGATCGGAAGAGCGGTTCAGCAGGGATGCCGCGGCC
++
+GFFIGIIIFGEHHIJJJIIGGGHIIBD=BFG?EDECC@FGCHC?BCCBB)53(;;B;?8299?######################
+</pre>
+
+</article></slide><slide class=""><hgroup><h2>Contrôle Qualité par FastQC</h2></hgroup><article  id="contrôle-qualité-par-fastqc" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/FASTQC_RNA_Seq_Snapshot.png" height="500" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Exemple d’alignement (<em>Mapping</em>) RNA-seq sur génome de référence</h2></hgroup><article  id="exemple-dalignement-mapping-rna-seq-sur-génome-de-référence" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/IGV_Profil_expression_All_Samples.png" height="500" width="800"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Analyse de séquence avec IGV</h2></hgroup><article  id="analyse-de-séquence-avec-igv" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/IGV_G_To_C_Substitution.png" height="500" width="800"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Comptage</h2></hgroup><article  id="comptage" class="smaller ">
+
+<ul>
+<li><p>Sous l’hypothèse que le nombre de reads venant d’un certain gène est <strong>proportionnel à l’abondance de son ARN dans la cellule</strong>, on compte les reads venant de chaque gène, transcrit ou exon du génome.</p></li>
+<li><p>Il est possible de faire un script &lsquo;maison&rsquo; mais il existe maintenant un grand nombre de programmes pour faire cette fonction, notamment <strong>featureCount</strong> de la suite logicielle <strong>SubRead</strong>.</p></li>
+<li><p>Les localisations génomiques des objects génomiques (<em>genome features</em>) sont données en entrée du programme de comptage (Fichier d’annotation <strong>GTF/GFF</strong>), permettant d’assigner les comptages à chaque transcrit, gene, ou exon.</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>QC (Quality Control)</h2></hgroup><article  id="qc-quality-control" class="smaller ">
+
+<p>Comparaison des distributions avant normalisation TMM</p>
+
+<center>
+
+<img src="figures_RNA_seq/Unnormalized_LogCPM.png" height="450" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>QC (Quality Control)</h2></hgroup><article  id="qc-quality-control-1" class="smaller ">
+
+<p>Comparaison des distributions après normalisation TMM</p>
+
+<center>
+
+<img src="figures_RNA_seq/Normalized_LogCPM.png" height="450" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Diagrammes thermiques</h2></hgroup><article  id="diagrammes-thermiques" class="smaller ">
+
+<ul>
+<li>Appelé également <strong>Heatmap</strong></li>
+<li>Normalisation par <strong>ligne</strong> ou <strong>globale</strong> pour l’affichage (<strong>Standardisation</strong>)</li>
+<li>Représentation d’une matrice de <strong>manière graphique</strong>, chaque valeur étant représentée par une <strong>cellule colorée</strong>.</li>
+<li>Les colonnes ou les lignes peuvent être ordonnée de plusieurs façons, soit manuellement, soit par une méthode de type <strong>clustering</strong>.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Diagramme thermique</h2></hgroup><article  id="diagramme-thermique" class="smaller ">
+
+<p>(<strong>Avec standardisation</strong> des profils d’expression par <em>z-scores</em>)</p>
+
+<center>
+
+<img src="figures_RNA_seq/DE_Genes_Heatmap.png" height="450" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Diagramme thermique</h2></hgroup><article  id="diagramme-thermique-1" class="smaller ">
+
+<p>(<strong>Sans standardisation</strong> des profils d’expression par <em>z-scores</em>)</p>
+
+<center>
+
+<img src="figures_RNA_seq/DE_Genes_Heatmap_NoNormalisation.png" height="450" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Analyse EdgeR avec statistiques</h2></hgroup><article  id="analyse-edger-avec-statistiques" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/Exemple_Gene_List.png" height="450" width="700"/>
+
+<center>
+
+</article></slide><slide class=""><hgroup><h2>Diagramme en volcan</h2></hgroup><article  id="diagramme-en-volcan" class="smaller ">
+
+<ul>
+<li>\(LogFC=1.5, pval=10^{-3}\)</li>
+</ul>
+
+<center>
+
+<img src="figures_RNA_seq/Volcano_Plot_LogFC15_Pval3.png" height="450" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Diagramme en volcan</h2></hgroup><article  id="diagramme-en-volcan-1" class="smaller ">
+
+<ul>
+<li>\(LogFC=2.0, pval=10^{-5}\)</li>
+</ul>
+
+<center>
+
+<img src="figures_RNA_seq/Volcano_Plot_LogFC2_Pval5.png" height="450" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Analyse multi-dimensionnelles par Analyse en Composantes Principales</h2></hgroup><article  id="analyse-multi-dimensionnelles-par-analyse-en-composantes-principales" class="smaller ">
+
+<p><strong>Objectif de l’ACP</strong>: Analyse statistique descriptive multi-dimensionnelle</p>
+
+<ul>
+<li>Liens entre échantillons: <strong>groupes et partitions</strong></li>
+<li>Liens entre gènes: <strong>gènes co-exprimés</strong></li>
+<li>Liens entre échantillons et gènes</li>
+<li>Le cas échéant: variables <em>supplémentaires</em></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Structure de base des données</h2></hgroup><article  id="structure-de-base-des-données" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/Table.png" height="400" width="300"/>
+
+</center>
+
+<ul>
+<li>En colonnes \(1...K\) variables</li>
+<li>En lignes \(1...I\) individus</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Structure de base de l’exploration par ACP</h2></hgroup><article  id="structure-de-base-de-lexploration-par-acp" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/Etudes%20variables%20et%20individus.png" height="450" width="600"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Représentation d’un nuage de points</h2></hgroup><article  id="représentation-dun-nuage-de-points" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/Nuage%20des%20individus.png" height="450" width="600"/>
+
+</center>
+
+<p>Représentation dans \(R^k\). (Figure : F. Husson)</p>
+
+</article></slide><slide class=""><hgroup><h2>Différentes projections</h2></hgroup><article  id="différentes-projections" class="smaller ">
+
+<p>On cherche à trouver la &ldquo;meilleure&rdquo; projection.</p>
+
+<p>C’est une image simplifiée qui &ldquo;résume&rdquo; au mieux les données.</p>
+
+<p>Pour cela, on trouve la <strong>projection</strong> qui restitue au mieux la <strong>forme générale du nuage</strong>:</p>
+
+<center>
+
+<img src="figures_RNA_seq/Diffe%CC%81rentes%20projections.png" height="200" width="700"/>
+
+</center>
+
+<p>(Figure : F. Husson)</p>
+
+</article></slide><slide class=""><hgroup><h2>Ajustement du nuage des individus</h2></hgroup><article  id="ajustement-du-nuage-des-individus" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/Chameau.png" height="500" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Tableau des températures (F. Husson)</h2></hgroup><article  id="tableau-des-températures-f.-husson" class="smaller ">
+
+<table class = 'rmdtable'>
+<col width="16.000000%" />
+<col width="6.666667%" />
+<col width="6.666667%" />
+<col width="6.666667%" />
+<col width="6.666667%" />
+<col width="6.666667%" />
+<col width="6.666667%" />
+<col width="6.666667%" />
+<col width="6.666667%" />
+<col width="8.000000%" />
+<col width="8.000000%" />
+<col width="8.000000%" />
+<col width="6.666667%" />
+<tr class="header">
+<th align="left"></th>
+<th align="right">Janv</th>
+<th align="right">Fevr</th>
+<th align="right">Mars</th>
+<th align="right">Avri</th>
+<th align="right">Mai</th>
+<th align="right">Juin</th>
+<th align="right">juil</th>
+<th align="right">Aout</th>
+<th align="right">Lati</th>
+<th align="right">Long</th>
+<th align="right">Moye</th>
+<th align="right">Ampl</th>
+</tr>
+<tr class="odd">
+<td align="left">Bordeaux</td>
+<td align="right">5.6</td>
+<td align="right">6.6</td>
+<td align="right">10.3</td>
+<td align="right">12.8</td>
+<td align="right">15.8</td>
+<td align="right">19.3</td>
+<td align="right">20.9</td>
+<td align="right">21.0</td>
+<td align="right">44.50</td>
+<td align="right">-0.34</td>
+<td align="right">13.33</td>
+<td align="right">15.4</td>
+</tr>
+<tr class="even">
+<td align="left">Brest</td>
+<td align="right">6.1</td>
+<td align="right">5.8</td>
+<td align="right">7.8</td>
+<td align="right">9.2</td>
+<td align="right">11.6</td>
+<td align="right">14.4</td>
+<td align="right">15.6</td>
+<td align="right">16.0</td>
+<td align="right">48.24</td>
+<td align="right">-4.29</td>
+<td align="right">10.77</td>
+<td align="right">10.2</td>
+</tr>
+<tr class="odd">
+<td align="left">Clermont</td>
+<td align="right">2.6</td>
+<td align="right">3.7</td>
+<td align="right">7.5</td>
+<td align="right">10.3</td>
+<td align="right">13.8</td>
+<td align="right">17.3</td>
+<td align="right">19.4</td>
+<td align="right">19.1</td>
+<td align="right">45.47</td>
+<td align="right">3.05</td>
+<td align="right">10.94</td>
+<td align="right">16.8</td>
+</tr>
+<tr class="even">
+<td align="left">Grenoble</td>
+<td align="right">1.5</td>
+<td align="right">3.2</td>
+<td align="right">7.7</td>
+<td align="right">10.6</td>
+<td align="right">14.5</td>
+<td align="right">17.8</td>
+<td align="right">20.1</td>
+<td align="right">19.5</td>
+<td align="right">45.10</td>
+<td align="right">5.43</td>
+<td align="right">10.98</td>
+<td align="right">18.6</td>
+</tr>
+<tr class="odd">
+<td align="left">Lille</td>
+<td align="right">2.4</td>
+<td align="right">2.9</td>
+<td align="right">6.0</td>
+<td align="right">8.9</td>
+<td align="right">12.4</td>
+<td align="right">15.3</td>
+<td align="right">17.1</td>
+<td align="right">17.1</td>
+<td align="right">50.38</td>
+<td align="right">3.04</td>
+<td align="right">9.73</td>
+<td align="right">14.7</td>
+</tr>
+<tr class="even">
+<td align="left">Lyon</td>
+<td align="right">2.1</td>
+<td align="right">3.3</td>
+<td align="right">7.7</td>
+<td align="right">10.9</td>
+<td align="right">14.9</td>
+<td align="right">18.5</td>
+<td align="right">20.7</td>
+<td align="right">20.1</td>
+<td align="right">45.45</td>
+<td align="right">4.51</td>
+<td align="right">11.36</td>
+<td align="right">18.6</td>
+</tr>
+<tr class="odd">
+<td align="left">Marseille</td>
+<td align="right">5.5</td>
+<td align="right">6.6</td>
+<td align="right">10.0</td>
+<td align="right">13.0</td>
+<td align="right">16.8</td>
+<td align="right">20.8</td>
+<td align="right">23.3</td>
+<td align="right">22.8</td>
+<td align="right">43.18</td>
+<td align="right">5.24</td>
+<td align="right">14.23</td>
+<td align="right">17.8</td>
+</tr>
+<tr class="even">
+<td align="left">Montpellier</td>
+<td align="right">5.6</td>
+<td align="right">6.7</td>
+<td align="right">9.9</td>
+<td align="right">12.8</td>
+<td align="right">16.2</td>
+<td align="right">20.1</td>
+<td align="right">22.7</td>
+<td align="right">22.3</td>
+<td align="right">43.36</td>
+<td align="right">3.53</td>
+<td align="right">13.89</td>
+<td align="right">17.1</td>
+</tr>
+<tr class="odd">
+<td align="left">Nantes</td>
+<td align="right">5.0</td>
+<td align="right">5.3</td>
+<td align="right">8.4</td>
+<td align="right">10.8</td>
+<td align="right">13.9</td>
+<td align="right">17.2</td>
+<td align="right">18.8</td>
+<td align="right">18.6</td>
+<td align="right">47.13</td>
+<td align="right">-1.33</td>
+<td align="right">11.69</td>
+<td align="right">13.8</td>
+</tr>
+<tr class="even">
+<td align="left">Nice</td>
+<td align="right">7.5</td>
+<td align="right">8.5</td>
+<td align="right">10.8</td>
+<td align="right">13.3</td>
+<td align="right">16.7</td>
+<td align="right">20.1</td>
+<td align="right">22.7</td>
+<td align="right">22.5</td>
+<td align="right">43.42</td>
+<td align="right">7.15</td>
+<td align="right">14.84</td>
+<td align="right">15.2</td>
+</tr>
+</table>
+
+</article></slide><slide class=""><hgroup><h2>ACP sur les données Température (Graphe des individus)</h2></hgroup><article  id="acp-sur-les-données-température-graphe-des-individus" class="smaller ">
+
+<p><img src="Intro_Analyse_RNA-seq_Bulk_Single_files/figure-html/unnamed-chunk-2-1.png" width="720" /></p>
+
+</article></slide><slide class=""><hgroup><h2>ACP sur les données Température (Graphe des variables)</h2></hgroup><article  id="acp-sur-les-données-température-graphe-des-variables" class="smaller ">
+
+<p><img src="Intro_Analyse_RNA-seq_Bulk_Single_files/figure-html/unnamed-chunk-3-1.png" width="720" /></p>
+
+</article></slide><slide class=""><hgroup><h2>Ajout des variables supplémentaires</h2></hgroup><article  id="ajout-des-variables-supplémentaires" class="smaller ">
+
+<p><img src="Intro_Analyse_RNA-seq_Bulk_Single_files/figure-html/unnamed-chunk-4-1.png" width="720" /></p>
+
+</article></slide><slide class=""><hgroup><h2>Conclusion</h2></hgroup><article  id="conclusion" class="smaller ">
+
+<p>L’ACP permet d’obtenir une vision synthétique des données.</p>
+
+<ul>
+<li>Groupes d’individus</li>
+<li>Groupes de variables</li>
+<li>Quelles variables structurent les données?</li>
+</ul>
+
+<p>-&gt; Passage aux données d’expression RNA-seq.</p>
+
+</article></slide><slide class=""><hgroup><h2>Exemple sur les données cellulaires précédentes</h2></hgroup><article  id="exemple-sur-les-données-cellulaires-précédentes" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/PCA_samples.png" height="450" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Cercle des corrélations (gènes)</h2></hgroup><article  id="cercle-des-corrélations-gènes" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/PCA_genes.png" height="450" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Analyse fonctionnelle</h2></hgroup><article  id="analyse-fonctionnelle" class="smaller ">
+
+<p>Après avoir identifié les gènes <strong>différentiellement exprimés</strong>, nous cherchons à obtenir leur <strong>fonction</strong>.</p>
+
+<p>Deux manières de procéder:</p>
+
+<ul>
+<li>Parcourir la liste et faire une recherche dans la littérature…</li>
+<li>Utiliser les annotations des gènes pour trouver les fonctions moléculaires ou pathways représentés par ces gènes: -&gt; Faire une <strong>Analyse d’enrichissement fonctionnelle</strong>.</li>
+</ul>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Partie 2: Analyse Single Cell RNA-seq (scRNA-seq)</h2></hgroup><article  id="partie-2-analyse-single-cell-rna-seq-scrna-seq" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Partie 2: Analyse Single Cell RNA-seq (scRNA-seq)</h2></hgroup><article  id="partie-2-analyse-single-cell-rna-seq-scrna-seq-1" class="smaller ">
+
+<ul>
+<li><p>Etude de l’expression des gènes au <strong>niveau de chaque cellule</strong></p></li>
+<li><p>Etudier <strong>l’hétérogénéité d’un tissu</strong> (Bulk RNA-seq= les expressions sont <strong>confondues</strong>)</p></li>
+<li><p>Etudier les <strong>types cellulaires</strong> rares et inconnus</p></li>
+</ul>
+
+<p>Il est également possible de réaliser d’autres <em>omiques</em> (Atac-Seq, scDNA-seq).</p>
+
+<center>
+
+<img src="figures_RNA_seq/Cao_Single_cell.png" height="230" width="330"/>
+
+</center>
+
+<p>D’après Cao <em>et al.</em> 2017 (<em>Science</em>)</p>
+
+</article></slide><slide class=""><hgroup><h2>From RNA-seq to Single Cell RNA-seq</h2></hgroup><article  id="from-rna-seq-to-single-cell-rna-seq" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/SC_From_RNA-seq_to_SC.png" height="'400" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Différentes technologies Single Cell</h2></hgroup><article  id="différentes-technologies-single-cell" class="smaller ">
+
+<table class = 'rmdtable'>
+<col width="18.309859%" />
+<col width="28.169014%" />
+<col width="30.985915%" />
+<col width="8.450704%" />
+<col width="14.084507%" />
+<tr class="header">
+<th align="left">Technologie</th>
+<th align="left">Nombre de cellules</th>
+<th align="left">Nombre de paramètres</th>
+<th align="left">Pour</th>
+<th align="left">Contre</th>
+</tr>
+<tr class="odd">
+<td align="left">Cytométrie en flux</td>
+<td align="left">1k - 100k</td>
+<td align="left">1-15</td>
+<td align="left">Simple</td>
+<td align="left">N Limité</td>
+</tr>
+<tr class="even">
+<td align="left">Spectrométrie de Masse</td>
+<td align="left">1k-100k</td>
+<td align="left">20-50</td>
+<td align="left">Plus de paramètres</td>
+<td align="left">N Limité</td>
+</tr>
+<tr class="odd">
+<td align="left">RNA FISH</td>
+<td align="left">~100</td>
+<td align="left">1</td>
+<td align="left">Résolution spatiale</td>
+<td align="left">Complexe, Faible débit</td>
+</tr>
+<tr class="even">
+<td align="left">Multiplex FISH</td>
+<td align="left">100-aine</td>
+<td align="left">~100</td>
+<td align="left">Résolution spatiale</td>
+<td align="left">Complexe à mettre en oeuvre et à analyser</td>
+</tr>
+<tr class="odd">
+<td align="left">SS2 scRNA-seq</td>
+<td align="left">100-1000</td>
+<td align="left">~20000</td>
+<td align="left">Haut débit</td>
+<td align="left">Matrices creuses</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><em>Droplets</em> scRNA-seq</strong> (Gouttelettes)</td>
+<td align="left">100-1e6</td>
+<td align="left">~20000</td>
+<td align="left">Haut débit</td>
+<td align="left">Matrices creuses</td>
+</tr>
+</table>
+
+</article></slide><slide class=""><hgroup><h2>Analyse 10X Genomics (Chromium)</h2></hgroup><article  id="analyse-10x-genomics-chromium" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/SC_10X_Genomics_Library_preparation.png" height="300" width="700"/>
+
+</center>
+
+<ul>
+<li>Le gel contient les billes magnétiques barcodées destinés à <strong>identifier chaque cellule de façon unique</strong>.</li>
+<li>Les cellules sont ensuite <strong>isolées dans des goutelettes</strong> par émulsion grâce à l’apport d’huile. Les cellules associés à chaque goutelette sont barcodées avec le code de la bille correspondante.</li>
+<li>La technologie <em>10X Genomics</em> permets la <strong>transcription inverse</strong> directement dans les goutelettes (mRNA-&gt;cDNA) avec l’ajout d’un <strong>barcode unique</strong> (UMI = <em>Unique Molecular Identifier</em>) par transcrit. <strong>Les transcrits (+ barcode + UMI) sont ensuite séquencés</strong>.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Schéma Analytique Général</h2></hgroup><article  id="schéma-analytique-général" class="smaller ">
+
+<p>Le travail de bioinformatique se divise en 3 pipelines:</p>
+
+<ul>
+<li><p><strong>Pipeline primaire</strong>, intrinsèque au séquenceur: C’est le pipeline qui produit les séquences brutes</p></li>
+<li><p><strong>Pipeline secondaire</strong>: Contrôle qualité de base (suppression des doublons), alignement des séquences (<em>10X Genomics</em>: Logiciel <strong><em>CellRanger</em></strong>)</p></li>
+<li><p><strong>Pipeline tertiaire</strong>: Analyse fine de l’expression des gènes en fonction de la question biologique (<em>10X Genomics</em>: Logiciel <strong><em>Seurat</em></strong> sous <strong>R</strong>)</p>
+
+<ul>
+<li>Normalisation + Correction Batch (Lots)</li>
+<li>Estimation de la dimensionnalité des données (PCA)</li>
+<li>Réduction de dimensionnalité (tSNE, UMAP)</li>
+<li>Groupement des cellules semblables par <em>clustering</em></li>
+<li>Analyse d’expression différentielle</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>UMIs</h2></hgroup><article  id="umis" class="smaller ">
+
+<ul>
+<li><strong>UMI: Unique Molecular Identifiers</strong> (12bp en plus des 16bp des barcodes des cellules = unique par transcrits)</li>
+<li>Permettent de donner le <strong>comptage quasi-exact</strong> des molécules dans un séquençage</li>
+<li>Réduction du bruit d’amplification par <strong>déduplication des fragments de lecture</strong> (<em>reads</em>)</li>
+</ul>
+
+<center>
+
+<img src="figures_RNA_seq/SC_Deduplication.png" height="250" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Détection des cellules de mauvaise qualité</h2></hgroup><article  id="détection-des-cellules-de-mauvaise-qualité" class="smaller ">
+
+<p>Plot <strong>transcrits vs barcodes</strong>: on détecte les cellules <strong>dédoublées</strong> (barcodes <strong>fortement représentés</strong>) ou les cellules <strong>non viables</strong> (barcodes <strong>faiblement représentés</strong>)</p>
+
+<center>
+
+<img src="figures_RNA_seq/SC_10X_genomics_barcode_thresholding.png" height="400" width="400"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Détection des cellules de mauvaise qualité (2)</h2></hgroup><article  id="détection-des-cellules-de-mauvaise-qualité-2" class="smaller ">
+
+<p><strong>Séparation en cellules de haute et basse qualité:</strong> Le point d’inflexion et le coude (<em>knee</em>) du graphe précédent représentent la transition entre les deux composants suivants de la distribution totale de comptage:</p>
+
+<ul>
+<li>Des gouttelettes vides sans ARN (barcodes représentés par <strong>très peu de transcrits</strong>, en bas)</li>
+<li>Des gouttelettes contenant des doublons avec beaucoup d’ARN (barcodes représentés par <strong>énormément de transcrits</strong>, en haut)</li>
+</ul>
+
+<p>La différence entre ces deux points permets d’avoir une <strong>estimation du nombre de cellules dans notre échantillon</strong>.</p>
+
+</article></slide><slide class=""><hgroup><h2>Pipeline Seurat</h2></hgroup><article  id="pipeline-seurat" class="smaller ">
+
+<ul>
+<li>Développé par le labo Satija. (New York University Genome Center)</li>
+<li><strong>Actuellement disponible en Version 5.0</strong>, fonctionne sous <strong>R/Bioconductor</strong>.</li>
+<li>Plusieurs tutoriels sont disponibles sur le site des auteurs (<a href='https://satijalab.org/seurat/' title=''>https://satijalab.org/seurat/</a>)</li>
+<li>Il permet de lire les données alignées par le pipeline secondaire <em>CellRanger</em> (<em>10x genomics</em>) et comporte un grand nombre de possibilité d’analyse.</li>
+<li>Pour la suite, nous nous intéressons au tutoriel basé sur <strong>l’étude des cellules circulantes</strong> PBMC (Disponible à <a href='https://satijalab.org/seurat/v3.2/pbmc3k_tutorial.html' title=''>https://satijalab.org/seurat/v3.2/pbmc3k_tutorial.html</a> )</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Contrôle Qualité et filtrage</h2></hgroup><article  id="contrôle-qualité-et-filtrage" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_QC.png" height="250" width="600"/>
+
+</center>
+
+<ul>
+<li>Filtrage des cellules ayant peu ou pas de doublons</li>
+<li>Filtrage des cellules ayant de la contamination mitochodriale (Les gènes <em>MT-</em> représentent les gènes mitochondriales)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Filtrage sur les données</h2></hgroup><article  id="filtrage-sur-les-données" class="smaller ">
+
+Les données ressemblent à
+
+<pre>
+## CD3D  4 . 10 . . 1 2 3 1 . . 2 7 1 . . 1 3 . 2  3 . . . . . 3 4 1 5
+## TCL1A . .  . . . . . . 1 . . . . . . . . . . .  . 1 . . . . . . . .
+## MS4A1 . 6  . . . . . . 1 1 1 . . . . . . . . . 36 1 2 . . 2 . . . .
+</pre>
+
+<p>Elles contiennent principalement des <em>zéros</em> (matrices <strong>creuses</strong>). On filtre les cellules ayant trop peu de gènes exprimés et les gènes n’étant pas assez exprimés).</p>
+
+<p>Cette caractéristique est utiliseé pour le <strong>stockage optimisé</strong> de données en mémoire et sur disque.</p>
+
+</article></slide><slide class=""><hgroup><h2>Normalisation</h2></hgroup><article  id="normalisation" class="smaller ">
+
+<ul>
+<li><p>Méthode de mise à l’échelle <strong>globale</strong>.</p></li>
+<li><p>L’ensemble des valeurs de comptage est divisé par l’expression totale.</p></li>
+<li><p>On multiple le tout par un facteur \(1e4\).</p></li>
+<li><p>Le résultat est normalisé en \(log\).</p></li>
+<li><p>Avant toute réduction de dimensions (ACP ou autre), les données sont <strong>centrées reduites</strong> (Variance=1, moyenne=0).</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Réduction de dimensions linéaire</h2></hgroup><article  id="réduction-de-dimensions-linéaire" class="smaller ">
+
+<p>L’objectif est d’estimer la dimensionalité des données par application d’une ACP (<strong>Analyse en composantes Principales</strong>) (Ici estimée à 10).</p>
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_PCA.png" height="400" width="500"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Valeurs propres de l’ACP</h2></hgroup><article  id="valeurs-propres-de-lacp" class="smaller ">
+
+<p>Les <strong>valeurs propres</strong> (<em>Eigen Values</em>) de l’<strong>ACP</strong> permettent l’estimation de la dimensionalité des données.</p>
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_Eigenvalues.png" height="400" width="500"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Clustering</h2></hgroup><article  id="clustering" class="smaller ">
+
+<p>Les cellules sont <em>clusterisées</em> par l’algorithme suivant:</p>
+
+<ul>
+<li><p><strong>Etape 1:</strong> Les cellules sont groupées dans un graphe par similarité de distance dans l’ACP par un algorithme KNN (<em>K Nearest Neighbors</em>, méthode des <em>K plus proches voisins</em>). Cet algorithme prend comme paramètre le nombre de <em>clusters</em> à découvrir. On lui donne le nombre de dimensions estimées précédemment par ACP.</p></li>
+<li><p><strong>Etape 2:</strong> le <em>clustering</em> obtenu est <em>optimisé</em> par une méthode appelée <em>Algorithme de Louvain</em>.</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Réduction de dimensions (UMAP)</h2></hgroup><article  id="réduction-de-dimensions-umap" class="smaller ">
+
+<p>Les clusters déterminés à l’étape précédente sont superposés aux plans obtenus par réduction de dimensions <strong>UMAP</strong> (<em>Uniform Manifold Approximation and Projection for Dimension Reduction</em>)</p>
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_TSNE.png" height="400" width="500"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Analyse d’expression différentielle</h2></hgroup><article  id="analyse-dexpression-différentielle" class="smaller ">
+
+<p>L’analyse d’expression différentielle en scRNA-seq se fait par comparaison des groupes (<em>clusters</em>) détectés lors de l’étape de <em>clustering</em> précédente. Elle est <strong>identique au RNA-seq classique</strong>, et fonctionne par comparaison de l’expression moyenne des cellules entre les deux groupes pondérée par la variance intra-groupe.</p>
+
+<p>Il est donc possible de faire les analyses suivantes:</p>
+
+<ul>
+<li>Comparer des <strong>clusters deux à deux</strong>.</li>
+<li>Comparer chaque <strong>cluster avec le reste des cellules</strong>.</li>
+<li>On peut aussi explorer l’expression des gènes et étudier leur variation entre les clusters.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Exemple de résultat</h2></hgroup><article  id="exemple-de-résultat" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_Cluster.png" height="350" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Comparaison d’expression entre clusters (Violin Plot)</h2></hgroup><article  id="comparaison-dexpression-entre-clusters-violin-plot" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_Gene_expression.png" height="400" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Identification de population</h2></hgroup><article  id="identification-de-population" class="smaller ">
+
+<p>Les populations cellulaires peuvent être identifiées par l’observation de l’expression des marqueurs d’identification.</p>
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_Marqeurs.png" height="350" width="700"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Et le résultat reporté de façon visuelle sur UMAP</h2></hgroup><article  id="et-le-résultat-reporté-de-façon-visuelle-sur-umap" class="smaller ">
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_Pop.png" height="350" width="500"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Expression des marqueurs</h2></hgroup><article  id="expression-des-marqueurs" class="smaller ">
+
+<p>Il est également possible d’explorer le résultat de la decomposition UMAP en y superposant l’expression de certains gènes.</p>
+
+<center>
+
+<img src="figures_RNA_seq/SC_Seurat_Features.png" height="450" width="600"/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Liens intéressants:</h2></hgroup><article  id="liens-intéressants" class="smaller ">
+
+<ul>
+<li>Tutoriel Single Cell Galaxy:</li>
+</ul>
+
+<p><a href='https://training.galaxyproject.org/training-material/topics/transcriptomics/tutorials/scrna-preprocessing-tenx/tutorial.html' title=''>https://training.galaxyproject.org/training-material/topics/transcriptomics/tutorials/scrna-preprocessing-tenx/tutorial.html</a></p>
+
+<ul>
+<li>Pipeline Seurat:</li>
+</ul>
+
+<p><a href='https://satijalab.org/seurat/' title=''>https://satijalab.org/seurat/</a></p>
+
+<ul>
+<li>Démo Pipeline Seurat PBMC</li>
+</ul>
+
+<p><a href='https://satijalab.org/seurat/v3.2/pbmc3k_tutorial.html' title=''>https://satijalab.org/seurat/v3.2/pbmc3k_tutorial.html</a></p>
+
+<ul>
+<li>Cours analyse Single Cell du Sanger</li>
+</ul>
+
+<p><a href='https://scrnaseq-course.cog.sanger.ac.uk/website/index.html' title=''>https://scrnaseq-course.cog.sanger.ac.uk/website/index.html</a></p>
+
+</article></slide><slide class=""><hgroup><h2>Copyright</h2></hgroup><article  id="copyright" class="smaller ">
+
+<div style="text-align: center">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a><br />Ce(tte) œuvre est mise à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Licence Creative Commons Attribution - Pas d&#39;Utilisation Commerciale - Pas de Modification 4.0 International</a>.</p></div></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+    if (window.Shiny) {
+      // Initialize slides when this script appears on the page, since it
+      // indicates that the <slides> markup has been fully loaded.
+      window.loadDeck();
+    }
+  })();
+</script>
+
+</body>
+</html>
