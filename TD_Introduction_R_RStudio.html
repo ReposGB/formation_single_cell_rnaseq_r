@@ -352,19 +352,16 @@ Université</h4>
 <p><br> <br></p>
 <p><img src="Maxi_Logo_Formation_Bioinfo.png" width="3000" /> <br> <br>
 <br> <br></p>
-<div id="introduction" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Introduction</h1>
+<div id="organisation" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Organisation</h1>
 <p>Ce TD va nous permettre d’aborder l’utilisation de R pour la
 manipulation de données et de fichiers.</p>
-</div>
-<div id="organisation" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Organisation</h1>
 <p>Nous allons utiliser le serveur RStudio sur l’IFB par OnDemand: <a
 href="https://ondemand.cluster.france-bioinformatique.fr/pun/sys/dashboard/batch_connect/sessions"
 class="uri">https://ondemand.cluster.france-bioinformatique.fr/pun/sys/dashboard/batch_connect/sessions</a></p>
-<p>Il est souhaitable de réaliser ce TD dans un fichier
-<strong>.R</strong> (Dans RStudio, Fichier -&gt; Nouveau Fichier -&gt; R
-Script). Par exemple, dans
+<p>Nous allons réaliser ce TD en <strong>enregistrant les commandes dans
+un script</strong> <code>.R</code> (Dans RStudio, Fichier -&gt; Nouveau
+Fichier -&gt; R Script). Par exemple, dans
 <code>&lt;mon_reperoire_de_travail&gt;/TP_R/TP_Intro_R.R</code>.</p>
 <p>N’oubliez pas d’organiser votre script en sections avec des
 commentaires, comme, par exemple, ceci:</p>
@@ -373,25 +370,24 @@ A &lt;- 10
 # Exercice 2
 C &lt;- 11</code></pre>
 </div>
-<div id="exercices" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Exercices</h1>
-<div id="exercice-calculs-simples" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Exercice: Calculs
+<div id="exercices" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Exercices</h1>
+<div id="exercice-calculs-simples" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Exercice: Calculs
 simples</h2>
 <ol style="list-style-type: decimal">
 <li><p>Calculer <span class="math inline">\(2+2\)</span>.</p></li>
 <li><p>Calculer <span class="math inline">\(0.5.10^2 \times
 0.3.10^4\)</span></p></li>
 <li><p>Concaténer les chaines de caractère “J’aime” et “Linux”</p></li>
-<li><p>Reproduire les commandes dans un script</p></li>
 </ol>
-<div id="solution" class="section level3" number="3.1.1">
-<h3><span class="header-section-number">3.1.1</span> Solution</h3>
+<div id="solution" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Solution</h3>
 </div>
 </div>
 <div id="exercice-variables-et-environnement" class="section level2"
-number="3.2">
-<h2><span class="header-section-number">3.2</span> Exercice: Variables
+number="2.2">
+<h2><span class="header-section-number">2.2</span> Exercice: Variables
 et environnement</h2>
 <ol style="list-style-type: decimal">
 <li><p>Reprendre les calculs précédents et les stocker dans des
@@ -399,13 +395,13 @@ variables, respectivement <code>a1</code>, <code>a2</code>et
 <code>str_linux</code>.</p></li>
 <li><p>Où retrouver ces objets avec l’interface RStudio ?</p></li>
 </ol>
-<div id="solution-1" class="section level3" number="3.2.1">
-<h3><span class="header-section-number">3.2.1</span> Solution</h3>
+<div id="solution-1" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Solution</h3>
 </div>
 </div>
 <div id="exercice-extraction-déléments-dun-vecteur"
-class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Exercice: Extraction
+class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Exercice: Extraction
 d’éléments d’un vecteur</h2>
 <p>Soit
 <code>genel &lt;- c("ALK", "HRAS", "BRAD", "AKT1", "EGFR")</code></p>
@@ -422,12 +418,12 @@ et “EGFR”.</p></li>
 <li><p>Ajouter les gènes “PIK3CA” et “KIT” au vecteur
 <code>gl2</code></p></li>
 </ol>
-<div id="solution-2" class="section level3" number="3.3.1">
-<h3><span class="header-section-number">3.3.1</span> Solution</h3>
+<div id="solution-2" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> Solution</h3>
 </div>
 </div>
-<div id="exercice-facteurs" class="section level2" number="3.4">
-<h2><span class="header-section-number">3.4</span> Exercice:
+<div id="exercice-facteurs" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Exercice:
 Facteurs</h2>
 <p>Soit un facteur
 <code>cell_type &lt;- factor(c("C1","C2","C2","C2","C1","C2","C2","C1"))</code>.</p>
@@ -439,13 +435,13 @@ des opérateurs binaires (==).</p></li>
 <li><p>Que permet de faire la fonction <code>table</code> ? Appliquer-la
 à <code>cell_type</code> et décrire sa fonction.</p></li>
 </ol>
-<div id="solution-3" class="section level3" number="3.4.1">
-<h3><span class="header-section-number">3.4.1</span> Solution</h3>
+<div id="solution-3" class="section level3" number="2.4.1">
+<h3><span class="header-section-number">2.4.1</span> Solution</h3>
 </div>
 </div>
 <div id="exercice-chaines-de-caractères" class="section level2"
-number="3.5">
-<h2><span class="header-section-number">3.5</span> Exercice: Chaines de
+number="2.5">
+<h2><span class="header-section-number">2.5</span> Exercice: Chaines de
 caractères</h2>
 <p>La commande <code>paste</code> permet de concaténer du texte.</p>
 <ol style="list-style-type: decimal">
@@ -463,8 +459,8 @@ identique à <code>chrs</code>.</p></li>
 </ol>
 </div>
 <div id="exercice-tableaux-de-données" class="section level2"
-number="3.6">
-<h2><span class="header-section-number">3.6</span> Exercice: Tableaux de
+number="2.6">
+<h2><span class="header-section-number">2.6</span> Exercice: Tableaux de
 données</h2>
 <p>Créer une liste <code>x</code> contenant :</p>
 <ul>
@@ -492,13 +488,13 @@ de 1 à 26.</p></li>
 <li><p>Essayer de transformer de nouveau <code>x</code> en data.frame.
 Que se passe-t-il ?</p></li>
 </ol>
-<div id="solution-4" class="section level3" number="3.6.1">
-<h3><span class="header-section-number">3.6.1</span> Solution</h3>
+<div id="solution-4" class="section level3" number="2.6.1">
+<h3><span class="header-section-number">2.6.1</span> Solution</h3>
 </div>
 </div>
 </div>
-<div id="etude-de-données-génomique" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Etude de données
+<div id="etude-de-données-génomique" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Etude de données
 génomique</h1>
 <p>Dans ce TP, nous allons faire des statistiques sur les gènes du
 génome humain. Pour cela, nous allons utiliser un fichier GFF
@@ -508,8 +504,8 @@ pouvez le récupérer sur</p>
 <p><code>/shared/projects/tp_2529_ngs_amu_181496/data/gencode.v38.ENSEMBL.annotation.gtf</code></p>
 <p>Nous enregistrerons les manipulations dans un fichier RScript
 (extension <code>.R</code>).</p>
-<div id="chargement-des-données" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Chargement des
+<div id="chargement-des-données" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Chargement des
 données</h2>
 <ol start="0" style="list-style-type: decimal">
 <li><p>Copiez le fichier dans votre répertoire de travail.</p></li>
@@ -530,13 +526,13 @@ GFF et donc partagent le même format.</p>
 <li><p>Afficher les premières lignes, les dernières lignes, puis ouvrez
 l’objet avec la fonction View, disponible dans RStudio.</p></li>
 </ol>
-<div id="solution-5" class="section level3" number="4.1.1">
-<h3><span class="header-section-number">4.1.1</span> Solution</h3>
+<div id="solution-5" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Solution</h3>
 </div>
 </div>
 <div id="sélection-dun-sous-ensemble-de-données" class="section level2"
-number="4.2">
-<h2><span class="header-section-number">4.2</span> Sélection d’un sous
+number="3.2">
+<h2><span class="header-section-number">3.2</span> Sélection d’un sous
 ensemble de données</h2>
 <ol style="list-style-type: decimal">
 <li><p>Afficher la ligne 12. Afficher le nom du gène de la ligne
@@ -545,14 +541,14 @@ ensemble de données</h2>
 chromosomique, strand et le type de <em>feature</em>.</p></li>
 <li><p>Afficher les types de <em>features</em> existantes.</p></li>
 </ol>
-<div id="solution-6" class="section level3" number="4.2.1">
-<h3><span class="header-section-number">4.2.1</span> Solution</h3>
+<div id="solution-6" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Solution</h3>
 </div>
 </div>
 <div
 id="sélection-dun-sous-ensemble-de-données-basé-sur-les-valeurs-du-tableau"
-class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Sélection d’un sous
+class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Sélection d’un sous
 ensemble de données basé sur les valeurs du tableau</h2>
 <ol style="list-style-type: decimal">
 <li><p>Sélectionner les lignes correspondantes aux gènes et comptez les
@@ -564,22 +560,22 @@ ensemble de données basé sur les valeurs du tableau</h2>
 feature pour chaque chromosome (Utiliser la fonction
 <code>table</code>)</p></li>
 </ol>
-<div id="solution-7" class="section level3" number="4.3.1">
-<h3><span class="header-section-number">4.3.1</span> Solution</h3>
+<div id="solution-7" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Solution</h3>
 </div>
 </div>
-<div id="manipulation-dun-tableau" class="section level2" number="4.4">
-<h2><span class="header-section-number">4.4</span> Manipulation d’un
+<div id="manipulation-dun-tableau" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Manipulation d’un
 tableau</h2>
 <p>Ajouter une colonne <code>length</code> au tableau
 <code>human.gene.annot</code>, définie comme étant la différence entre
 les colonnes <code>start</code>et <code>end</code>.</p>
-<div id="solution-8" class="section level3" number="4.4.1">
-<h3><span class="header-section-number">4.4.1</span> Solution</h3>
+<div id="solution-8" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Solution</h3>
 </div>
 </div>
-<div id="plot-de-données" class="section level2" number="4.5">
-<h2><span class="header-section-number">4.5</span> Plot de données</h2>
+<div id="plot-de-données" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Plot de données</h2>
 <ol style="list-style-type: decimal">
 <li><p>Faire un histogramme représentant la distribution des longueurs
 des gènes (fonction <code>hist</code>).</p></li>
@@ -593,22 +589,22 @@ suivante:</p>
 pdf(&quot;mon fichier.pdf&quot;)
 hist(rnorm(100))
 dev.off()</code></pre>
-<div id="solution-9" class="section level3" number="4.5.1">
-<h3><span class="header-section-number">4.5.1</span> Solution</h3>
+<div id="solution-9" class="section level3" number="3.5.1">
+<h3><span class="header-section-number">3.5.1</span> Solution</h3>
 </div>
 </div>
-<div id="paramètres-descriptifs" class="section level2" number="4.6">
-<h2><span class="header-section-number">4.6</span> Paramètres
+<div id="paramètres-descriptifs" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Paramètres
 descriptifs</h2>
 <p>Extraire la moyenne, écart type, valeurs min et max des longueurs de
 gènes pour le génome total (<code>feature == "gene"</code>)</p>
-<div id="solution-10" class="section level3" number="4.6.1">
-<h3><span class="header-section-number">4.6.1</span> Solution</h3>
+<div id="solution-10" class="section level3" number="3.6.1">
+<h3><span class="header-section-number">3.6.1</span> Solution</h3>
 </div>
 </div>
 </div>
-<div id="data-sheets" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Data sheets</h1>
+<div id="data-sheets" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Data sheets</h1>
 <ul>
 <li><p>DataSheet <strong>Base R</strong>: <a
 href="https://github.com/rstudio/cheatsheets/blob/main/base-r.pdf"
