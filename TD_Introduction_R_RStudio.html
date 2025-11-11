@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille Université" />
+
+
+<title>TD: Introduction et pratique de R et RStudio</title>
+
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Formation Single Cell RNA-seq sous R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Accueil</a>
+</li>
+<li>
+  <a href="Introduction_Formation.html">Introduction</a>
+</li>
+<li>
+  <a href="Introduction_R_RStudio.html">Introduction R/Rstudio</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">TD: Introduction et pratique de R et
+RStudio</h1>
+<h4 class="author">Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille
+Université</h4>
+<h4 class="date">Novembre 2025</h4>
+
+</div>
+
+
+<p><br> <br></p>
+<p><img src="Maxi_Logo_Formation_Bioinfo.png" width="3000" /> <br> <br>
+<br> <br></p>
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>Ce TD va nous permettre d’aborder l’utilisation de R pour la
+manipulation de données et de fichiers.</p>
+</div>
+<div id="organisation" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Organisation</h1>
+<p>Nous allons utiliser le serveur RStudio sur l’IFB par OnDemand: <a
+href="https://ondemand.cluster.france-bioinformatique.fr/pun/sys/dashboard/batch_connect/sessions"
+class="uri">https://ondemand.cluster.france-bioinformatique.fr/pun/sys/dashboard/batch_connect/sessions</a></p>
+<p>Il est souhaitable de réaliser ce TD dans un fichier
+<strong>.R</strong> (Dans RStudio, Fichier -&gt; Nouveau Fichier -&gt; R
+Script). Par exemple, dans
+<code>&lt;mon_reperoire_de_travail&gt;/TP_R/TP_Intro_R.R</code>.</p>
+<p>N’oubliez pas d’organiser votre script en sections avec des
+commentaires, comme, par exemple, ceci:</p>
+<pre class="r"><code># Exercice 1
+A &lt;- 10
+# Exercice 2
+C &lt;- 11</code></pre>
+</div>
+<div id="exercices" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Exercices</h1>
+<div id="exercice-calculs-simples" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Exercice: Calculs
+simples</h2>
+<ol style="list-style-type: decimal">
+<li><p>Calculer <span class="math inline">\(2+2\)</span>.</p></li>
+<li><p>Calculer <span class="math inline">\(0.5.10^2 \times
+0.3.10^4\)</span></p></li>
+<li><p>Concaténer les chaines de caractère “J’aime” et “Linux”</p></li>
+<li><p>Reproduire les commandes dans un script</p></li>
+</ol>
+<div id="solution" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Solution</h3>
+</div>
+</div>
+<div id="exercice-variables-et-environnement" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> Exercice: Variables
+et environnement</h2>
+<ol style="list-style-type: decimal">
+<li><p>Reprendre les calculs précédents et les stocker dans des
+variables, respectivement <code>a1</code>, <code>a2</code>et
+<code>str_linux</code>.</p></li>
+<li><p>Où retrouver ces objets avec l’interface RStudio ?</p></li>
+</ol>
+<div id="solution-1" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Solution</h3>
+</div>
+</div>
+<div id="exercice-extraction-déléments-dun-vecteur"
+class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Exercice: Extraction
+d’éléments d’un vecteur</h2>
+<p>Soit
+<code>genel &lt;- c("ALK", "HRAS", "BRAD", "AKT1", "EGFR")</code></p>
+<ol style="list-style-type: decimal">
+<li><p>Quelle est la longueur du vecteur ? indice :
+<code>length</code></p></li>
+<li><p>Essayer de faire <code>genel[1:3]</code>. Qu’obtenez-vous
+?</p></li>
+<li><p>Créer un nouveau vecteur <code>gl2</code> ne contenant que “HRAS”
+et “EGFR”.</p></li>
+<li><p>Essayer de faire <code>genel[-1]</code>. Qu’obtenez-vous
+?</p></li>
+<li><p>Trier par ordre alphabétique. indice : <code>sort</code></p></li>
+<li><p>Ajouter les gènes “PIK3CA” et “KIT” au vecteur
+<code>gl2</code></p></li>
+</ol>
+<div id="solution-2" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Solution</h3>
+</div>
+</div>
+<div id="exercice-facteurs" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Exercice:
+Facteurs</h2>
+<p>Soit un facteur
+<code>cell_type &lt;- factor(c("C1","C2","C2","C2","C1","C2","C2","C1"))</code>.</p>
+<ol style="list-style-type: decimal">
+<li><p>Afficher les “niveaux” de cell_types</p></li>
+<li><p>Calculer le nombre de “C1” et de “C2” dans <code>cell_type</code>
+en utilisant les fonctions <code>which</code>, <code>length</code> et
+des opérateurs binaires (==).</p></li>
+<li><p>Que permet de faire la fonction <code>table</code> ? Appliquer-la
+à <code>cell_type</code> et décrire sa fonction.</p></li>
+</ol>
+<div id="solution-3" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Solution</h3>
+</div>
+</div>
+<div id="exercice-chaines-de-caractères" class="section level2"
+number="3.5">
+<h2><span class="header-section-number">3.5</span> Exercice: Chaines de
+caractères</h2>
+<p>La commande <code>paste</code> permet de concaténer du texte.</p>
+<ol style="list-style-type: decimal">
+<li><p>Essayer la commande
+<code>paste("chr", 1, sep="")</code>.</p></li>
+<li><p>Créer, en une seule ligne de commande, le vecteur
+<code>chrs</code> contenant les noms suivants : chr1, chr2, …, chr22,
+chrX, chrY. Indice : <code>paste</code>.</p></li>
+<li><p>Créer une chaîne unique <code>chrsj</code> contenant tous les
+champs de <code>chrs</code> séparés par un espace ” “. Indice :
+<code>paste</code>.</p></li>
+<li><p>Recréer un vecteur <code>chrs2</code> à partir de la chaine
+<code>chrsj</code>. Indice : <code>strsplit</code>. Vérifier s’il est
+identique à <code>chrs</code>.</p></li>
+</ol>
+</div>
+<div id="exercice-tableaux-de-données" class="section level2"
+number="3.6">
+<h2><span class="header-section-number">3.6</span> Exercice: Tableaux de
+données</h2>
+<p>Créer une liste <code>x</code> contenant :</p>
+<ul>
+<li><p>une variable aléatoire gaussienne de taille 10 appelée
+<code>a</code></p></li>
+<li><p>un vecteur contenant uniquement des 1, de taille 10 également,
+appelé <code>b</code>.</p></li>
+</ul>
+<p>On peut accéder aux deux éléments de cette liste avec les commandes
+<code>x[[i]]</code> ou <code>x$nom_de_la_variable</code>. Indices :
+<code>list</code>, <code>rnorm</code>.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>Créer un objet <code>y</code> qui est la transformation de cette
+liste en <em>data frame</em>. On peut maintenant parcourir les éléments
+de chaque objet comme pour une matrice avec la commande
+<code>y[i,j]</code>. indice = <code>data.frame</code>.</p></li>
+<li><p>Créer deux objets <code>z1</code> et <code>z2</code> contenant
+respectivement les 3 premières et les 3 dernières lignes de
+<code>y</code>.</p></li>
+</ol>
+<p>Quelle est la classe de ces deux objets ?</p>
+<ol start="4" style="list-style-type: decimal">
+<li><p>Rajouter à la liste x un vecteur numérique contenant les entiers
+de 1 à 26.</p></li>
+<li><p>Essayer de transformer de nouveau <code>x</code> en data.frame.
+Que se passe-t-il ?</p></li>
+</ol>
+<div id="solution-4" class="section level3" number="3.6.1">
+<h3><span class="header-section-number">3.6.1</span> Solution</h3>
+</div>
+</div>
+</div>
+<div id="etude-de-données-génomique" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Etude de données
+génomique</h1>
+<p>Dans ce TP, nous allons faire des statistiques sur les gènes du
+génome humain. Pour cela, nous allons utiliser un fichier GFF
+d’annotations, <strong>GenCode</strong>. J’ai mis à disposition une
+version réduite limitée aux annotations <code>ENSEMBL</code>: Vous
+pouvez le récupérer sur</p>
+<p><code>/shared/projects/tp_2529_ngs_amu_181496/data/gencode.v38.ENSEMBL.annotation.gtf</code></p>
+<p>Nous enregistrerons les manipulations dans un fichier RScript
+(extension <code>.R</code>).</p>
+<div id="chargement-des-données" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Chargement des
+données</h2>
+<ol start="0" style="list-style-type: decimal">
+<li><p>Copiez le fichier dans votre répertoire de travail.</p></li>
+<li><p>Charger le fichier dans R dans l’objet
+<code>human.gene.annot</code> avec la fonction appropriée ou avec la
+fonction d’importation de RStudio.</p></li>
+</ol>
+<p>Il n’y a pas de nom de colonnes prédéfinis pour ce fichier, nous
+allons donc les ajouter à l’objet <code>human.gene.annot</code> avec la
+fonction <code>names</code>, sur la base du format de fichier décrit <a
+href="https://www.gencodegenes.org/pages/data_format.html"
+class="uri">https://www.gencodegenes.org/pages/data_format.html</a></p>
+<p><em>Note</em>: Un fichier GTF est une instance spéciale des fichiers
+GFF et donc partagent le même format.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>Afficher les dimensions du tableau
+<code>human.gene.annot</code></p></li>
+<li><p>Afficher les premières lignes, les dernières lignes, puis ouvrez
+l’objet avec la fonction View, disponible dans RStudio.</p></li>
+</ol>
+<div id="solution-5" class="section level3" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Solution</h3>
+</div>
+</div>
+<div id="sélection-dun-sous-ensemble-de-données" class="section level2"
+number="4.2">
+<h2><span class="header-section-number">4.2</span> Sélection d’un sous
+ensemble de données</h2>
+<ol style="list-style-type: decimal">
+<li><p>Afficher la ligne 12. Afficher le nom du gène de la ligne
+12.</p></li>
+<li><p>Afficher les lignes 100 à 105, incluant les positions
+chromosomique, strand et le type de <em>feature</em>.</p></li>
+<li><p>Afficher les types de <em>features</em> existantes.</p></li>
+</ol>
+<div id="solution-6" class="section level3" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Solution</h3>
+</div>
+</div>
+<div
+id="sélection-dun-sous-ensemble-de-données-basé-sur-les-valeurs-du-tableau"
+class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Sélection d’un sous
+ensemble de données basé sur les valeurs du tableau</h2>
+<ol style="list-style-type: decimal">
+<li><p>Sélectionner les lignes correspondantes aux gènes et comptez les
+(fonction <code>subset</code>).</p></li>
+<li><p>Afficher le nombre d’entrées pour chaque <em>feature</em> avec
+<code>table</code>.</p></li>
+<li><p>Afficher le nombre d’entrées pour chaque chromosome.</p></li>
+<li><p>Faire une table de contingence en affichant le nombre de chaque
+feature pour chaque chromosome (Utiliser la fonction
+<code>table</code>)</p></li>
+</ol>
+<div id="solution-7" class="section level3" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Solution</h3>
+</div>
+</div>
+<div id="manipulation-dun-tableau" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Manipulation d’un
+tableau</h2>
+<p>Ajouter une colonne <code>length</code> au tableau
+<code>human.gene.annot</code>, définie comme étant la différence entre
+les colonnes <code>start</code>et <code>end</code>.</p>
+<div id="solution-8" class="section level3" number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Solution</h3>
+</div>
+</div>
+<div id="plot-de-données" class="section level2" number="4.5">
+<h2><span class="header-section-number">4.5</span> Plot de données</h2>
+<ol style="list-style-type: decimal">
+<li><p>Faire un histogramme représentant la distribution des longueurs
+des gènes (fonction <code>hist</code>).</p></li>
+<li><p>Faire un plot représentant le nombre de gènes par chromosome
+(fonction <code>barplot</code>).</p></li>
+</ol>
+<p><strong>Note</strong>: En cas d’absence de fonctionnalités graphiques
+sur votre machine, il est possible de générer des graphes de la manière
+suivante:</p>
+<pre class="r"><code># Exemple: pour générer un fichier PDF:
+pdf(&quot;mon fichier.pdf&quot;)
+hist(rnorm(100))
+dev.off()</code></pre>
+<div id="solution-9" class="section level3" number="4.5.1">
+<h3><span class="header-section-number">4.5.1</span> Solution</h3>
+</div>
+</div>
+<div id="paramètres-descriptifs" class="section level2" number="4.6">
+<h2><span class="header-section-number">4.6</span> Paramètres
+descriptifs</h2>
+<p>Extraire la moyenne, écart type, valeurs min et max des longueurs de
+gènes pour le génome total (<code>feature == "gene"</code>)</p>
+<div id="solution-10" class="section level3" number="4.6.1">
+<h3><span class="header-section-number">4.6.1</span> Solution</h3>
+</div>
+</div>
+</div>
+<div id="data-sheets" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Data sheets</h1>
+<ul>
+<li><p>DataSheet <strong>Base R</strong>: <a
+href="https://github.com/rstudio/cheatsheets/blob/main/base-r.pdf"
+class="uri">https://github.com/rstudio/cheatsheets/blob/main/base-r.pdf</a></p></li>
+<li><p>DataSheet <strong>RStudio:</strong>: <a
+href="https://github.com/rstudio/cheatsheets/blob/main/rstudio-ide.pdf"
+class="uri">https://github.com/rstudio/cheatsheets/blob/main/rstudio-ide.pdf</a></p></li>
+<li><p>DataSheet <strong>“tout”</strong>: <a
+href="https://github.com/rstudio/cheatsheets/tree/main"
+class="uri">https://github.com/rstudio/cheatsheets/tree/main</a></p></li>
+</ul>
+<pre class="r"><code>################################################################
+#######  Correction TD Partie 3: Manipulation d&#39;objets
+###############################################################@
+
+
+# Exercice 1 - Extraction d&#39;éléments
+# ----------------------------------
+
+gl &lt;- c(&quot;ALK&quot;, &quot;HRAS&quot;, &quot;BRAD&quot;, &quot;AKT1&quot;, &quot;EGFR&quot;)
+
+# 1 
+
+length(gl)
+
+# 2
+gl[1:3]
+
+# 3
+
+gl2 &lt;- c(gl[2], gl[5])
+
+# ou
+
+gl2 &lt;- gl[c(2,5)]
+
+# 4
+
+sort(gl)
+
+# 5 
+
+gl2 &lt;- c(gl2, &quot;PIK3CA&quot;, &quot;KIT&quot;)
+
+
+
+
+
+# Exercice 2: Facteurs
+# ---------------------
+
+cell_type &lt;- factor(c(&quot;C1&quot;,&quot;C2&quot;,&quot;C2&quot;,&quot;C2&quot;,&quot;C1&quot;,&quot;C2&quot;,&quot;C2&quot;,&quot;C1&quot;))
+
+# 1
+
+levels(cell_type)
+
+# 2
+
+length(which(cell_type==&quot;C1&quot;))
+
+length(which(cell_type==&quot;C2&quot;))
+
+# 3
+
+table(cell_type)
+
+# Exercice 3: Chaines de caractères
+# ---------------------------------
+
+# 1
+
+paste(&quot;chr&quot;, 1, sep=&quot;&quot;)
+
+# 2
+
+chrs &lt;- paste(&quot;chr&quot;, c(seq(1, 22), &quot;X&quot;, &quot;Y&quot;), sep=&quot;&quot;)
+
+# 3
+
+chrsj &lt;- paste(chrs, collapse = &#39; &#39;)
+
+# 4
+
+chrs2 &lt;- unlist(strsplit(chrsj, &quot; &quot;))
+
+identical(chrs2, chrs)
+
+
+# Exercice 4: Tableau de données
+# ----------------------------
+
+# 1
+
+a &lt;- rnorm(10, mean = 0, sd = 1)
+
+b &lt;- rep(1, 10)
+
+x &lt;- list(a=a, b=b)
+
+x$a
+
+# 2
+
+y &lt;- data.frame(x)
+
+# 3
+
+z1 &lt;- y[1:3,]
+z2 &lt;- y[8:10,]
+
+class(z1)
+class(z2)
+
+# 4
+
+num &lt;- seq(1:26)
+
+x$num = num
+
+# 5
+y &lt;- data.frame(x)
+# Impossible: nombre de lignes différents</code></pre>
+<pre class="bash"><code>##########################################################@##############
+# Correction TD Partie 4 : Etude de données génomiques
+#########################################################################
+
+# Exercice 1: Chargement des données 
+# 1 
+# Dans bash:
+
+gunzip gencode.v38.ENSEMBL.annotation.gtf.gz
+</code></pre>
+<pre class="r"><code># Dans R:
+human.gene.annot &lt;- read.delim(&quot;gencode.v38.ENSEMBL.annotation.gtf&quot;, comment.char=&quot;#&quot;)
+
+names(human.gene.annot) = c(&quot;chromosome name&quot;, &quot;annotation source&quot;, &quot;feature type&quot;, &quot;genomic start location&quot;, &quot;genomic end location&quot;, &quot;score(not used)&quot;, &quot;genomic strand&quot;, &quot;genomic phase (for CDS features)&quot;, &quot;additional information as key-value pairs&quot;)
+# 2
+dim(human.gene.annot)
+
+# 3
+head(human.gene.annot)
+tail(human.gene.annot)
+View(human.gene.annot)
+
+# Exercice 2: Sélection d&#39;un sous-ensemble de données
+
+# 1
+human.gene.annot[12,]
+
+# 2
+human.gene.annot[100:105,]
+
+# 3
+unique(human.gene.annot[,3])
+
+
+# Exercice 3: selection d&#39;un sous ensemble basé sur les valeurs du tableau
+
+# 1
+
+nrow(human.gene.annot[human.gene.annot$`feature type`==&quot;gene&quot;, ])
+
+# ou
+
+nrow(subset(human.gene.annot, `feature type` == &quot;gene&quot;))
+
+# 2
+
+table(human.gene.annot$`feature type`)
+
+# 3
+
+table(human.gene.annot$`chromosome name`)
+
+# 4
+
+table(human.gene.annot$`chromosome name`, human.gene.annot$`feature type`)
+
+# ou
+
+feature.count.table &lt;- table(human.gene.annot[, c(&quot;chromosome name&quot;, &quot;feature type&quot;)])
+feature.count.table
+
+# conversion table vers dataframe
+
+feature.count.matrix &lt;- (apply(as.matrix(feature.count.table), 2 , as.numeric))
+rownames(feature.count.matrix) &lt;- rownames(feature.count.table)
+
+
+# Exercice 4: Manipulation d&#39;un tableau
+
+# 1
+
+length = human.gene.annot$`genomic end location` - human.gene.annot$`genomic start location`
+summary(length)
+
+human.gene.annot$length = length
+
+View(human.gene.annot)
+
+# Exercice: Plot
+
+#1
+
+human.gene.annot.genefeature &lt;- subset(human.gene.annot, `feature type` == &quot;gene&quot;)
+
+hist(log10(human.gene.annot.genefeature$length), breaks = 100)
+
+
+# 2
+
+barplot(table(human.gene.annot.genefeature$`chromosome name`))
+
+# Exercice: Paramètres descriptifs
+
+# 1 
+
+summary(human.gene.annot.genefeature$length)</code></pre>
+<p><br> <br> <br> <br></p>
+<hr />
+<p>Ce TD est librement inspiré de la formation R proposée par Justine
+Guégan (<a href="https://pf-bb.github.io/Formation-Rrrr/"
+class="uri">https://pf-bb.github.io/Formation-Rrrr/</a>), ainsi que d’un
+TP proposé par Jacques Van Helden (<a
+href="https://jvanheld.github.io/stat1/practicals/02_yeast_annotations/02_yeast_annotations.html"
+class="uri">https://jvanheld.github.io/stat1/practicals/02_yeast_annotations/02_yeast_annotations.html</a>)</p>
+<div style="text-align: center">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png"></a><br></p>
+<p>Cette œuvre est mise à disposition selon les termes de la
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Licence
+Creative Commons:</a> <br>Attribution - Pas d’Utilisation Commerciale -
+Pas de Modification 4.0 International (CC BY-NC-ND 4.0).</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

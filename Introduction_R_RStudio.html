@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Introduction à R et RStudio</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Introduction à R et RStudio',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Introduction_R_RStudio_files/logo.png',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille Université' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    details > summary > p:only-child {
+      display: inline;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            html { -webkit-text-size-adjust: 100%; }
+            pre > code.sourceCode { white-space: pre; position: relative; }
+            pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+            pre > code.sourceCode > span:empty { height: 1.2em; }
+            .sourceCode { overflow: visible; }
+            code.sourceCode > span { color: inherit; text-decoration: inherit; }
+            div.sourceCode { margin: 1em 0; }
+            pre.sourceCode { margin: 0; }
+            @media screen {
+            div.sourceCode { overflow: auto; }
+            }
+            @media print {
+            pre > code.sourceCode { white-space: pre-wrap; }
+            pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+            }
+            pre.numberSource code
+              { counter-reset: source-line 0; }
+            pre.numberSource code > span
+              { position: relative; left: -4em; counter-increment: source-line; }
+            pre.numberSource code > span > a:first-child::before
+              { content: counter(source-line);
+                position: relative; left: -1em; text-align: right; vertical-align: baseline;
+                border: none; display: inline-block;
+                -webkit-touch-callout: none; -webkit-user-select: none;
+                -khtml-user-select: none; -moz-user-select: none;
+                -ms-user-select: none; user-select: none;
+                padding: 0 4px; width: 4em;
+                color: #aaaaaa;
+              }
+            pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+            div.sourceCode
+              {   }
+            @media screen {
+            pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+            }
+            code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+            code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+            code span.at { color: #7d9029; } /* Attribute */
+            code span.bn { color: #40a070; } /* BaseN */
+            code span.bu { color: #008000; } /* BuiltIn */
+            code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+            code span.ch { color: #4070a0; } /* Char */
+            code span.cn { color: #880000; } /* Constant */
+            code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+            code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+            code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+            code span.dt { color: #902000; } /* DataType */
+            code span.dv { color: #40a070; } /* DecVal */
+            code span.er { color: #ff0000; font-weight: bold; } /* Error */
+            code span.ex { } /* Extension */
+            code span.fl { color: #40a070; } /* Float */
+            code span.fu { color: #06287e; } /* Function */
+            code span.im { color: #008000; font-weight: bold; } /* Import */
+            code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+            code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+            code span.op { color: #666666; } /* Operator */
+            code span.ot { color: #007020; } /* Other */
+            code span.pp { color: #bc7a00; } /* Preprocessor */
+            code span.sc { color: #4070a0; } /* SpecialChar */
+            code span.ss { color: #bb6688; } /* SpecialString */
+            code span.st { color: #4070a0; } /* String */
+            code span.va { color: #19177c; } /* Variable */
+            code span.vs { color: #4070a0; } /* VerbatimString */
+            code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Introduction_R_RStudio_files/logo.png) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+  <link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body style="opacity: 0">
+
+<slides>
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Introduction_R_RStudio_files/logo.png"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Novembre 2025</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Introduction à R</h2></hgroup><article  id="introduction-à-r" class="smaller ">
+
+<ul>
+<li>Qu’est ce que <strong>R</strong> ?</li>
+</ul>
+
+<p><strong>R</strong> est à la fois un <strong>langage de programmation</strong> et un <strong>environnement d’analyse de données</strong>. Il est issu du monde de la statistique.</p>
+
+<ul>
+<li>Qu’est ce que <strong>Bioconductor</strong> ?</li>
+</ul>
+
+<p>Bioconductor est un projet de développement de librairies dédiées à <strong>l’analyse de données en biologie</strong> pour <strong>R</strong>. Il est centré autour du site <a href='http://www.bioconductor.org' title=''>http://www.bioconductor.org</a></p>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Introduction à R</h2></hgroup><article  id="introduction-à-r-1" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Description</h2></hgroup><article  id="description" class="smaller ">
+
+<ul>
+<li>Il est particulièrement puissant pour les applications <strong>mathématiques et statistiques</strong></li>
+<li>Il permet d’écrire des scripts et de les exécuter (Reproducibilité)</li>
+<li>Il est basé sur la manipulation de <strong>vecteurs</strong> ce qui encourage d’<strong>éviter</strong> le recours aux boucles (de type for, while, …)</li>
+<li>De par sa puissance, il permet de développer des programmes avec seulement quelques lignes de code</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Environnement et utilisation</h2></hgroup><article  id="environnement-et-utilisation" class="smaller ">
+
+<p>Nous utilisons l’environnement <strong>RStudio</strong>, qui est une interface développée autour de R. <strong>RStudio</strong> existe sous les principaux systèmes d’exploitation. Il comprend:</p>
+
+<ul>
+<li>L’<strong>Invite de commande R</strong></li>
+<li>Un <strong>éditeur de texte</strong> avec coloration syntaxique</li>
+<li>Un éditeur de différents formats de documents basées sous R (<strong>Rapports</strong> et <strong>présentations</strong> (<strong>RMarkDown</strong>)</li>
+<li>Un terminal <em>Linux</em></li>
+<li>Une aide <strong>R intégrée</strong></li>
+<li>Un gestionnaire d’<strong>historique</strong></li>
+<li>Un gestionnaire d’<strong>objets R</strong></li>
+<li>Un <strong>explorateur de fichiers</strong></li>
+</ul>
+
+<p>Accès RStudio IFB par l’adresse: <a href='https://ondemand.cluster.france-bioinformatique.fr/' title=''>https://ondemand.cluster.france-bioinformatique.fr/</a></p>
+
+</article></slide><slide class=""><hgroup><h2></h2></hgroup><article  id="section" class="smaller ">
+
+<img width="800px" src='figures-intro-R/rstudio_screen.png' title=''/>
+
+</article></slide><slide class=""><hgroup><h2>Invite de commande</h2></hgroup><article  id="invite-de-commande" class="smaller ">
+
+<ul>
+<li>On entre des instruction directement à l’invite de commande</li>
+</ul>
+
+<pre class = 'prettyprint lang-bash'>(base) 19:41:14-user@machine:~$ R
+
+R version 4.2.1 (2022-06-23) -- &quot;Funny-Looking Kid&quot;
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin17.0 (64-bit)
+
+R est un logiciel libre livré sans AUCUNE GARANTIE.
+Vous pouvez le redistribuer sous certaines conditions.
+Tapez &#39;license()&#39; ou &#39;licence()&#39; pour plus de détails.
+
+R est un projet collaboratif avec de nombreux contributeurs.
+Tapez &#39;contributors()&#39; pour plus d&#39;information et
+&#39;citation()&#39; pour la façon de le citer dans les publications.
+
+Tapez &#39;demo()&#39; pour des démonstrations, &#39;help()&#39; pour l&#39;aide
+en ligne ou &#39;help.start()&#39; pour obtenir l&#39;aide au format HTML.
+Tapez &#39;q()&#39; pour quitter R.
+
+&gt; </pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Utilisation de R</h2></hgroup><article  id="utilisation-de-r" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Utilisation &ldquo;basique&rdquo;</h2></hgroup><article  id="utilisation-basique" class="smaller ">
+
+<p>On rentre directement les expression pour les valider directement:</p>
+
+<pre class = 'prettyprint lang-r'>2 + 3</pre>
+
+<pre >## [1] 5</pre>
+
+<p>On peut assigner des valeurs à des <strong>variables</strong> grâce au symbole d’assignation <code>&lt;-</code> (<code>=</code>marche aussi)</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 2^2
+x</pre>
+
+<pre >## [1] 4</pre>
+
+<pre class = 'prettyprint lang-r'>y &lt;- 2.5+4
+y</pre>
+
+<pre >## [1] 6.5</pre>
+
+</article></slide><slide class=""><hgroup><h2>Fonctions</h2></hgroup><article  id="fonctions" class="smaller ">
+
+<p>Il existe des fonctions préprogrammée. Ici est un exemple d’utilisation de la fonction <em>exponentielle</em>, que l’on invoque avec <code>exp()</code>.</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- exp(2)
+x</pre>
+
+<pre >## [1] 7.389056</pre>
+
+<p>Si on tape le nom de la fonction sans parenthèses, R renvoie son contenu, c’est à dire l’objet qui contient le code de la fonction.</p>
+
+<pre class = 'prettyprint lang-r'>exp</pre>
+
+<pre >## function (x)  .Primitive(&quot;exp&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Fonctions</h2></hgroup><article  id="fonctions-1" class="smaller ">
+
+<center>
+
+<img src="figures-intro-R/schema-fonction-R.png" height="150" width="700" align="center"/>
+
+</center>
+
+<p>Les <strong>fonctions</strong> prennent en entrée des <em>objets</em> de manière optionnelle. On peut également spécifier des <strong>options</strong>. Les options ont des valeurs par défaut. Les fonctions renvoient un <strong>objet</strong> en résultat. Les fonctions sont elle-même des <strong>objets</strong>. Un <strong>opérateur</strong> fait référence aux opérateurs mathématiques, tels que <code>+</code> qui ne sont pas invoqués avec des parenthèses.</p>
+
+<p>Exemple: la fonction <strong>ls</strong> permet de lister les objets en mémoire:</p>
+
+<pre class = 'prettyprint lang-r'>ls()</pre>
+
+<pre >## [1] &quot;x&quot; &quot;y&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Fonction ls</h2></hgroup><article  id="fonction-ls" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>ls(pattern = &quot;x&quot;)</pre>
+
+<pre >## [1] &quot;x&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>m &lt;- data.frame(x, y)</pre>
+
+<pre class = 'prettyprint lang-r'>ls.str()</pre>
+
+<pre >## m : &#39;data.frame&#39;:    1 obs. of  2 variables:
+##  $ x: num 7.39
+##  $ y: num 6.5
+## x :  num 7.39
+## y :  num 6.5</pre>
+
+</article></slide><slide class=""><hgroup><h2>Aide</h2></hgroup><article  id="aide" class="smaller ">
+
+<p><strong>Aide en ligne</strong> pour la fonction <em>ls</em></p>
+
+<pre class = 'prettyprint lang-r'>?ls</pre>
+
+<p>Cet appel ouvre une page d’aide dans l’onglet &ldquo;help&rdquo; de RStudio, contenant les sections suivantes:</p>
+
+<ul>
+<li><p><strong>Description</strong>: Description brève</p></li>
+<li><p><strong>Usage</strong>: Pour une fonction, donne le nom avec ses arguments et les éventuelles options (et leurs valeurs par défaut)</p></li>
+<li><p><strong>Arguments</strong>: Liste des arguments de la fonction</p></li>
+<li><p><strong>Details</strong>: Description détaillée</p></li>
+<li><p><strong>Value</strong>: Le type d’objet éventuellement retourné par la fonction ou l’opérateur</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Aide</h2></hgroup><article  id="aide-1" class="smaller ">
+
+<ul>
+<li><p><strong>See Also</strong>: D’autres rubriques proches ou similaire</p></li>
+<li><p><strong>Examples</strong>. Des exemples qui peuvent être généralement exécutés</p></li>
+</ul>
+
+<p>La fonction <code>example</code>:</p>
+
+<pre class = 'prettyprint lang-r'>example(ls)</pre>
+
+<pre >## 
+## ls&gt; .Ob &lt;- 1
+## 
+## ls&gt; ls(pattern = &quot;O&quot;)
+## character(0)
+## 
+## ls&gt; ls(pattern= &quot;O&quot;, all.names = TRUE)    # also shows &quot;.[foo]&quot;
+## [1] &quot;.Ob&quot;
+## 
+## ls&gt; # shows an empty list because inside myfunc no variables are defined
+## ls&gt; myfunc &lt;- function() {ls()}
+## 
+## ls&gt; myfunc()
+## character(0)
+## 
+## ls&gt; # define a local variable inside myfunc
+## ls&gt; myfunc &lt;- function() {y &lt;- 1; ls()}
+## 
+## ls&gt; myfunc()                # shows &quot;y&quot;
+## [1] &quot;y&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Aide</h2></hgroup><article  id="aide-2" class="smaller ">
+
+<p>Aide dans les paquets déjà chargés</p>
+
+<pre class = 'prettyprint lang-r'>help(&quot;ls&quot;)</pre>
+
+<p>Aide Dans les paquets installés</p>
+
+<pre class = 'prettyprint lang-r'>help(&quot;bs&quot;, try.all.packages = TRUE)</pre>
+
+<pre class = 'prettyprint lang-r'>help.start()</pre>
+
+<p>Recherche d’un terme dans l’aide</p>
+
+<pre class = 'prettyprint lang-r'>help.search(&quot;weighted mean&quot;)</pre>
+
+<p>Recherche dans les noms de fonctions</p>
+
+<pre class = 'prettyprint lang-r'>apropos(&quot;read&quot;)</pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Données simples</h2></hgroup><article  id="données-simples" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Données simples sous R</h2></hgroup><article  id="données-simples-sous-r" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>1</pre>
+
+<pre >## [1] 1</pre>
+
+<pre class = 'prettyprint lang-r'>1.2</pre>
+
+<pre >## [1] 1.2</pre>
+
+<pre class = 'prettyprint lang-r'>1e10</pre>
+
+<pre >## [1] 1e+10</pre>
+
+<pre class = 'prettyprint lang-r'>&quot;Linux&quot;</pre>
+
+<pre >## [1] &quot;Linux&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Opérations</h2></hgroup><article  id="opérations" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>1+1</pre>
+
+<pre >## [1] 2</pre>
+
+<pre class = 'prettyprint lang-r'>10*0.5</pre>
+
+<pre >## [1] 5</pre>
+
+<pre class = 'prettyprint lang-r'>10^2</pre>
+
+<pre >## [1] 100</pre>
+
+<pre class = 'prettyprint lang-r'>paste(&quot;Linux&quot;, &quot;est excellent&quot;)</pre>
+
+<pre >## [1] &quot;Linux est excellent&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Mise en mémoire</h2></hgroup><article  id="mise-en-mémoire" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>variable &lt;- &quot;valeur&quot;</pre>
+
+<p>ou</p>
+
+<pre class = 'prettyprint lang-r'>variable = &quot;valeur&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Représentations des valeurs numériques</h2></hgroup><article  id="représentations-des-valeurs-numériques" class="smaller ">
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>n &lt;- 1
+x &lt;- 1.3
+X &lt;- 2.5e25
+my_bool &lt;- TRUE</pre>
+
+<pre class = 'prettyprint lang-r'>n</pre>
+
+<pre >## [1] 1</pre>
+
+<pre class = 'prettyprint lang-r'>x</pre>
+
+<pre >## [1] 1.3</pre>
+
+<pre class = 'prettyprint lang-r'>X</pre>
+
+<pre >## [1] 2.5e+25</pre>
+
+<pre class = 'prettyprint lang-r'>my_bool</pre>
+
+<pre >## [1] TRUE</pre></div>
+
+</article></slide><slide class=""><hgroup><h2>Représentation des valeurs infinies</h2></hgroup><article  id="représentation-des-valeurs-infinies" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1/0
+x</pre>
+
+<pre >## [1] Inf</pre>
+
+<pre class = 'prettyprint lang-r'>exp(x)</pre>
+
+<pre >## [1] Inf</pre>
+
+<pre class = 'prettyprint lang-r'>exp(-x)</pre>
+
+<pre >## [1] 0</pre>
+
+<pre class = 'prettyprint lang-r'>x - x</pre>
+
+<pre >## [1] NaN</pre>
+
+</article></slide><slide class=""><hgroup><h2>Représentations des caractères</h2></hgroup><article  id="représentations-des-caractères" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>my_c &lt;- &quot;Ceci est une valeur en mode caractère.&quot;
+length(my_c)</pre>
+
+<pre >## [1] 1</pre>
+
+<pre class = 'prettyprint lang-r'>nchar(my_c)</pre>
+
+<pre >## [1] 38</pre>
+
+</article></slide><slide class=""><hgroup><h2>Gérér des chaînes de caractères</h2></hgroup><article  id="gérér-des-chaînes-de-caractères" class="smaller ">
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>x &lt;- 2
+paste(&quot;Mon resultat est&quot;, x )</pre>
+
+<pre >## [1] &quot;Mon resultat est 2&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>paste(&quot;Linux&quot;, &quot;est excellent&quot;)</pre>
+
+<pre >## [1] &quot;Linux est excellent&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>paste(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)</pre>
+
+<pre >## [1] &quot;a b c&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>paste0(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)</pre>
+
+<pre >## [1] &quot;abc&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>paste(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, sep= &#39;-&#39;)</pre>
+
+<pre >## [1] &quot;a-b-c&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>strsplit(&quot;a-b-c&quot;, split =&#39;-&#39;)</pre>
+
+<pre >## [[1]]
+## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;</pre></div>
+
+</article></slide><slide class=""><hgroup><h2>Caractère d’échappement <code>\</code></h2></hgroup><article  id="caractère-déchappement" class="smaller ">
+
+<p>Notion de <em>caractère d’échappement</em> pour éviter de traiter un caractère:</p>
+
+<pre class = 'prettyprint lang-r'>my_c &lt;- &quot;Ceci est un guillemet double: \&quot;.&quot;
+cat(my_c)</pre>
+
+<pre >## Ceci est un guillemet double: &quot;.</pre>
+
+<p>On peut utiliser aussi des guillemets simples. Dans ce cas le contenu de la chaine ne sera pas interpreté:</p>
+
+<pre class = 'prettyprint lang-r'>my_c &lt;- &#39;Ceci est un guillemet double: &quot;.&#39;
+cat(my_c)</pre>
+
+<pre >## Ceci est un guillemet double: &quot;.</pre>
+
+</article></slide><slide class=""><hgroup><h2>Noms de variables à éviter</h2></hgroup><article  id="noms-de-variables-à-éviter" class="smaller ">
+
+<ul>
+<li>Il vaut <strong>éviter l’utilisation de caractères accentués</strong> pour les noms de variable.</li>
+<li>Les noms d’objet ne <strong>peuvent pas commencer par un chiffre</strong>.</li>
+<li>R est <strong>sensible à la casse</strong>, donc <strong>truc</strong>, <strong>Truc</strong> et <strong>TRUC</strong> sont trois objets distincts.</li>
+<li>Les noms suivants <strong>sont utilisés par R</strong>, donc à éviter: <strong>c, q, t, C, D, I, diff, length, mean, pi, range, var</strong>.</li>
+<li>Les mots suivants <strong>sont réservés</strong> et il est interdit de les utiliser comme nom d’objet:
+
+<ul>
+<li><code>break</code>, <code>else</code>, <code>for</code>, <code>function</code>, <code>if</code>, <code>in</code>, <code>next</code>, <code>repeat</code>, <code>return</code>, <code>while</code></li>
+<li><code>TRUE</code>, <code>FALSE</code></li>
+<li><code>Inf</code>, <code>NA</code>, <code>NaN</code>, <code>NULL</code></li>
+<li><code>NA_integer_</code>, <code>NA_real_</code>, <code>NA_complex_</code>, <code>NA_character_</code></li>
+<li><code>...</code>, <code>..1</code>, <code>..2</code>, etc</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2><strong>TRUE</strong> et <strong>FALSE</strong></h2></hgroup><article  id="true-et-false" class="smaller ">
+
+<div class="columns-2">
+<p>Les variables T et F sont affectés par défaut à TRUE et FALSE.</p>
+
+<pre class = 'prettyprint lang-r'>T</pre>
+
+<pre >## [1] TRUE</pre>
+
+<pre class = 'prettyprint lang-r'>F</pre>
+
+<pre >## [1] FALSE</pre>
+
+<pre class = 'prettyprint lang-r'>T &lt;- 3 # A NE PAS FAIRE /!\
+T</pre>
+
+<pre >## [1] 3</pre>
+
+<pre class = 'prettyprint lang-r'>TRUE &lt;- 3
+Error in TRUE &lt;- 3 : membre gauche 
+de l&#39;assignation
+(do_set) incorrect</pre></div>
+
+</article></slide><slide class=""><hgroup><h2>Enregistrer ses commandes : <strong>les scripts</strong></h2></hgroup><article  id="enregistrer-ses-commandes-les-scripts" class="smaller ">
+
+<p>On peut mettre les commandes dans un fichier <strong>RScript</strong>, ce qui permet de les <strong>mémoriser</strong>. Ce type de fichier porte l’extension <em>.R</em>.</p>
+
+<p>On peut directement en créer un dans RStudio, puis l’exécuter soit <strong>pas à pas (commande ALT-Entrée)</strong>, soit dans son intégralité dans la <strong>console</strong>.</p>
+
+<p>Pour structurer ses scripts:</p>
+
+<ul>
+<li>le commenter à l’aide du caractère <code>#</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'># Ceci est un commentaire</pre>
+
+<ul>
+<li>Utiliser des fonctions</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>my_square_function &lt;- function(x) {
+  return(x*x)
+}
+my_square_function(2)</pre>
+
+<pre >## [1] 4</pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Fichiers</h2></hgroup><article  id="fichiers" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Lecture de données d’un fichier</h2></hgroup><article  id="lecture-de-données-dun-fichier" class="smaller ">
+
+<p>Répertoires de travail</p>
+
+<pre class = 'prettyprint lang-r'>setwd(dir = &quot;/Users/bidaut/data/&quot;)
+getwd()</pre>
+
+<pre >## [1] &quot;/Users/bidaut/data&quot;</pre>
+
+<p>Lecture de fichiers texte et importation dans l’environnement R</p>
+
+<p>La fonction la plus commune est <code>read.table</code></p>
+
+<pre class = 'prettyprint lang-r'>read.table(file, header = FALSE, sep = &quot;&quot;, quote = &quot;\&quot;’&quot;, dec = &quot;.&quot;, row.names,
+           col.names, as.is = FALSE, na.strings = &quot;NA&quot;, colClasses = NA, nrows = -1,
+          skip = 0, check.names = TRUE, fill = !blank.lines.skip, strip.white = FALSE,
+          blank.lines.skip = TRUE, comment.char = &quot;#&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Exemple: un fichier de description d’experimentation RNA-seq</h2></hgroup><article  id="exemple-un-fichier-de-description-dexperimentation-rna-seq" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>targets &lt;- read.table(file=&#39;targets_GSE130657.txt&#39;, header = T)
+targets</pre>
+
+<pre >##       SRA_ID     GEO_ID Treatment Sample
+## 1 SRR9005674 GSM3746500      THP0      1
+## 2 SRR9005675 GSM3746501      THP0      2
+## 3 SRR9005676 GSM3746502      THP0      3
+## 4 SRR9005677 GSM3746503         M      1
+## 5 SRR9005678 GSM3746504         M      2
+## 6 SRR9005679 GSM3746505         M      3</pre>
+
+</article></slide><slide class=""><hgroup><h2>Enregistrement de données dans un fichier</h2></hgroup><article  id="enregistrement-de-données-dans-un-fichier" class="smaller ">
+
+<p>Enregistrement d’un tableau dans un fichier texte délimité.</p>
+
+<pre class = 'prettyprint lang-r'>write.table(x, file = &quot;&quot;, append = FALSE, quote = TRUE, sep = &quot; &quot;, 
+                        eol = &quot;\n&quot;, na = &quot;NA&quot;, dec = &quot;.&quot;, row.names = TRUE, 
+                        col.names = TRUE, qmethod = c(&quot;escape&quot;, &quot;double&quot;)))</pre>
+
+<p>Enregistrement d’un objet dans un fichier de type <code>.RData</code>.</p>
+
+<pre class = 'prettyprint lang-r'>save(x, y, z, file=&quot;xyz.RData&quot;)</pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Générer des données</h2></hgroup><article  id="générer-des-données" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Générér des données</h2></hgroup><article  id="générér-des-données" class="smaller ">
+
+<p>Générer une séquence régulière</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:30</pre>
+
+<p>Plus de paramètres</p>
+
+<pre class = 'prettyprint lang-r'>seq(1, 5, 0.5)</pre>
+
+<pre >## [1] 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0</pre>
+
+<pre class = 'prettyprint lang-r'>seq(length=9, from=1, to=5)</pre>
+
+<pre >## [1] 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0</pre>
+
+</article></slide><slide class=""><hgroup><h2>La fonction <code>c</code></h2></hgroup><article  id="la-fonction-c" class="smaller ">
+
+<p>La fonction <code>c</code> permet de combiner des éléments pour former un <strong>Vecteur</strong>.</p>
+
+<pre class = 'prettyprint lang-r'>c(1, 3, 12, 15)</pre>
+
+<pre >## [1]  1  3 12 15</pre>
+
+<pre class = 'prettyprint lang-r'>c(&#39;a&#39;, c(1:3), 12, &quot;test&quot;)</pre>
+
+<pre >## [1] &quot;a&quot;    &quot;1&quot;    &quot;2&quot;    &quot;3&quot;    &quot;12&quot;   &quot;test&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Répétition d’éléments</h2></hgroup><article  id="répétition-déléments" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>rep(1, 30)</pre>
+
+<pre >##  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</pre>
+
+<p>Création d’une suite de séquences</p>
+
+<pre class = 'prettyprint lang-r'>sequence(5:4)</pre>
+
+<pre >## [1] 1 2 3 4 5 1 2 3 4</pre>
+
+<pre class = 'prettyprint lang-r'>sequence(c(10, 5))</pre>
+
+<pre >##  [1]  1  2  3  4  5  6  7  8  9 10  1  2  3  4  5</pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Objets de plus grande dimensions (listes, matrices, etc…)</h2></hgroup><article  id="objets-de-plus-grande-dimensions-listes-matrices-etc" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Créer des objets: Vecteurs</h2></hgroup><article  id="créer-des-objets-vecteurs" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>vector(mode = &quot;numeric&quot;, 5)</pre>
+
+<pre >## [1] 0 0 0 0 0</pre>
+
+<pre class = 'prettyprint lang-r'>vector(mode = &quot;logical&quot;, 5)</pre>
+
+<pre >## [1] FALSE FALSE FALSE FALSE FALSE</pre>
+
+<pre class = 'prettyprint lang-r'>vector(mode = &quot;character&quot;, 5)</pre>
+
+<pre >## [1] &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Créer des objets: Facteurs</h2></hgroup><article  id="créer-des-objets-facteurs" class="smaller ">
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>factor(1:3)</pre>
+
+<pre >## [1] 1 2 3
+## Levels: 1 2 3</pre>
+
+<pre class = 'prettyprint lang-r'>factor(1:3, levels = 1:5)</pre>
+
+<pre >## [1] 1 2 3
+## Levels: 1 2 3 4 5</pre>
+
+<pre class = 'prettyprint lang-r'>factor(1:3, labels=c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;))</pre>
+
+<pre >## [1] A B C
+## Levels: A B C</pre>
+
+<pre class = 'prettyprint lang-r'>factor(1:5, exclude=4)</pre>
+
+<pre >## [1] 1    2    3    &lt;NA&gt; 5   
+## Levels: 1 2 3 5</pre>
+
+<pre class = 'prettyprint lang-r'>(ff &lt;- factor(1:3, levels = 1:5))</pre>
+
+<pre >## [1] 1 2 3
+## Levels: 1 2 3 4 5</pre>
+
+<pre class = 'prettyprint lang-r'>levels(ff)</pre>
+
+<pre >## [1] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; &quot;5&quot;</pre></div>
+
+</article></slide><slide class=""><hgroup><h2>Créer des objets: Matrices</h2></hgroup><article  id="créer-des-objets-matrices" class="smaller ">
+
+<p>Une matrice est un vecteur qui possède un argument supplémentaire (<em>dim</em>) qui est lui même un vecteur.</p>
+
+<pre class = 'prettyprint lang-r'>matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)</pre>
+
+<p>L’option <code>dimname</code> permet de donner des noms aux lignes et colonnes. l’option <code>byrow</code> permet de définir le sens de remplissage.</p>
+
+<pre class = 'prettyprint lang-r'>matrix(seq(1:4), nr=2, nc=2)</pre>
+
+<pre >##      [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4</pre>
+
+<pre class = 'prettyprint lang-r'>matrix(seq(1:4), nr=2, nc=2, byrow = TRUE)</pre>
+
+<pre >##      [,1] [,2]
+## [1,]    1    2
+## [2,]    3    4</pre>
+
+</article></slide><slide class=""><hgroup><h2>Créer des objets: Matrices</h2></hgroup><article  id="créer-des-objets-matrices-1" class="smaller ">
+
+<p>On peut aussi créer une matrice à partir d’un vecteur en assignant les valeurs voulues à <code>dim</code>.</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:15
+x</pre>
+
+<pre >##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15</pre>
+
+<pre class = 'prettyprint lang-r'>dim(x)</pre>
+
+<pre >## NULL</pre>
+
+<pre class = 'prettyprint lang-r'>dim(x) &lt;- c(5,3)
+x</pre>
+
+<pre >##      [,1] [,2] [,3]
+## [1,]    1    6   11
+## [2,]    2    7   12
+## [3,]    3    8   13
+## [4,]    4    9   14
+## [5,]    5   10   15</pre>
+
+</article></slide><slide class=""><hgroup><h2>Tableaux de données : Data frames</h2></hgroup><article  id="tableaux-de-données-data-frames" class="smaller ">
+
+<p>Un tableau de données (<em>Data frame</em>) peut être créé directement à partir d’un fichier par un appel à <code>read.table</code>.</p>
+
+<p>On peut aussi créer un Data frame par assemblage de vecteurs. Les <strong>noms</strong> des objets sont repris dans les colonnes.</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:4; n &lt;- 10; M &lt;- c(10, 35); y &lt;- 2:4
+data.frame(x, n)</pre>
+
+<pre >##   x  n
+## 1 1 10
+## 2 2 10
+## 3 3 10
+## 4 4 10</pre>
+
+</article></slide><slide class=""><hgroup><h2>Tableaux de données : Data frames</h2></hgroup><article  id="tableaux-de-données-data-frames-1" class="smaller ">
+
+<p>Si un vecteur est plus court, il sera <strong>recyclé un nombre entier</strong> de fois.</p>
+
+<pre class = 'prettyprint lang-r'>data.frame(x, M)</pre>
+
+<pre >##   x  M
+## 1 1 10
+## 2 2 35
+## 3 3 10
+## 4 4 35</pre>
+
+<p>On peut aussi inclure des <strong>Facteurs</strong>.</p>
+
+<pre class = 'prettyprint lang-r'>ff &lt;- factor(1:4); df &lt;- data.frame(x, ff); summary(df)</pre>
+
+<pre >##        x        ff   
+##  Min.   :1.00   1:1  
+##  1st Qu.:1.75   2:1  
+##  Median :2.50   3:1  
+##  Mean   :2.50   4:1  
+##  3rd Qu.:3.25        
+##  Max.   :4.00</pre>
+
+</article></slide><slide class=""><hgroup><h2>Créer des objets: Listes</h2></hgroup><article  id="créer-des-objets-listes" class="smaller ">
+
+<p>Une liste est créée de la même façon (fonction <code>list</code>). Il n’y a pas de contraintes sur le type des objets qui y sont inclus. Les noms des objets ne sont pas repris par défaut mais peuvent être spécifiés.</p>
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>L1 &lt;- list(x, y); L2 &lt;- list(A=x, B=y)
+names(L1)</pre>
+
+<pre >## NULL</pre>
+
+<pre class = 'prettyprint lang-r'>names(L2)</pre>
+
+<pre >## [1] &quot;A&quot; &quot;B&quot;</pre></div>
+
+</article></slide><slide class=""><hgroup><h2>Récapitulation sur les objets</h2></hgroup><article  id="récapitulation-sur-les-objets" class="smaller ">
+
+<ul>
+<li>Vecteurs : ?</li>
+<li>Facteurs : ?</li>
+<li>Matrices : ?</li>
+<li>Data Frames : ?</li>
+<li>Listes : ?</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Récapitulation sur les objets</h2></hgroup><article  id="récapitulation-sur-les-objets-1" class="smaller ">
+
+<ul>
+<li>Vecteurs : Contient plusieurs objets du même type (unidimensionnel)</li>
+<li>Facteurs : Valeurs numériques associées à une chaîne de caractère</li>
+<li>Matrices : Contient plusieurs objets du même type (multidimensionnel)</li>
+<li>Data Frames : Tableau bidimensionnel: Types hétérogènes par colonnes</li>
+<li>Listes : Contient plusieurs objets hétérogènes</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Nommer les objets</h2></hgroup><article  id="nommer-les-objets" class="smaller ">
+
+<ul>
+<li>Les éléments d’un vecteur</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>vec &lt;- c(1,2,4)
+names(vec) &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
+vec</pre>
+
+<pre >## a b c 
+## 1 2 4</pre>
+
+<ul>
+<li>Les éléments d’une matrice</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mat &lt;- matrix(c(1,2,3,4,5,6), nrow= 2) 
+colnames(mat) &lt;- c(&quot;c1&quot;, &quot;c2&quot;, &quot;c3&quot;)
+rownames(mat) &lt;- c(&quot;r1&quot;, &quot;r2&quot;)
+mat</pre>
+
+<pre >##    c1 c2 c3
+## r1  1  3  5
+## r2  2  4  6</pre>
+
+</article></slide><slide class=""><hgroup><h2>Conversion d’objets</h2></hgroup><article  id="conversion-dobjets" class="smaller ">
+
+<p>Il existe plusieurs fonctions de conversions,</p>
+
+<ul>
+<li>Conversions entre <em>modes</em>: <strong>as.numeric</strong>, <strong>as.logical</strong>, <strong>as.character</strong></li>
+<li>Conversion entre objets: <strong>as.matrix</strong>, <strong>as.data.frame</strong>, <strong>as.list</strong>, <strong>as.ts</strong>:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>(fac &lt;- factor(c(1, 10)))</pre>
+
+<pre >## [1] 1  10
+## Levels: 1 10</pre>
+
+<pre class = 'prettyprint lang-r'>as.numeric(fac)</pre>
+
+<pre >## [1] 1 2</pre>
+
+</article></slide><slide class=""><hgroup><h2>Conversions</h2></hgroup><article  id="conversions" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>fac2 &lt;- factor(c(&quot;Male&quot;, &quot;Female&quot;))
+fac2</pre>
+
+<pre >## [1] Male   Female
+## Levels: Female Male</pre>
+
+<pre class = 'prettyprint lang-r'>as.numeric(fac2)</pre>
+
+<pre >## [1] 2 1</pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Extraire des valeurs des objects multidimensionnels</h2></hgroup><article  id="extraire-des-valeurs-des-objects-multidimensionnels" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Accéder aux valeurs des objets</h2></hgroup><article  id="accéder-aux-valeurs-des-objets" class="smaller ">
+
+<p>Nous accédons de façon sélective aux éléments d’un objet par l’indexation: <code>x[3]</code></p>
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>x &lt;- seq(1,5)
+x[3]</pre>
+
+<pre >## [1] 3</pre>
+
+<pre class = 'prettyprint lang-r'>x[3] &lt;- 20
+x</pre>
+
+<pre >## [1]  1  2 20  4  5</pre>
+
+<p>L’indice lui-même peut être un vecteur:</p>
+
+<pre class = 'prettyprint lang-r'>i &lt;- c(1,3)
+x[i]</pre>
+
+<pre >## [1]  1 20</pre>
+
+<pre class = 'prettyprint lang-r'>x &lt;- matrix(1:6, 2,3)
+x[, 3]</pre>
+
+<pre >## [1] 5 6</pre>
+
+<pre class = 'prettyprint lang-r'># Force à renvoyer une matrice
+
+x[,3, drop = FALSE]</pre>
+
+<pre >##      [,1]
+## [1,]    5
+## [2,]    6</pre></div>
+
+</article></slide><slide class=""><hgroup><h2>Accéder aux valeurs des objets</h2></hgroup><article  id="accéder-aux-valeurs-des-objets-1" class="smaller ">
+
+<p>On peut accéder aux valeurs d’une matrice à l’aide d’une expression de comparaison:</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- rnorm(10, 1, 4)
+x [x&gt;=1] &lt;- 20
+x</pre>
+
+<pre >##  [1] -0.8650658 20.0000000 20.0000000 20.0000000 20.0000000  0.4935994
+##  [7] 20.0000000 20.0000000 -0.3544822 20.0000000</pre>
+
+<p>Accéder aux valeurs d’une liste: double crochets</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:3; y &lt;- 1:3; z &lt;- c(1,2,2.9)
+li &lt;- list(x, y, z)
+li[[1]] # extrait x</pre>
+
+<pre >## [1] 1 2 3</pre>
+
+</article></slide><slide class=""><hgroup><h2>Accéder aux valeurs d’une liste</h2></hgroup><article  id="accéder-aux-valeurs-dune-liste" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:3; y &lt;- 1:3; z &lt;- c(1,2,2.9)
+li &lt;- list(x, y, z)
+li[[1]][1] # extrait x puis x[1]</pre>
+
+<pre >## [1] 1</pre>
+
+<pre class = 'prettyprint lang-r'>li[[2]][1] # extrait y puis y[1]</pre>
+
+<pre >## [1] 1</pre>
+
+<pre class = 'prettyprint lang-r'>li[[3]][2] # extrait z puis z[2]</pre>
+
+<pre >## [1] 2</pre>
+
+</article></slide><slide class=""><hgroup><h2>Accéder aux valeurs des objets avec les noms</h2></hgroup><article  id="accéder-aux-valeurs-des-objets-avec-les-noms" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>x &lt;- matrix(1:4, 2, 2)
+colnames(x) = c(&quot;a&quot;, &quot;b&quot;)
+rownames(x) = c(&quot;c&quot;, &quot;d&quot;)
+x[&quot;c&quot;, &quot;a&quot;]</pre>
+
+<pre >## [1] 1</pre>
+
+<pre class = 'prettyprint lang-r'>dimnames(x)</pre>
+
+<pre >## [[1]]
+## [1] &quot;c&quot; &quot;d&quot;
+## 
+## [[2]]
+## [1] &quot;a&quot; &quot;b&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Accéder aux valeurs d’un tableau de données (Data frame)</h2></hgroup><article  id="accéder-aux-valeurs-dun-tableau-de-données-data-frame" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>df &lt;- as.data.frame(x)
+df</pre>
+
+<pre >##   a b
+## c 1 3
+## d 2 4</pre>
+
+<pre class = 'prettyprint lang-r'>df$a</pre>
+
+<pre >## [1] 1 2</pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Calcul sur des vecteurs et matrices</h2></hgroup><article  id="calcul-sur-des-vecteurs-et-matrices" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Calcul sur les vecteurs</h2></hgroup><article  id="calcul-sur-les-vecteurs" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>x &lt;- rnorm(10, 1, 4)</pre>
+
+<p>Tri</p>
+
+<pre class = 'prettyprint lang-r'>sort(x)</pre>
+
+<pre >##  [1] -2.904357 -1.823418  1.093990  1.254394  1.722320  2.025361  3.339458
+##  [8]  4.066004  4.814644  7.199752</pre>
+
+<p>Rang</p>
+
+<pre class = 'prettyprint lang-r'>rank(x)</pre>
+
+<pre >##  [1]  9  1 10  2  6  5  7  8  3  4</pre>
+
+</article></slide><slide class=""><hgroup><h2>Calcul sur les vecteurs</h2></hgroup><article  id="calcul-sur-les-vecteurs-1" class="smaller ">
+
+<div class="columns-2">
+<p>Moyenne, variance</p>
+
+<pre class = 'prettyprint lang-r'>mean(x)</pre>
+
+<pre >## [1] 2.078815</pre>
+
+<pre class = 'prettyprint lang-r'>var(x)</pre>
+
+<pre >## [1] 9.009536</pre>
+
+<p>Extraction de valeurs sur test</p>
+
+<pre class = 'prettyprint lang-r'>which(x&gt;3)</pre>
+
+<pre >## [1] 1 3 7 8</pre>
+
+<p>Comparaison</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:3
+y &lt;- 1:10
+match(x, y)</pre>
+
+<pre >## [1] 1 2 3</pre>
+
+<p>Extrait les éléments uniques</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- rep(1:6, 3)
+x</pre>
+
+<pre >##  [1] 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6</pre>
+
+<pre class = 'prettyprint lang-r'>unique(x)</pre>
+
+<pre >## [1] 1 2 3 4 5 6</pre></div>
+
+</article></slide><slide class=""><hgroup><h2>Calcul matriciel</h2></hgroup><article  id="calcul-matriciel" class="smaller ">
+
+<p><em>rbind, cbind</em></p>
+
+<pre class = 'prettyprint lang-r'>m1 &lt;- matrix(1, nr = 2, nc = 2)
+m2 &lt;- matrix(2, nr = 2, nc = 2)
+rbind(m1, m2)</pre>
+
+<pre >##      [,1] [,2]
+## [1,]    1    1
+## [2,]    1    1
+## [3,]    2    2
+## [4,]    2    2</pre>
+
+<pre class = 'prettyprint lang-r'>cbind(m1, m2)</pre>
+
+<pre >##      [,1] [,2] [,3] [,4]
+## [1,]    1    1    2    2
+## [2,]    1    1    2    2</pre>
+
+</article></slide><slide class=""><hgroup><h2>Produit de matrices</h2></hgroup><article  id="produit-de-matrices" class="smaller ">
+
+<div class="columns-2">
+<p>Produit élément par élément (<code>*</code>)</p>
+
+<pre class = 'prettyprint lang-r'>m1 * m2</pre>
+
+<pre >##      [,1] [,2]
+## [1,]    2    2
+## [2,]    2    2</pre>
+
+<p>Produit matriciel (<code>%*%</code>)</p>
+
+<pre class = 'prettyprint lang-r'>pm &lt;- rbind(m1, m2) %*% cbind(m1, m2)
+pm</pre>
+
+<pre >##      [,1] [,2] [,3] [,4]
+## [1,]    2    2    4    4
+## [2,]    2    2    4    4
+## [3,]    4    4    8    8
+## [4,]    4    4    8    8</pre>
+
+<p>Transposition (<code>t</code>)</p>
+
+<pre class = 'prettyprint lang-r'>m &lt;- matrix(rep(1:4, 3), 3, 4)
+t(m)</pre>
+
+<pre >##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    1    2
+## [3,]    3    4    1
+## [4,]    2    3    4</pre></div>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Utilisation plus avancée et formalisation</h2></hgroup><article  id="utilisation-plus-avancée-et-formalisation" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Opérateurs</h2></hgroup><article  id="opérateurs" class="smaller ">
+
+<p>Il y a trois principaux types d’opérateurs dans R:</p>
+
+<ul>
+<li>Opérateurs arithmétiques: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>, <code>%%</code> (modulo), <code>%/%</code> (Division entière)</li>
+<li>Opérateurs de comparaison: <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code> <code>==</code> <code>!=</code></li>
+<li>Opérateurs logiques: <code>!</code> (non), <code>&amp;</code> ou <code>&amp;&amp;</code> (et), <code>|</code> ou <code>||</code> (ou), <code>xor(x,y)</code> (ou exclusif)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 0.5
+0 &lt; x &amp; x &lt; 1</pre>
+
+<pre >## [1] TRUE</pre>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:3; y &lt;- 1:3; z &lt;- c(1,2,2.9)
+x == y</pre>
+
+<pre >## [1] TRUE TRUE TRUE</pre>
+
+</article></slide><slide class=""><hgroup><h2>Objets et attributs</h2></hgroup><article  id="objets-et-attributs" class="smaller ">
+
+<p>Considérons une variable qui prendrait les valeurs 1,2 ou 3.</p>
+
+<ul>
+<li>Est-ce que cette variable est un entier ?</li>
+<li>Est ce que cette variable est le codage d’une variable catégorielle ?</li>
+</ul>
+
+<p>Deux attributs intrinsèque: <em>mode</em> et <em>longueur</em>:</p>
+
+<ul>
+<li>Le <strong>Mode</strong>: <code>numeric</code>, <code>character</code>, <code>complex</code>, <code>logical</code>, <code>function</code>, <code>list</code>, <code>expression</code></li>
+<li>La <strong>Longueur</strong>: Un entier correspondant au nombre d’éléments de l’objet</li>
+</ul>
+
+<p><em>List</em> ou <em>expression</em> sont des objets <em>récursifs</em> (Qui peuvent contenir eux même d’autres objets).</p>
+
+</article></slide><slide class=""><hgroup><h2>Un peu d’exploration sur ces attributs</h2></hgroup><article  id="un-peu-dexploration-sur-ces-attributs" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1
+mode(x)</pre>
+
+<pre >## [1] &quot;numeric&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>A &lt;- &quot;Linux&quot;; compar &lt;- TRUE; z &lt;- 1i
+mode(A); mode(compar); mode(z)</pre>
+
+<pre >## [1] &quot;character&quot;</pre>
+
+<pre >## [1] &quot;logical&quot;</pre>
+
+<pre >## [1] &quot;complex&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Voir le type de données avec <code>str</code></h2></hgroup><article  id="voir-le-type-de-données-avec-str" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>str(A); str(compar); str(z)</pre>
+
+<pre >##  chr &quot;Linux&quot;</pre>
+
+<pre >##  logi TRUE</pre>
+
+<pre >##  cplx 0+1i</pre>
+
+</article></slide><slide class=""><hgroup><h2>Sauvegarde de session</h2></hgroup><article  id="sauvegarde-de-session" class="smaller ">
+
+<p>Une fois notre session terminée, on peut quitter R et sauver notre session</p>
+
+<pre class = 'prettyprint lang-bash'>q()
+Save workspace image? [y/n/c]: y</pre>
+
+<p>Des fichiers <code>.RData</code> (contenant les <strong>objets R</strong> créés) et <code>.Rhistory</code> sont créés.</p>
+
+<p>Le problème de cette approche est que nous ne <strong>conservons pas</strong> les instructions qui ont permis de créer les fichiers utilisés <strong>de manière organisée</strong>.</p>
+
+<p>Il est important de consolider le code qui permet de créer les objets en conservant les instructions dans un <em>script</em>.</p>
+
+<p>Sous R, on peut créer des scripts en enregistrant des instructions dans des fichiers portant l’extension <code>.R</code>.</p>
+
+</article></slide><slide class=""><hgroup><h2>Fonctions - Programmation</h2></hgroup><article  id="fonctions---programmation" class="smaller ">
+
+<p>Pour <strong>structurer</strong> ses scripts et <strong>éviter de répéter</strong> des instructions:</p>
+
+<ul>
+<li>On peut créer des <strong>fonctions</strong>:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>my_square_function &lt;- function(x) {
+  return(x*x)
+}
+my_square_function(2)</pre>
+
+<pre >## [1] 4</pre>
+
+<ul>
+<li>Commenter ses programmes à l’aide du caractère <code>#</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'># Ceci est un commentaire</pre>
+
+</article></slide><slide class=""><hgroup><h2>Commentaires</h2></hgroup><article  id="commentaires" class="smaller ">
+
+<p>Il est important de commenter le code pour se rappeler de ce qu’il fait et pourquoi on la fait.</p>
+
+<p>Bien:</p>
+
+<pre class = 'prettyprint lang-r'># Je génère un échantillon de 20 valeurs tirées d&#39;une loi normale
+x &lt;- rnorm(20, 4, 3)</pre>
+
+<p>Mieux:</p>
+
+<pre class = 'prettyprint lang-r'># Cela sert à mimuler des valeurs correspondant à la distribution 
+# de données théorique publiée dans(Smith et al . 2024) qui suit
+# une loi normale de moyenne mu=4 et d&#39;écart type sigma=3
+
+x &lt;- rnorm(20, 0, 1)</pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Graphiques</h2></hgroup><article  id="graphiques" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Graphique simple</h2></hgroup><article  id="graphique-simple" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>plot((-100:100)^2, type = &quot;s&quot;) # s = stair steps</pre>
+
+<p><img src="Introduction_R_RStudio_files/figure-html/unnamed-chunk-83-1.png" width="720" /></p>
+
+</article></slide><slide class=""><hgroup><h2>Plot d’une fonction</h2></hgroup><article  id="plot-dune-fonction" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>plot(sin, -pi, pi) # ou curve(sin(x), -pi, pi)</pre>
+
+<p><img src="Introduction_R_RStudio_files/figure-html/unnamed-chunk-84-1.png" width="720" /></p>
+
+</article></slide><slide class=""><hgroup><h2>Histogramme</h2></hgroup><article  id="histogramme" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>x &lt;- rnorm(100, 1, 3)
+hist(x)</pre>
+
+<p><img src="Introduction_R_RStudio_files/figure-html/unnamed-chunk-85-1.png" width="720" /></p>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Avancé</h2></hgroup><article  id="avancé" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Génération de niveaux (<strong>gl</strong>)</h2></hgroup><article  id="génération-de-niveaux-gl" class="smaller ">
+
+<p><code>gl(k,n)</code> génère <strong>k</strong> niveaux de données dans un facteur répétées <strong>n</strong> fois.</p>
+
+<pre class = 'prettyprint lang-r'>gl(3,5)</pre>
+
+<pre >##  [1] 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3
+## Levels: 1 2 3</pre>
+
+<pre class = 'prettyprint lang-r'>gl(3,5, length = 30)</pre>
+
+<pre >##  [1] 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3
+## Levels: 1 2 3</pre>
+
+<pre class = 'prettyprint lang-r'>gl(2,6, label=c(&quot;Male&quot;, &quot;Femelle&quot;))</pre>
+
+<pre >##  [1] Male    Male    Male    Male    Male    Male    Femelle Femelle Femelle
+## [10] Femelle Femelle Femelle
+## Levels: Male Femelle</pre>
+
+</article></slide><slide class=""><hgroup><h2>Création d’un tableau avec toutes les combinaisons</h2></hgroup><article  id="création-dun-tableau-avec-toutes-les-combinaisons" class="smaller ">
+
+<p>Fonction <code>expand.grid</code>:</p>
+
+<pre class = 'prettyprint lang-r'>expand.grid(h=c(60,80), w=c(100, 300), sex=c(&quot;Male&quot;, &quot;Female&quot;))</pre>
+
+<pre >##    h   w    sex
+## 1 60 100   Male
+## 2 80 100   Male
+## 3 60 300   Male
+## 4 80 300   Male
+## 5 60 100 Female
+## 6 80 100 Female
+## 7 60 300 Female
+## 8 80 300 Female</pre>
+
+</article></slide><slide class=""><hgroup><h2>Générer des données aléatoires</h2></hgroup><article  id="générer-des-données-aléatoires" class="smaller ">
+
+<p>R permet de générer des données aléatoires à partir d’un grand nombre de lois de densité de probabilités.</p>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="left">Loi</th>
+<th align="left">Fonction</th>
+</tr>
+<tr class="odd">
+<td align="left">Gauss(normale)</td>
+<td align="left"><code>rnorm(n, mean=0, sd=1)</code></td>
+</tr>
+<tr class="even">
+<td align="left">exponentielle</td>
+<td align="left"><code>rexp(n, rate=1)</code></td>
+</tr>
+<tr class="odd">
+<td align="left">gamma</td>
+<td align="left"><code>rgamma(n, shape, scale=1)</code></td>
+</tr>
+<tr class="even">
+<td align="left">Poisson</td>
+<td align="left"><code>rpos(n, lambda)</code></td>
+</tr>
+<tr class="odd">
+<td align="left">binomiale</td>
+<td align="left"><code>rbinom(n, size, prob)</code></td>
+</tr>
+<tr class="even">
+<td align="left">hypergéométrique</td>
+<td align="left"><code>rhyper(nn, m, n, k)</code></td>
+</tr>
+</table>
+
+</article></slide><slide class=""><hgroup><h2>Générer des données aléatoires</h2></hgroup><article  id="générer-des-données-aléatoires-1" class="smaller ">
+
+<p>Ces fonctions ont des compagnes obtenues en replaçant la lettre <code>r</code> par <code>d</code>, <code>p</code> ou <code>c</code> pour obtenir la <strong>densité</strong>, la <strong>densité de probabilité cumulée</strong>, et la <strong>valeur de quantile</strong>.</p>
+
+<p>Par exemple, pour obtenir les valeurs critiques au seuil de 5% pour un test bilatéral suivant une loi normale:</p>
+
+<pre class = 'prettyprint lang-r'>qnorm(0.025)</pre>
+
+<pre >## [1] -1.959964</pre>
+
+<pre class = 'prettyprint lang-r'>qnorm(0.975)</pre>
+
+<pre >## [1] 1.959964</pre>
+
+</article></slide><slide class=""><hgroup><h2>Créer des objets: Séries temporelles</h2></hgroup><article  id="créer-des-objets-séries-temporelles" class="smaller ">
+
+<p>La fonction <code>ts</code> va créer une série temporelle à partir d’un vecteur (série temporelle simple) ou d’une matrice (série temporelle multiple).</p>
+
+<pre class = 'prettyprint lang-r'>ts(1:10, start = 1959)</pre>
+
+<pre >## Time Series:
+## Start = 1959 
+## End = 1968 
+## Frequency = 1 
+##  [1]  1  2  3  4  5  6  7  8  9 10</pre>
+
+<pre class = 'prettyprint lang-r'>ts(1:47, frequency = 12, start = c(1959, 2))</pre>
+
+<pre >##      Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+## 1959       1   2   3   4   5   6   7   8   9  10  11
+## 1960  12  13  14  15  16  17  18  19  20  21  22  23
+## 1961  24  25  26  27  28  29  30  31  32  33  34  35
+## 1962  36  37  38  39  40  41  42  43  44  45  46  47</pre>
+
+</article></slide><slide class=""><hgroup><h2>Créer des objets: Séries temporelles</h2></hgroup><article  id="créer-des-objets-séries-temporelles-1" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>ts(1:10, frequency = 4, start = c(1959,2))</pre>
+
+<pre >##      Qtr1 Qtr2 Qtr3 Qtr4
+## 1959         1    2    3
+## 1960    4    5    6    7
+## 1961    8    9   10</pre>
+
+<pre class = 'prettyprint lang-r'>ts(matrix(rpois(36, 5), 6, 3), start = c(1961,1), frequency = 12)</pre>
+
+<pre >## Warning in matrix(rpois(36, 5), 6, 3): data length differs from size of matrix:
+## [36 != 6 x 3]</pre>
+
+<pre >##          Series 1 Series 2 Series 3
+## Jan 1961        3        2        4
+## Feb 1961        3        6        4
+## Mar 1961        5        5       11
+## Apr 1961        5        4        5
+## May 1961        6        5        9
+## Jun 1961        5        8        6</pre>
+
+</article></slide><slide class=""><hgroup><h2>Créer des objets: Expression</h2></hgroup><article  id="créer-des-objets-expression" class="smaller ">
+
+<p>Toutes les commandes valides sont des expressions. Or, il est possible en R de stocker une expression dans un objet sans l’évaluer (fonction <code>expression</code>). Ces objets représentent des expressions littérales que l’on peut ensuite évaluer avec la fonction <code>eval</code>.</p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 3; y &lt;- 2.5; z &lt;- 1
+exp1 &lt;- expression(x / (y + exp(z)))
+exp1</pre>
+
+<pre >## expression(x/(y + exp(z)))</pre>
+
+<pre class = 'prettyprint lang-r'>eval(exp1)</pre>
+
+<pre >## [1] 0.5749019</pre>
+
+<pre class = 'prettyprint lang-r'>D(exp1, &quot;z&quot;) # Calcul de la dérivée partielle d&#39;exp1 en z</pre>
+
+<pre >## -(x * exp(z)/(y + exp(z))^2)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Comparaison de valeurs numériques</h2></hgroup><article  id="comparaison-de-valeurs-numériques" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>identical(x,y)</pre>
+
+<pre >## [1] FALSE</pre>
+
+<pre class = 'prettyprint lang-r'>all.equal(x, z)</pre>
+
+<pre >## [1] &quot;Mean relative difference: 0.6666667&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>0.9 == (1.1 - 0.2)</pre>
+
+<pre >## [1] FALSE</pre>
+
+<pre class = 'prettyprint lang-r'>identical(0.9, 1.1 - 0.2)</pre>
+
+<pre >## [1] FALSE</pre>
+
+<pre class = 'prettyprint lang-r'>all.equal(0.9, 1.1 - 0.2)</pre>
+
+<pre >## [1] TRUE</pre>
+
+<pre class = 'prettyprint lang-r'>all.equal(0.9, 1.1 - 0.2, tolerance = 1e-16)</pre>
+
+<pre >## [1] &quot;Mean relative difference: 1.233581e-16&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>Ressources</h2></hgroup><article  id="ressources" class="smaller ">
+
+<ul>
+<li><em>Introduction à la programmation en R</em> par <em>Vincent Goulet</em>: <a href='https://cran.r-project.org/doc/contrib/Goulet_introduction_programmation_R.pdf' title=''>https://cran.r-project.org/doc/contrib/Goulet_introduction_programmation_R.pdf</a></li>
+<li><em>R pour les débutants</em>, par <em>Emmanuel Paradis</em>: <a href='https://cran.r-project.org/doc/contrib/Paradis-rdebuts_fr.pdf' title=''>https://cran.r-project.org/doc/contrib/Paradis-rdebuts_fr.pdf</a></li>
+</ul>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Bioconductor</h2></hgroup><article  id="bioconductor" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Bioconductor</h2></hgroup><article  id="bioconductor-1" class="smaller ">
+
+<p><strong>Bioconductor</strong> possède son propre dépôt et sa propre fonction pour installer des paquets.</p>
+
+<p><a href='https://www.bioconductor.org/install/' title=''>https://www.bioconductor.org/install/</a></p>
+
+<p>Installation sous R:</p>
+
+<pre class = 'prettyprint lang-r'>if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
+    install.packages(&quot;BiocManager&quot;)
+BiocManager::install()</pre>
+
+<p>Paquets disponibles: <a href='https://www.bioconductor.org/packages/release/BiocViews.html#___Software' title=''>https://www.bioconductor.org/packages/release/BiocViews.html#___Software</a></p>
+
+</article></slide><slide class=""><hgroup><h2>Recherche et installation de packages Bioconductor</h2></hgroup><article  id="recherche-et-installation-de-packages-bioconductor" class="smaller ">
+
+<p>Exemple: le paquet <strong>edgeR</strong>:</p>
+
+<p><a href='https://www.bioconductor.org/packages/release/bioc/html/edgeR.html' title=''>https://www.bioconductor.org/packages/release/bioc/html/edgeR.html</a></p>
+
+<p>Installation:</p>
+
+<pre class = 'prettyprint lang-r'>if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
+    install.packages(&quot;BiocManager&quot;)
+
+BiocManager::install(&quot;edgeR&quot;)</pre>
+
+<p>Vignette:</p>
+
+<pre class = 'prettyprint lang-r'>browseVignettes(&quot;edgeR&quot;)</pre>
+
+<pre class = 'prettyprint lang-r'>sessionInfo()</pre>
+
+</article></slide><slide class=""><hgroup><h2>Data sheets:</h2></hgroup><article  id="data-sheets" class="smaller ">
+
+<ul>
+<li><p>DataSheet <strong>Base R</strong>: <a href='https://github.com/rstudio/cheatsheets/blob/main/base-r.pdf' title=''>https://github.com/rstudio/cheatsheets/blob/main/base-r.pdf</a></p></li>
+<li><p>DataSheet <strong>RStudio:</strong>: <a href='https://github.com/rstudio/cheatsheets/blob/main/rstudio-ide.pdf' title=''>https://github.com/rstudio/cheatsheets/blob/main/rstudio-ide.pdf</a></p></li>
+<li><p>DataSheet <strong>&ldquo;tout&rdquo;</strong>: <a href='https://github.com/rstudio/cheatsheets/tree/main' title=''>https://github.com/rstudio/cheatsheets/tree/main</a></p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Licence</h2></hgroup><article  id="licence" class="smaller ">
+
+<div style="text-align: center">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png"></a><br></p>
+
+<p>Cette œuvre est mise à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Licence Creative Commons:</a> <br>Attribution - Pas d’Utilisation Commerciale - Pas de Modification 4.0 International (CC BY-NC-ND 4.0).</p></div></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+    if (window.Shiny) {
+      // Initialize slides when this script appears on the page, since it
+      // indicates that the <slides> markup has been fully loaded.
+      window.loadDeck();
+    }
+  })();
+</script>
+
+</body>
+</html>
