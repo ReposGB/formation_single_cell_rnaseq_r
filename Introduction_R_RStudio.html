@@ -242,7 +242,11 @@ slide:not(.current) .plotly.html-widget{
 
 </article></slide><slide class=""><hgroup><h2></h2></hgroup><article  id="section" class="smaller ">
 
-<img width="800px" src='figures-intro-R/rstudio_screen.png' title=''/>
+<center>
+
+<img src="figures-intro-R/rstudio_screen.png" height="'500" width="800"/>
+
+</center>
 
 </article></slide><slide class=""><hgroup><h2>Invite de commande</h2></hgroup><article  id="invite-de-commande" class="smaller ">
 
@@ -974,8 +978,8 @@ x[,3, drop = FALSE]</pre>
 x [x&gt;=1] &lt;- 20
 x</pre>
 
-<pre >##  [1] -4.50549389 -2.85670925 20.00000000  0.42899516 20.00000000 -0.18587981
-##  [7] 20.00000000 -2.53707096 -0.01320232 -0.35520564</pre>
+<pre >##  [1] -4.16105474 -5.83270544 -2.78776859 20.00000000 -1.27069230 20.00000000
+##  [7] -0.05545414 -1.33215894 20.00000000 -1.95133239</pre>
 
 <p>Accéder aux valeurs d’une liste: double crochets</p>
 
@@ -1041,14 +1045,14 @@ df</pre>
 
 <pre class = 'prettyprint lang-r'>sort(x)</pre>
 
-<pre >##  [1] -6.3131191 -4.8140000 -2.1585075 -1.4500882 -1.1775474 -0.1395329
-##  [7]  0.8125409  1.6992635  6.0827649  9.5226960</pre>
+<pre >##  [1] -8.4306985 -6.9641843 -2.5850708 -0.4040216  0.3376447  0.4831419
+##  [7]  0.6482769  1.5832246  7.7111599  7.8297741</pre>
 
 <p>Rang</p>
 
 <pre class = 'prettyprint lang-r'>rank(x)</pre>
 
-<pre >##  [1]  8  5 10  4  1  9  2  7  6  3</pre>
+<pre >##  [1]  8 10  3  5  4  2  6  9  1  7</pre>
 
 </article></slide><slide class=""><hgroup><h2>Calcul sur les vecteurs</h2></hgroup><article  id="calcul-sur-les-vecteurs-1" class="smaller ">
 
@@ -1057,17 +1061,17 @@ df</pre>
 
 <pre class = 'prettyprint lang-r'>mean(x)</pre>
 
-<pre >## [1] 0.206447</pre>
+<pre >## [1] 0.02092469</pre>
 
 <pre class = 'prettyprint lang-r'>var(x)</pre>
 
-<pre >## [1] 22.44459</pre>
+<pre >## [1] 27.82885</pre>
 
 <p>Extraction de valeurs sur test</p>
 
 <pre class = 'prettyprint lang-r'>which(x&gt;3)</pre>
 
-<pre >## [1] 3 6</pre>
+<pre >## [1] 2 8</pre>
 
 <p>Comparaison</p>
 
@@ -1403,12 +1407,12 @@ hist(x)</pre>
 ## [36 != 6 x 3]</pre>
 
 <pre >##          Series 1 Series 2 Series 3
-## Jan 1961        6        5        6
-## Feb 1961        8        4        6
-## Mar 1961        4        5        4
-## Apr 1961        5        4        6
-## May 1961        5        4        6
-## Jun 1961        9        5        5</pre>
+## Jan 1961        2        4        7
+## Feb 1961        8        2        5
+## Mar 1961        3        6       10
+## Apr 1961        4        6        7
+## May 1961        9        5        4
+## Jun 1961        4        4        5</pre>
 
 </article></slide><slide class=""><hgroup><h2>Créer des objets: Expression</h2></hgroup><article  id="créer-des-objets-expression" class="smaller ">
 
