@@ -12,7 +12,7 @@
 <meta name="author" content="Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille Université" />
 
 
-<title>TD Analyse de données Single Cell RNA-seq sous R/Bioconductor - Package Seurat</title>
+<title>TD Analyse de données Single Cell RNA-seq sous R - Package Seurat</title>
 
 <script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -344,7 +344,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">TD Analyse de données Single Cell RNA-seq
-sous R/Bioconductor - Package Seurat</h1>
+sous R - Package Seurat</h1>
 <h4 class="author">Ghislain Bidaut, Plateforme Cibi, CRCM, Aix-Marseille
 Université</h4>
 <h4 class="date">Novembre 2025</h4>
@@ -520,10 +520,10 @@ number="3">
 l’échantillon PDAC 1</h1>
 <p>Dans cette première partie, nous allons analyse uniquemeent
 l’échantillon <strong>PDAC_TISSUE_1</strong>.</p>
-<div id="td-charger-les-données-de-léchantillon-pdac-1-avec-seurat."
+<div id="charger-les-données-de-léchantillon-pdac-1-avec-seurat."
 class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> TD: Charger les
-données de l’échantillon PDAC 1 avec Seurat.</h2>
+<h2><span class="header-section-number">3.1</span> Charger les données
+de l’échantillon PDAC 1 avec Seurat.</h2>
 <ol style="list-style-type: decimal">
 <li><p>Créer un objet Seurat et garder - les cellules ayant au
 <strong>moins 200 gènes exprimés</strong> - les gènes exprimés au moins
@@ -532,22 +532,19 @@ données de l’échantillon PDAC 1 avec Seurat.</h2>
 <code>NKG7</code>, <code>KRT18</code> et <code>PRSS1</code> ainsi que le
 marqueur <code>CD45</code> sur les 30 premières cellules.</p></li>
 </ol>
-<div id="solution" class="section level3" number="3.1.1">
-<h3><span class="header-section-number">3.1.1</span> Solution</h3>
-<pre class="r"><code># Set the path to the input data directory
+<pre class="r"><code># Chemin des données d&#39;entrée
 input_dir_pdac &lt;- &quot;/shared/projects/tp_2529_ngs_amu_181496/data/GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot; 
 
 #input_dir_pdac &lt;- &quot;GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot;
 
-# Load the data using Read10X function
+# Charger les données avec Read10X
 pdac.data &lt;- Read10X(data.dir = input_dir_pdac)
 
-# Create seurat objects
+# Créer l&#39;objet Seurat
 pdac.seurat &lt;- CreateSeuratObject(counts = pdac.data, project = &quot;PDAC&quot;, min.cells = 3, min.features = 200)
 
-# Examination of the count matrix
+# Voir la matrice de comptage
 pdac.data[c(&quot;PTPRC&quot;, &quot;NKG7&quot;, &quot;KRT18&quot;, &quot;PRSS1&quot;), 1:30]</code></pre>
-</div>
 </div>
 <div id="faire-un-contrôle-qualité" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Faire un contrôle
@@ -566,7 +563,7 @@ cellule</li>
 <li>Fixer les seuils acceptables sur ces distributions</li>
 <li>Les appliquer aux données.</li>
 </ol>
-<pre class="r"><code># L&#39;opérateur [[, ]] permet d&quot;&#39;ajouter des données d&#39;annotation &quot;meta data&quot;.
+<pre class="r"><code># L&#39;opérateur [[, ]] permet d&quot;&#39;ajouter des données d&#39;annotation au meta data
 pdac.seurat[[&quot;percent.mt&quot;]] &lt;- PercentageFeatureSet(pdac.seurat, pattern = &quot;^MT-&quot;)
 VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
 <pre class="r"><code>pdac.seurat &lt;- subset(pdac.seurat, subset = nFeature_RNA &gt; 200 &amp; nFeature_RNA &lt; 5000 &amp; percent.mt &lt; 15)
@@ -574,12 +571,10 @@ VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quo
 </div>
 <div id="normalisation" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span> Normalisation</h2>
-<ul>
-<li><strong>Normalisez les données</strong> avec la méthode
+<p><strong>Normalisez les données</strong> avec la méthode
 <em>LogNormalize</em>, en multipliant les valeurs par un facteur 10000
-et prenant le log du résultat.</li>
-</ul>
-<div id="solution-1" class="section level3" number="3.3.1">
+et en prenant le log du résultat.</p>
+<div id="solution" class="section level3" number="3.3.1">
 <h3><span class="header-section-number">3.3.1</span> Solution</h3>
 </div>
 </div>
@@ -596,17 +591,19 @@ méthode “vst” en partiant de 2000 “features” (gènes).</li>
 les 10 gènes les plus variables en les labellisant sur le
 graphique.</li>
 </ol>
-<div id="solution-2" class="section level3" number="3.4.1">
-<h3><span class="header-section-number">3.4.1</span> Solution:</h3>
+<div id="solution-1" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Solution</h3>
 </div>
 </div>
 <div id="préparation-acp-étape-2-mise-à-léchelle-des-données"
 class="section level2" number="3.5">
 <h2><span class="header-section-number">3.5</span> Préparation ACP étape
 2: Mise à l’échelle des données</h2>
-<p>Nous avons besoin de <strong>standardiser</strong>: centrer et
-réduire l’expression de chaque gène dans la matrice de comptage. Pour
-cela, nous utilisons <code>ScaleData</code>.</p>
+<p>Nous avons besoin de <strong>standardiser</strong>:</p>
+<ol style="list-style-type: decimal">
+<li>centrer et réduire l’expression de chaque gène dans la matrice de
+comptage avec <code>ScaleData</code>.</li>
+</ol>
 <pre class="r"><code>pdac.seurat &lt;- ScaleData(pdac.seurat) </code></pre>
 </div>
 <div id="réduction-de-dimensions-avec-acp" class="section level2"
@@ -625,14 +622,14 @@ principaux (fonction <code>VizDimLoadings</code>)</li>
 <li>Faire une représentation des données sous forme de Heatmap dans
 l’espace des composants principaux grâce à <code>DimHeatmap</code></li>
 </ol>
-<div id="solution-3" class="section level3" number="3.6.1">
+<div id="solution-2" class="section level3" number="3.6.1">
 <h3><span class="header-section-number">3.6.1</span> Solution</h3>
 </div>
 <div id="estimation-de-la-dimensionalité" class="section level3"
 number="3.6.2">
 <h3><span class="header-section-number">3.6.2</span> Estimation de la
 Dimensionalité</h3>
-<p>Nous utilisons la méthode des valeurs propres obtenues à partie de
+<p>Nous utilisons la méthode des valeurs propres obtenues à partir de
 l’ACP.</p>
 <ol style="list-style-type: decimal">
 <li><strong>Faire un graphe</strong> des valeurs propres</li>
@@ -651,11 +648,11 @@ graphe <em>K-nearest neighbors</em> à l’aide de la fonction
 <li><strong>Clusteriser les cellules</strong> en utilisant l’algorithme
 de Louvain pour grouper les cellules (fonction
 <code>FindClusters</code>)</li>
-<li>Examinez les resultats pour les 5 premières cellules (utiliser
+<li>Examiner les résultats pour les 5 premières cellules (utiliser
 <code>Idents(pdac.seurat)</code>)</li>
 </ol>
-<div id="solution-4" class="section level3" number="3.7.1">
-<h3><span class="header-section-number">3.7.1</span> Solution:</h3>
+<div id="solution-3" class="section level3" number="3.7.1">
+<h3><span class="header-section-number">3.7.1</span> Solution</h3>
 </div>
 </div>
 <div id="exploration-des-clusters-par-umap" class="section level2"
@@ -673,14 +670,14 @@ méthodes de regroupement basées sur les graphes devraient “<strong>se
 retrouver proches</strong>” les unes des autres sur ces représentations
 réduites.</p>
 <ol style="list-style-type: decimal">
-<li>Utiliser <code>RunUMAP</code> sur 10 clusters puis
+<li>Utiliser <code>RunUMAP</code> sur 15 dimensions puis
 <code>Dimplot</code></li>
-<li>Que pensez vous du nombre de clusters choisis ?</li>
+<li>Que pensez vous du nombre de clusters identifiés ?</li>
 <li>Sauver l’objet <code>pdac.seurat</code>dans un fichier RDS pour
 pouvoir le réutiliser plus tard.</li>
 </ol>
-<div id="solution-5" class="section level4" number="3.8.0.1">
-<h4><span class="header-section-number">3.8.0.1</span> Solution:</h4>
+<div id="solution-4" class="section level3" number="3.8.1">
+<h3><span class="header-section-number">3.8.1</span> Solution</h3>
 </div>
 </div>
 <div id="visualisation-des-marqueurs" class="section level2"
@@ -739,8 +736,6 @@ marqeurs suivants:</li>
 <ol start="3" style="list-style-type: decimal">
 <li>Faites un <code>Dotplot</code> avec l’ensemble de ces marqueurs</li>
 </ol>
-<div id="solution-6" class="section level3" number="3.9.1">
-<h3><span class="header-section-number">3.9.1</span> Solution</h3>
 <pre class="r"><code># Plots pour CD45
 VlnPlot(pdac.seurat, features = &quot;PTPRC&quot;)
 FeaturePlot(pdac.seurat, features = &quot;PTPRC&quot;)
@@ -764,7 +759,6 @@ FeaturePlot(pdac.seurat, features = genes_markers)
 dtplot &lt;- DotPlot(pdac.seurat, features = genes_markers) + RotatedAxis()
 plot(dtplot)</code></pre>
 </div>
-</div>
 <div id="identifier-les-marqueurs-différentiellement-exprimés"
 class="section level2" number="3.10">
 <h2><span class="header-section-number">3.10</span> Identifier les
@@ -779,21 +773,29 @@ clusters.</li>
 <strong>cluster 3</strong> et afficher les <strong>10</strong> premiers
 marqueurs.</li>
 <li>Identifier les marqueurs de différentiation pour l’ensemble des
-clusters</li>
+clusters en utilisant <code>FindAllMarkers</code> puis filtrer les
+marqueurs sur <span class="math inline">\(avglog2FC &gt; 2.0\)</span> en
+utilisant la librairie <code>dplyr</code>.</li>
 </ol>
-<pre class="r"><code># On vérifie les données
+<pre class="r"><code># On vérifie que l&#39;on est bien sur le bon Ident
 table(Idents(pdac.seurat))
 
+# 1. Table avec la liste des marqueurs DE
 cluster2.markers &lt;- FindMarkers(pdac.seurat, ident.1 = 2)
+
+# 2. afficher les 10 premiers marqueurs
 head(cluster2.markers, n = 10)
 
+# 3. pareil pour les cluster 2 et cluster s3 
 cluster2.3.markers &lt;- FindMarkers(pdac.seurat, ident.1 = 2, ident.2 = 3)
 head (cluster2.3.markers, n = 10)
 
-library(dplyr)
+# 4. marqueurs pour l&#39;ensemble des clusters
 pdac.all.markers &lt;- FindAllMarkers(pdac.seurat, only.pos = TRUE)
 
-pdac.all.markers  %&gt;% group_by(cluster) %&gt;% dplyr::filter(avg_log2FC &gt; 1)</code></pre>
+# Filtrage du resultat (logFC&gt;1) et tri par cluster
+library(dplyr)
+pdac.all.markers %&gt;% dplyr::group_by(cluster) %&gt;% dplyr::filter(avg_log2FC &gt; 2.0) -&gt; filtered_markers</code></pre>
 </div>
 <div id="représentation-de-lexpression-sous-forme-de-heatmap"
 class="section level2" number="3.11">
@@ -807,8 +809,8 @@ caractérisant chaque cluster (appliquer les fonctions
 <code>group_by</code>, <code>filter</code>, <code>slice_head</code> et
 <code>ungroup</code> du package <code>dplyr</code>)</li>
 </ol>
-<div id="solution-7" class="section level3" number="3.11.1">
-<h3><span class="header-section-number">3.11.1</span> Solution:</h3>
+<div id="solution-5" class="section level3" number="3.11.1">
+<h3><span class="header-section-number">3.11.1</span> Solution</h3>
 </div>
 </div>
 </div>
