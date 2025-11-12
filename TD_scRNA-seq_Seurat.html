@@ -510,14 +510,14 @@ set.seed(1234) # pour reproductibilité</code></pre>
 number="2.3">
 <h2><span class="header-section-number">2.3</span> Récupération des
 données de comptage</h2>
-<p>Les données de steel sont disponible sur le chemin:
+<p>Les données de Steele sont disponible sur le chemin:
 <code>/shared/projects/tp_2529_ngs_amu_181496/data/GSE155698_RAW"</code>.</p>
 </div>
 </div>
-<div id="première-analyse---échantillon-pdac-1" class="section level1"
+<div id="analyse-de-léchantillon-pdac-1" class="section level1"
 number="3">
-<h1><span class="header-section-number">3</span> Première analyse -
-échantillon PDAC 1</h1>
+<h1><span class="header-section-number">3</span> Analyse de
+l’échantillon PDAC 1</h1>
 <p>Dans cette première partie, nous allons analyse uniquemeent
 l’échantillon <strong>PDAC_TISSUE_1</strong>.</p>
 <div id="td-charger-les-données-de-léchantillon-pdac-1-avec-seurat."
@@ -549,9 +549,8 @@ pdac.seurat &lt;- CreateSeuratObject(counts = pdac.data, project = &quot;PDAC&qu
 pdac.data[c(&quot;PTPRC&quot;, &quot;NKG7&quot;, &quot;KRT18&quot;, &quot;PRSS1&quot;), 1:30]</code></pre>
 </div>
 </div>
-<div id="td-faire-un-contrôle-qualité" class="section level2"
-number="3.2">
-<h2><span class="header-section-number">3.2</span> TD: Faire un contrôle
+<div id="faire-un-contrôle-qualité" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Faire un contrôle
 qualité</h2>
 <p>Seurat permet de faire un controle qualité (QC) sur</p>
 <ul>
@@ -572,20 +571,22 @@ pdac.seurat[[&quot;percent.mt&quot;]] &lt;- PercentageFeatureSet(pdac.seurat, pa
 VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
 <pre class="r"><code>pdac.seurat &lt;- subset(pdac.seurat, subset = nFeature_RNA &gt; 200 &amp; nFeature_RNA &lt; 5000 &amp; percent.mt &lt; 15)
 VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
-<div id="normalisation" class="section level3" number="3.2.1">
-<h3><span class="header-section-number">3.2.1</span> Normalisation</h3>
+</div>
+<div id="normalisation" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Normalisation</h2>
 <ul>
 <li><strong>Normalisez les données</strong> avec la méthode
 <em>LogNormalize</em>, en multipliant les valeurs par un facteur 10000
 et prenant le log du résultat.</li>
 </ul>
-<pre class="r"><code>pdac.seurat &lt;- NormalizeData(pdac.seurat, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000)</code></pre>
+<div id="solution-1" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Solution</h3>
 </div>
 </div>
-<div id="préparation-acp-étape-1-idebntification-des-gènes-variables"
-class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Préparation ACP étape
-1: idebntification des gènes variables</h2>
+<div id="préparation-acp-étape-1-identification-des-gènes-variables"
+class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Préparation ACP étape
+1: identification des gènes variables</h2>
 <p><strong>Objectif:</strong> Il faut identifier les gènes présentant la
 plus grande <strong>variation</strong> entre cellules.</p>
 <ol style="list-style-type: decimal">
@@ -595,22 +596,22 @@ méthode “vst” en partiant de 2000 “features” (gènes).</li>
 les 10 gènes les plus variables en les labellisant sur le
 graphique.</li>
 </ol>
-<div id="solution-1" class="section level3" number="3.3.1">
-<h3><span class="header-section-number">3.3.1</span> Solution:</h3>
+<div id="solution-2" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Solution:</h3>
 </div>
 </div>
-<div id="td-préparation-acp-étape-2-mise-à-léchelle-des-données"
-class="section level2" number="3.4">
-<h2><span class="header-section-number">3.4</span> TD Préparation ACP
-étape 2: Mise à l’échelle des données</h2>
+<div id="préparation-acp-étape-2-mise-à-léchelle-des-données"
+class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Préparation ACP étape
+2: Mise à l’échelle des données</h2>
 <p>Nous avons besoin de <strong>standardiser</strong>: centrer et
 réduire l’expression de chaque gène dans la matrice de comptage. Pour
 cela, nous utilisons <code>ScaleData</code>.</p>
 <pre class="r"><code>pdac.seurat &lt;- ScaleData(pdac.seurat) </code></pre>
 </div>
 <div id="réduction-de-dimensions-avec-acp" class="section level2"
-number="3.5">
-<h2><span class="header-section-number">3.5</span> Réduction de
+number="3.6">
+<h2><span class="header-section-number">3.6</span> Réduction de
 dimensions avec ACP</h2>
 <ol style="list-style-type: decimal">
 <li><strong>Faire une réduction de dimensions</strong> par ACP sur les
@@ -624,12 +625,12 @@ principaux (fonction <code>VizDimLoadings</code>)</li>
 <li>Faire une représentation des données sous forme de Heatmap dans
 l’espace des composants principaux grâce à <code>DimHeatmap</code></li>
 </ol>
-<div id="solution-2" class="section level3" number="3.5.1">
-<h3><span class="header-section-number">3.5.1</span> Solution</h3>
+<div id="solution-3" class="section level3" number="3.6.1">
+<h3><span class="header-section-number">3.6.1</span> Solution</h3>
 </div>
 <div id="estimation-de-la-dimensionalité" class="section level3"
-number="3.5.2">
-<h3><span class="header-section-number">3.5.2</span> Estimation de la
+number="3.6.2">
+<h3><span class="header-section-number">3.6.2</span> Estimation de la
 Dimensionalité</h3>
 <p>Nous utilisons la méthode des valeurs propres obtenues à partie de
 l’ACP.</p>
@@ -640,8 +641,8 @@ l’ACP.</p>
 <pre class="r"><code>ElbowPlot(pdac.seurat)</code></pre>
 </div>
 </div>
-<div id="clusteriser-les-cellules" class="section level2" number="3.6">
-<h2><span class="header-section-number">3.6</span> Clusteriser les
+<div id="clusteriser-les-cellules" class="section level2" number="3.7">
+<h2><span class="header-section-number">3.7</span> Clusteriser les
 cellules</h2>
 <ol style="list-style-type: decimal">
 <li><strong>Trouver les plus proches voisins</strong> en construisant un
@@ -653,13 +654,13 @@ de Louvain pour grouper les cellules (fonction
 <li>Examinez les resultats pour les 5 premières cellules (utiliser
 <code>Idents(pdac.seurat)</code>)</li>
 </ol>
-<div id="solution-3" class="section level3" number="3.6.1">
-<h3><span class="header-section-number">3.6.1</span> Solution:</h3>
+<div id="solution-4" class="section level3" number="3.7.1">
+<h3><span class="header-section-number">3.7.1</span> Solution:</h3>
 </div>
 </div>
 <div id="exploration-des-clusters-par-umap" class="section level2"
-number="3.7">
-<h2><span class="header-section-number">3.7</span> Exploration des
+number="3.8">
+<h2><span class="header-section-number">3.8</span> Exploration des
 clusters par UMAP</h2>
 <p>Seurat propose plusieurs techniques de réduction de dimension non
 linéaires, telles que <strong>t-SNE</strong> et <strong>UMAP</strong>,
@@ -678,15 +679,15 @@ réduites.</p>
 <li>Sauver l’objet <code>pdac.seurat</code>dans un fichier RDS pour
 pouvoir le réutiliser plus tard.</li>
 </ol>
-<div id="solution-4" class="section level4" number="3.7.0.1">
-<h4><span class="header-section-number">3.7.0.1</span> Solution:</h4>
+<div id="solution-5" class="section level4" number="3.8.0.1">
+<h4><span class="header-section-number">3.8.0.1</span> Solution:</h4>
 </div>
 </div>
 <div id="visualisation-des-marqueurs" class="section level2"
-number="3.8">
-<h2><span class="header-section-number">3.8</span> Visualisation des
+number="3.9">
+<h2><span class="header-section-number">3.9</span> Visualisation des
 marqueurs</h2>
-<p>Cette étape permets de découvrir les types cellulaires les plus
+<p>Cette étape permet de découvrir les types cellulaires les plus
 connus. Plusieurs outils de visualisation sont pertinents pour cela: Les
 <em>Violin plots</em> (fonction <code>VlnPlot</code>) et
 <strong>Superposition de l’expression d’un marqueur</strong> sur l’UMAP
@@ -738,18 +739,16 @@ marqeurs suivants:</li>
 <ol start="3" style="list-style-type: decimal">
 <li>Faites un <code>Dotplot</code> avec l’ensemble de ces marqueurs</li>
 </ol>
-<div id="solution-5" class="section level3" number="3.8.1">
-<h3><span class="header-section-number">3.8.1</span> Solution</h3>
-<pre class="r"><code># plots for CD45
+<div id="solution-6" class="section level3" number="3.9.1">
+<h3><span class="header-section-number">3.9.1</span> Solution</h3>
+<pre class="r"><code># Plots pour CD45
 VlnPlot(pdac.seurat, features = &quot;PTPRC&quot;)
 FeaturePlot(pdac.seurat, features = &quot;PTPRC&quot;)
 
 # On peut aussi mettre en place une analyse interactive
 #FeaturePlot(pdac.seurat, features = &quot;PTPRC&quot;, interactive = TRUE)
 
-
-# plots with all genes
-
+# Plots pour notre liste de marqeurs
 genes_markers &lt;- c(
   &quot;CLU&quot;, &quot;PRSS1&quot;, &quot;HLA-DRA&quot;,
   &quot;CD79A&quot;, &quot;MS4A1&quot;,
@@ -759,18 +758,16 @@ genes_markers &lt;- c(
   &quot;GZMB&quot;
 )
 
-
 VlnPlot(pdac.seurat, features = genes_markers)
 FeaturePlot(pdac.seurat, features = genes_markers)
-
 
 dtplot &lt;- DotPlot(pdac.seurat, features = genes_markers) + RotatedAxis()
 plot(dtplot)</code></pre>
 </div>
 </div>
 <div id="identifier-les-marqueurs-différentiellement-exprimés"
-class="section level2" number="3.9">
-<h2><span class="header-section-number">3.9</span> Identifier les
+class="section level2" number="3.10">
+<h2><span class="header-section-number">3.10</span> Identifier les
 marqueurs différentiellement exprimés</h2>
 <ol style="list-style-type: decimal">
 <li>Créer une table avec la liste des marquers
@@ -798,18 +795,20 @@ pdac.all.markers &lt;- FindAllMarkers(pdac.seurat, only.pos = TRUE)
 
 pdac.all.markers  %&gt;% group_by(cluster) %&gt;% dplyr::filter(avg_log2FC &gt; 1)</code></pre>
 </div>
-<div id="representation-sous-forme-de-heatmap" class="section level2"
-number="3.10">
-<h2><span class="header-section-number">3.10</span> Representation sous
-forme de heatmap</h2>
+<div id="représentation-de-lexpression-sous-forme-de-heatmap"
+class="section level2" number="3.11">
+<h2><span class="header-section-number">3.11</span> Représentation de
+l’expression sous forme de heatmap</h2>
 <ol style="list-style-type: decimal">
 <li>Faire une <strong>représentation heatmap</strong> des gènes de notre
 liste <code>genes_markers</code> (fonction <code>DoHeatmap</code>)</li>
-<li>Faire une représentation des <strong>top gènes</strong>
-caractérisant chaque cluster</li>
+<li>Faire une représentation des <strong>10 gènes les plus DE</strong>
+caractérisant chaque cluster (appliquer les fonctions
+<code>group_by</code>, <code>filter</code>, <code>slice_head</code> et
+<code>ungroup</code> du package <code>dplyr</code>)</li>
 </ol>
-<div id="solution-6" class="section level3" number="3.10.1">
-<h3><span class="header-section-number">3.10.1</span> Solution:</h3>
+<div id="solution-7" class="section level3" number="3.11.1">
+<h3><span class="header-section-number">3.11.1</span> Solution:</h3>
 </div>
 </div>
 </div>
