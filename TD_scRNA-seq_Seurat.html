@@ -366,23 +366,14 @@ landscape in human pancreatic cancer. <em>Nature Cancer</em> 1, pp
 <p><strong>L’objectif de l’analyse</strong> est <strong>d’identifier le
 paysage immunitaire dans les adénocarcinomes ductal pancréatiques
 (PDAC)</strong>.</p>
-<p>Nous allonns utiliser <strong>Seurat</strong> pour les étapes
+<p>Nous allons utiliser <strong>Seurat</strong> pour les étapes
 d’analyse suivantes:</p>
 <ul>
-<li><p>Chargement et contrôle qualité d’un échantillon</p></li>
-<li><p>Extraction des clusters et visualisation UMAP</p></li>
-<li><p>Interpretation des clusters - analyse interactive</p></li>
-<li><p>Comparaison Normal/PDAC</p></li>
-<li><p>Intégration de plusieurs échantillons</p></li>
-<li><p>Clusterisation hiérarchique</p></li>
-<li><p>Extraction des gènes différentiellement exprimés - visualistion
-de clusters</p></li>
-<li><p>Analyses avancées (si le temps le permet)</p>
-<ul>
-<li>Compensation du cycle cellulaire</li>
-<li>Analyse de sa propre liste de gènes</li>
-<li>Analyse en pseudotime</li>
-</ul></li>
+<li>Chargement et contrôle qualité d’un échantillon</li>
+<li>Extraction des clusters et visualisation UMAP</li>
+<li>Interpretation des clusters - analyse interactive</li>
+<li>Extraction des gènes différentiellement exprimés - visualistion de
+clusters</li>
 </ul>
 </div>
 <div id="données" class="section level1" number="2">
@@ -503,7 +494,9 @@ des données</h2>
 <p>Charger la librairie <code>Seurat</code>.</p>
 <p>Importance du <code>set.seed()</code> pour les étapes stochastiques
 (PCA, clustering)!</p>
-<pre class="r"><code>library(Seurat)
+<pre class="r"><code>#install.packages(&quot;Seurat&quot;)
+
+library(Seurat)
 set.seed(1234) # pour reproductibilité</code></pre>
 </div>
 <div id="récupération-des-données-de-comptage" class="section level2"
@@ -525,17 +518,21 @@ class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Charger les données
 de l’échantillon PDAC 1 avec Seurat.</h2>
 <ol style="list-style-type: decimal">
-<li><p>Créer un objet Seurat et garder - les cellules ayant au
-<strong>moins 200 gènes exprimés</strong> - les gènes exprimés au moins
-<strong>dans 3 cellules</strong></p></li>
-<li><p>Examiner la matrice de comptage: Examiner les gènes
+<li>Créer un objet Seurat et garder</li>
+</ol>
+<ul>
+<li>les cellules ayant au <strong>moins 200 gènes exprimés</strong></li>
+<li>les gènes exprimés au moins <strong>dans 3 cellules</strong></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Examiner la matrice de comptage: Examiner les gènes
 <code>NKG7</code>, <code>KRT18</code> et <code>PRSS1</code> ainsi que le
-marqueur <code>CD45</code> sur les 30 premières cellules.</p></li>
+marqueur <code>CD45</code> sur les 30 premières cellules.</li>
 </ol>
 <pre class="r"><code># Chemin des données d&#39;entrée
-input_dir_pdac &lt;- &quot;/shared/projects/tp_2529_ngs_amu_181496/data/GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot; 
+#input_dir_pdac &lt;- &quot;/shared/projects/tp_2529_ngs_amu_181496/data/GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot; 
 
-#input_dir_pdac &lt;- &quot;GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot;
+input_dir_pdac &lt;- &quot;GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot;
 
 # Charger les données avec Read10X
 pdac.data &lt;- Read10X(data.dir = input_dir_pdac)
@@ -545,14 +542,31 @@ pdac.seurat &lt;- CreateSeuratObject(counts = pdac.data, project = &quot;PDAC&qu
 
 # Voir la matrice de comptage
 pdac.data[c(&quot;PTPRC&quot;, &quot;NKG7&quot;, &quot;KRT18&quot;, &quot;PRSS1&quot;), 1:30]</code></pre>
+<pre><code>## 4 x 30 sparse Matrix of class &quot;dgCMatrix&quot;</code></pre>
+<pre><code>##                                                                              
+## PTPRC .  1   .   . 2 5 6   .   . . .    . 1 5 . .   .  . 15   .  . 12 10 .  .
+## NKG7  .  .   .   . 1 1 3   1   . . .    . . . . .   .  .  .   1  . 10  . .  .
+## KRT18 . 20 322   . . . 2 118 203 1 .    . . 2 . .   . 13  . 529 92  .  . 1 80
+## PRSS1 .  .   . 185 . . .   .   . . . 1133 . . . . 217  .  .   .  .  .  . .  .
+##                   
+## PTPRC  4 1 .   . 9
+## NKG7  41 . .   . 3
+## KRT18  . . .   . .
+## PRSS1  . . . 256 .</code></pre>
+<pre class="r"><code># Taille de l&#39;objet Seurat
+pdac.seurat</code></pre>
+<pre><code>## An object of class Seurat 
+## 19273 features across 1410 samples within 1 assay 
+## Active assay: RNA (19273 features, 0 variable features)
+##  1 layer present: counts</code></pre>
 </div>
 <div id="faire-un-contrôle-qualité" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Faire un contrôle
 qualité</h2>
-<p>Seurat permet de faire un controle qualité (QC) sur</p>
+<p>Seurat permet de faire un contrôle qualité (QC) sur</p>
 <ul>
-<li>Le <strong>nombre de gènes par cellules</strong>. Un nombre de gènes
-aberrant peut etre un marqueur de “doublets” ou de gouttes vides</li>
+<li>Le <strong>nombre de gènes par cellules</strong>: un nombre de gènes
+aberrant peut être un marqueur de “doublets” ou de gouttes vides.</li>
 <li>Le <strong>nombre de molécules uniques</strong> associée à une
 cellule</li>
 <li>Le poucentage de gènes associés avec la
@@ -566,8 +580,15 @@ cellule</li>
 <pre class="r"><code># L&#39;opérateur [[, ]] permet d&quot;&#39;ajouter des données d&#39;annotation au meta data
 pdac.seurat[[&quot;percent.mt&quot;]] &lt;- PercentageFeatureSet(pdac.seurat, pattern = &quot;^MT-&quot;)
 VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre class="r"><code>pdac.seurat &lt;- subset(pdac.seurat, subset = nFeature_RNA &gt; 200 &amp; nFeature_RNA &lt; 5000 &amp; percent.mt &lt; 15)
 VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>pdac.seurat</code></pre>
+<pre><code>## An object of class Seurat 
+## 19273 features across 928 samples within 1 assay 
+## Active assay: RNA (19273 features, 0 variable features)
+##  1 layer present: counts</code></pre>
 </div>
 <div id="normalisation" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span> Normalisation</h2>
@@ -576,6 +597,13 @@ VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quo
 et en prenant le log du résultat.</p>
 <div id="solution" class="section level3" number="3.3.1">
 <h3><span class="header-section-number">3.3.1</span> Solution</h3>
+<pre class="r"><code>pdac.seurat &lt;- NormalizeData(pdac.seurat, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000)
+
+pdac.seurat</code></pre>
+<pre><code>## An object of class Seurat 
+## 19273 features across 928 samples within 1 assay 
+## Active assay: RNA (19273 features, 0 variable features)
+##  2 layers present: counts, data</code></pre>
 </div>
 </div>
 <div id="préparation-acp-étape-1-identification-des-gènes-variables"
@@ -593,6 +621,19 @@ graphique.</li>
 </ol>
 <div id="solution-1" class="section level3" number="3.4.1">
 <h3><span class="header-section-number">3.4.1</span> Solution</h3>
+<pre class="r"><code>pdac.seurat &lt;- FindVariableFeatures(pdac.seurat, selection.method = &quot;vst&quot;, nfeatures = 2000)
+
+top10 &lt;- head(VariableFeatures(pdac.seurat), 10)
+
+plot &lt;- VariableFeaturePlot(pdac.seurat)
+plot &lt;- LabelPoints(plot = plot, points = top10, repel = TRUE)
+plot</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>pdac.seurat</code></pre>
+<pre><code>## An object of class Seurat 
+## 19273 features across 928 samples within 1 assay 
+## Active assay: RNA (19273 features, 2000 variable features)
+##  2 layers present: counts, data</code></pre>
 </div>
 </div>
 <div id="préparation-acp-étape-2-mise-à-léchelle-des-données"
@@ -604,7 +645,13 @@ class="section level2" number="3.5">
 <li>centrer et réduire l’expression de chaque gène dans la matrice de
 comptage avec <code>ScaleData</code>.</li>
 </ol>
-<pre class="r"><code>pdac.seurat &lt;- ScaleData(pdac.seurat) </code></pre>
+<pre class="r"><code>pdac.seurat &lt;- ScaleData(pdac.seurat) 
+
+pdac.seurat</code></pre>
+<pre><code>## An object of class Seurat 
+## 19273 features across 928 samples within 1 assay 
+## Active assay: RNA (19273 features, 2000 variable features)
+##  3 layers present: counts, data, scale.data</code></pre>
 </div>
 <div id="réduction-de-dimensions-avec-acp" class="section level2"
 number="3.6">
@@ -624,6 +671,35 @@ l’espace des composants principaux grâce à <code>DimHeatmap</code></li>
 </ol>
 <div id="solution-2" class="section level3" number="3.6.1">
 <h3><span class="header-section-number">3.6.1</span> Solution</h3>
+<pre class="r"><code>pdac.seurat &lt;- RunPCA(pdac.seurat, features = VariableFeatures(object = pdac.seurat))
+print(pdac.seurat[[&quot;pca&quot;]], dims = 1:5, nfeatures = 5)</code></pre>
+<pre><code>## PC_ 1 
+## Positive:  CTSB, CD68, TGFBI, GPNMB, MAFB 
+## Negative:  CD7, CD247, CTSW, PRF1, CCL5 
+## PC_ 2 
+## Positive:  SMIM22, C19orf33, GPRC5A, PMEPA1, PDZK1IP1 
+## Negative:  FTL, AIF1, NCF2, S100A8, LST1 
+## PC_ 3 
+## Positive:  CD7, CTSW, GZMA, CCND2, CCL5 
+## Negative:  FCGR3B, S100A9, SOD2, MNDA, SERPINA1 
+## PC_ 4 
+## Positive:  NUPR1, RNASE1, SPP1, CPA1, CLPS 
+## Negative:  FCN1, RP11-1143G9.4, CLEC12A, LGALS2, CCR2 
+## PC_ 5 
+## Positive:  S100A11, FCGR3B, IL8, CTSD, RARRES1 
+## Negative:  C11orf96, BGN, EDNRA, SNHG18, TBX2</code></pre>
+<pre class="r"><code>VizDimLoadings(pdac.seurat, dims = 1:2, reduction = &quot;pca&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>DimPlot(pdac.seurat, reduction = &quot;pca&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code>DimHeatmap(pdac.seurat, dims = 1:10, cells = 500, balanced = TRUE)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+<pre class="r"><code>pdac.seurat</code></pre>
+<pre><code>## An object of class Seurat 
+## 19273 features across 928 samples within 1 assay 
+## Active assay: RNA (19273 features, 2000 variable features)
+##  3 layers present: counts, data, scale.data
+##  1 dimensional reduction calculated: pca</code></pre>
 </div>
 <div id="estimation-de-la-dimensionalité" class="section level3"
 number="3.6.2">
@@ -636,6 +712,7 @@ l’ACP.</p>
 <li><strong>Estimer et discuter</strong> de la dimensionalité</li>
 </ol>
 <pre class="r"><code>ElbowPlot(pdac.seurat)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 </div>
 <div id="clusteriser-les-cellules" class="section level2" number="3.7">
@@ -653,6 +730,23 @@ de Louvain pour grouper les cellules (fonction
 </ol>
 <div id="solution-3" class="section level3" number="3.7.1">
 <h3><span class="header-section-number">3.7.1</span> Solution</h3>
+<pre class="r"><code>pdac.seurat &lt;- FindNeighbors(pdac.seurat, reduction = &quot;pca&quot;, dims = 1:15)
+pdac.seurat &lt;- FindClusters(pdac.seurat, resolution = 0.5)</code></pre>
+<pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+## 
+## Number of nodes: 928
+## Number of edges: 25631
+## 
+## Running Louvain algorithm...
+## Maximum modularity in 10 random starts: 0.9121
+## Number of communities: 10
+## Elapsed time: 0 seconds</code></pre>
+<pre class="r"><code>head(Idents(pdac.seurat), 5)</code></pre>
+<pre><code>## AAACGAAAGTGGAAAG-1 AAAGAACCATTAAAGG-1 AAAGGATTCGGCTTGG-1 AAAGGGCAGTAGCAAT-1 
+##                  0                  3                  1                  3 
+## AAAGGTACACATACGT-1 
+##                  0 
+## Levels: 0 1 2 3 4 5 6 7 8 9</code></pre>
 </div>
 </div>
 <div id="exploration-des-clusters-par-umap" class="section level2"
@@ -678,6 +772,19 @@ pouvoir le réutiliser plus tard.</li>
 </ol>
 <div id="solution-4" class="section level3" number="3.8.1">
 <h3><span class="header-section-number">3.8.1</span> Solution</h3>
+<pre class="r"><code>pdac.seurat &lt;- RunUMAP(pdac.seurat, dims = 1:15)
+DimPlot(pdac.seurat, reduction = &quot;umap&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>saveRDS(pdac.seurat, file = &quot;pdac_1.rds&quot;)
+
+# Alternative: SaveSeuratRds()
+
+pdac.seurat</code></pre>
+<pre><code>## An object of class Seurat 
+## 19273 features across 928 samples within 1 assay 
+## Active assay: RNA (19273 features, 2000 variable features)
+##  3 layers present: counts, data, scale.data
+##  2 dimensional reductions calculated: pca, umap</code></pre>
 </div>
 </div>
 <div id="visualisation-des-marqueurs" class="section level2"
@@ -737,10 +844,11 @@ marqeurs suivants:</li>
 <li>Faites un <code>Dotplot</code> avec l’ensemble de ces marqueurs</li>
 </ol>
 <pre class="r"><code># Plots pour CD45
-VlnPlot(pdac.seurat, features = &quot;PTPRC&quot;)
-FeaturePlot(pdac.seurat, features = &quot;PTPRC&quot;)
-
-# On peut aussi mettre en place une analyse interactive
+VlnPlot(pdac.seurat, features = &quot;PTPRC&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>FeaturePlot(pdac.seurat, features = &quot;PTPRC&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<pre class="r"><code># On peut aussi mettre en place une analyse interactive
 #FeaturePlot(pdac.seurat, features = &quot;PTPRC&quot;, interactive = TRUE)
 
 # Plots pour notre liste de marqeurs
@@ -753,11 +861,13 @@ genes_markers &lt;- c(
   &quot;GZMB&quot;
 )
 
-VlnPlot(pdac.seurat, features = genes_markers)
-FeaturePlot(pdac.seurat, features = genes_markers)
-
-dtplot &lt;- DotPlot(pdac.seurat, features = genes_markers) + RotatedAxis()
+VlnPlot(pdac.seurat, features = genes_markers)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-12-3.png" width="672" /></p>
+<pre class="r"><code>FeaturePlot(pdac.seurat, features = genes_markers)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-12-4.png" width="672" /></p>
+<pre class="r"><code>dtplot &lt;- DotPlot(pdac.seurat, features = genes_markers) + RotatedAxis()
 plot(dtplot)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-12-5.png" width="672" /></p>
 </div>
 <div id="identifier-les-marqueurs-différentiellement-exprimés"
 class="section level2" number="3.10">
@@ -778,19 +888,41 @@ marqueurs sur <span class="math inline">\(avglog2FC &gt; 2.0\)</span> en
 utilisant la librairie <code>dplyr</code>.</li>
 </ol>
 <pre class="r"><code># On vérifie que l&#39;on est bien sur le bon Ident
-table(Idents(pdac.seurat))
-
-# 1. Table avec la liste des marqueurs DE
+table(Idents(pdac.seurat))</code></pre>
+<pre><code>## 
+##   0   1   2   3   4   5   6   7   8   9 
+## 194 188 112  93  81  81  62  55  32  30</code></pre>
+<pre class="r"><code># 1. Table avec la liste des marqueurs DE
 cluster2.markers &lt;- FindMarkers(pdac.seurat, ident.1 = 2)
 
 # 2. afficher les 10 premiers marqueurs
-head(cluster2.markers, n = 10)
-
-# 3. pareil pour les cluster 2 et cluster s3 
+head(cluster2.markers, n = 10)</code></pre>
+<pre><code>##                   p_val avg_log2FC pct.1 pct.2     p_val_adj
+## MAL       2.901016e-120   9.118145 0.643 0.004 5.591127e-116
+## IL7R      1.007071e-117   4.380175 0.920 0.065 1.940928e-113
+## LEF1      1.865256e-114   6.892020 0.643 0.007 3.594907e-110
+## CCR7      9.776392e-107   5.850119 0.705 0.026 1.884204e-102
+## CD3G      2.724034e-103   3.019207 0.946 0.078  5.250032e-99
+## CD3D       1.167385e-90   2.727310 0.938 0.100  2.249901e-86
+## TCF7       6.045381e-84   4.357094 0.812 0.102  1.165126e-79
+## CD27       8.387488e-79   3.082440 0.732 0.062  1.616520e-74
+## PRKCQ-AS1  1.006525e-72   4.120219 0.723 0.085  1.939876e-68
+## BCL11B     1.472182e-71   3.818475 0.652 0.056  2.837337e-67</code></pre>
+<pre class="r"><code># 3. pareil pour les cluster 2 et cluster s3 
 cluster2.3.markers &lt;- FindMarkers(pdac.seurat, ident.1 = 2, ident.2 = 3)
-head (cluster2.3.markers, n = 10)
-
-# 4. marqueurs pour l&#39;ensemble des clusters
+head (cluster2.3.markers, n = 10)</code></pre>
+<pre><code>##                 p_val avg_log2FC pct.1 pct.2    p_val_adj
+## GPNMB    5.341285e-40  -8.552400 0.027 0.989 1.029426e-35
+## CD68     8.306483e-40  -9.339173 0.009 0.978 1.600909e-35
+## LYZ      1.674663e-39  -9.233372 0.018 0.978 3.227578e-35
+## PLAUR    1.723876e-39  -6.612930 0.071 1.000 3.322426e-35
+## C15orf48 6.927291e-39  -7.881700 0.018 0.968 1.335097e-34
+## FCER1G   2.039545e-38  -6.028574 0.036 0.978 3.930816e-34
+## GNS      2.607417e-38  -6.402631 0.036 0.968 5.025276e-34
+## CTSL     3.686963e-38  -7.463309 0.152 1.000 7.105883e-34
+## TYROBP   5.626096e-38  -6.928897 0.054 0.968 1.084317e-33
+## TIMP2    5.816277e-38  -6.453160 0.054 0.968 1.120971e-33</code></pre>
+<pre class="r"><code># 4. marqueurs pour l&#39;ensemble des clusters
 pdac.all.markers &lt;- FindAllMarkers(pdac.seurat, only.pos = TRUE)
 
 # Filtrage du resultat (logFC&gt;1) et tri par cluster
@@ -811,12 +943,87 @@ caractérisant chaque cluster (appliquer les fonctions
 </ol>
 <div id="solution-5" class="section level3" number="3.11.1">
 <h3><span class="header-section-number">3.11.1</span> Solution</h3>
+<pre class="r"><code># heatmap liste marqueurs
+DoHeatmap(pdac.seurat, features = genes_markers) + NoLegend()</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre class="r"><code># heatmap du top10 genes DE pout tous les clusters
+library(dplyr)
+pdac.all.markers %&gt;%
+    dplyr::group_by(cluster) %&gt;%
+    dplyr::filter(avg_log2FC &gt; 1) %&gt;%
+    dplyr::slice_head(n = 10) %&gt;%
+    dplyr::ungroup() -&gt; top10
+
+DoHeatmap(pdac.seurat, features = top10$gene) + NoLegend()</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
 </div>
 </div>
 </div>
 <div id="session-info" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Session Info</h1>
 <pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.5.1 (2025-06-13)
+## Platform: aarch64-apple-darwin20
+## Running under: macOS Sequoia 15.7.1
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: Europe/Paris
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices datasets  utils     methods   base     
+## 
+## other attached packages:
+## [1] dplyr_1.1.4        future_1.67.0      Seurat_5.3.1       SeuratObject_5.2.0
+## [5] sp_2.2-0          
+## 
+## loaded via a namespace (and not attached):
+##   [1] deldir_2.0-4           pbapply_1.7-4          gridExtra_2.3         
+##   [4] rlang_1.1.6            magrittr_2.0.4         RcppAnnoy_0.0.22      
+##   [7] otel_0.2.0             spatstat.geom_3.6-0    matrixStats_1.5.0     
+##  [10] ggridges_0.5.7         compiler_4.5.1         png_0.1-8             
+##  [13] vctrs_0.6.5            reshape2_1.4.4         stringr_1.5.2         
+##  [16] pkgconfig_2.0.3        fastmap_1.2.0          labeling_0.4.3        
+##  [19] promises_1.5.0         rmarkdown_2.30         purrr_1.1.0           
+##  [22] xfun_0.54              cachem_1.1.0           jsonlite_2.0.0        
+##  [25] goftest_1.2-3          later_1.4.4            spatstat.utils_3.2-0  
+##  [28] irlba_2.3.5.1          parallel_4.5.1         cluster_2.1.8.1       
+##  [31] R6_2.6.1               ica_1.0-3              spatstat.data_3.1-9   
+##  [34] bslib_0.9.0            stringi_1.8.7          RColorBrewer_1.1-3    
+##  [37] limma_3.64.3           reticulate_1.44.0      spatstat.univar_3.1-4 
+##  [40] parallelly_1.45.1      lmtest_0.9-40          jquerylib_0.1.4       
+##  [43] scattermore_1.2        Rcpp_1.1.0             knitr_1.50            
+##  [46] tensor_1.5.1           future.apply_1.20.0    zoo_1.8-14            
+##  [49] R.utils_2.13.0         sctransform_0.4.2      httpuv_1.6.16         
+##  [52] Matrix_1.7-4           splines_4.5.1          igraph_2.2.1          
+##  [55] tidyselect_1.2.1       abind_1.4-8            rstudioapi_0.17.1     
+##  [58] yaml_2.3.10            spatstat.random_3.4-2  codetools_0.2-20      
+##  [61] miniUI_0.1.2           spatstat.explore_3.5-3 listenv_0.10.0        
+##  [64] lattice_0.22-7         tibble_3.3.0           plyr_1.8.9            
+##  [67] withr_3.0.2            shiny_1.11.1           S7_0.2.0              
+##  [70] ROCR_1.0-11            evaluate_1.0.5         Rtsne_0.17            
+##  [73] fastDummies_1.7.5      survival_3.8-3         polyclip_1.10-7       
+##  [76] fitdistrplus_1.2-4     pillar_1.11.1          BiocManager_1.30.26   
+##  [79] KernSmooth_2.23-26     renv_1.1.5             plotly_4.11.0         
+##  [82] generics_0.1.4         RcppHNSW_0.6.0         ggplot2_4.0.0         
+##  [85] scales_1.4.0           globals_0.18.0         xtable_1.8-4          
+##  [88] glue_1.8.0             lazyeval_0.2.2         tools_4.5.1           
+##  [91] data.table_1.17.8      RSpectra_0.16-2        RANN_2.6.2            
+##  [94] dotCall64_1.2          cowplot_1.2.0          grid_4.5.1            
+##  [97] tidyr_1.3.1            nlme_3.1-168           patchwork_1.3.2       
+## [100] cli_3.6.5              spatstat.sparse_3.1-0  spam_2.11-1           
+## [103] viridisLite_0.4.2      uwot_0.2.3             gtable_0.3.6          
+## [106] R.methodsS3_1.8.2      sass_0.4.10            digest_0.6.37         
+## [109] progressr_0.17.0       ggrepel_0.9.6          htmlwidgets_1.6.4     
+## [112] farver_2.1.2           R.oo_1.27.1            htmltools_0.5.8.1     
+## [115] lifecycle_1.0.4        httr_1.4.7             statmod_1.5.1         
+## [118] mime_0.13              MASS_7.3-65</code></pre>
 <hr />
 <div style="text-align: center">
 <p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img src="https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png" alt="Licence Creative Commons" style="border-width:0"/></a><br></p>
