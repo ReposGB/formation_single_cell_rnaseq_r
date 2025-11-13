@@ -18,7 +18,7 @@ cp -rp $HOME/CRCMBox/Cours/Formation_NGS_AMU_2025/Module2_Formation_R_SingleCell
 
 cp -p $HOME/CRCMBox/Cours/Formation_NGS_AMU_2025/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat.html .
 
-cp -p $HOME/CRCMBox/Cours/Formation_NGS_AMU_2025/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat_Advanced.html
+cp -p $HOME/CRCMBox/Cours/Formation_NGS_AMU_2025/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat_Advanced.html .
 
 
 
