@@ -496,8 +496,21 @@ des données</h2>
 (PCA, clustering)!</p>
 <pre class="r"><code>#install.packages(&quot;Seurat&quot;)
 
-library(Seurat)
-set.seed(1234) # pour reproductibilité</code></pre>
+library(Seurat)</code></pre>
+<pre><code>## Loading required package: SeuratObject</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre><code>## &#39;SeuratObject&#39; was built under R 4.5.0 but the current version is
+## 4.5.1; it is recomended that you reinstall &#39;SeuratObject&#39; as the ABI
+## for R may have changed</code></pre>
+<pre><code>## &#39;SeuratObject&#39; was built with package &#39;Matrix&#39; 1.7.3 but the current
+## version is 1.7.4; it is recomended that you reinstall &#39;SeuratObject&#39; as
+## the ABI for &#39;Matrix&#39; may have changed</code></pre>
+<pre><code>## 
+## Attaching package: &#39;SeuratObject&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, t</code></pre>
+<pre class="r"><code>set.seed(1234) # pour reproductibilité</code></pre>
 </div>
 <div id="récupération-des-données-de-comptage" class="section level2"
 number="2.3">
@@ -530,7 +543,8 @@ de l’échantillon PDAC 1 avec Seurat.</h2>
 marqueur <code>CD45</code> sur les 30 premières cellules.</li>
 </ol>
 <pre class="r"><code># Chemin des données d&#39;entrée
-#input_dir_pdac &lt;- &quot;/shared/projects/tp_2529_ngs_amu_181496/data/GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot; 
+
+# input_dir_pdac &lt;- &quot;/shared/projects/tp_2529_ngs_amu_181496/data/GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot; 
 
 input_dir_pdac &lt;- &quot;GSE155698_RAW/PDAC_TISSUE_1/filtered_feature_bc_matrix/&quot;
 
@@ -543,6 +557,7 @@ pdac.seurat &lt;- CreateSeuratObject(counts = pdac.data, project = &quot;PDAC&qu
 # Voir la matrice de comptage
 pdac.data[c(&quot;PTPRC&quot;, &quot;NKG7&quot;, &quot;KRT18&quot;, &quot;PRSS1&quot;), 1:30]</code></pre>
 <pre><code>## 4 x 30 sparse Matrix of class &quot;dgCMatrix&quot;</code></pre>
+<pre><code>##   [[ suppressing 30 column names &#39;AAACGAAAGTGGAAAG-1&#39;, &#39;AAACGAAGTAGGGTAC-1&#39;, &#39;AAACGAAGTCATAGTC-1&#39; ... ]]</code></pre>
 <pre><code>##                                                                              
 ## PTPRC .  1   .   . 2 5 6   .   . . .    . 1 5 . .   .  . 15   .  . 12 10 .  .
 ## NKG7  .  .   .   . 1 1 3   1   . . .    . . . . .   .  .  .   1  . 10  . .  .
@@ -597,9 +612,9 @@ VlnPlot(pdac.seurat, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quo
 et en prenant le log du résultat.</p>
 <div id="solution" class="section level3" number="3.3.1">
 <h3><span class="header-section-number">3.3.1</span> Solution</h3>
-<pre class="r"><code>pdac.seurat &lt;- NormalizeData(pdac.seurat, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000)
-
-pdac.seurat</code></pre>
+<pre class="r"><code>pdac.seurat &lt;- NormalizeData(pdac.seurat, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000)</code></pre>
+<pre><code>## Normalizing layer: counts</code></pre>
+<pre class="r"><code>pdac.seurat</code></pre>
 <pre><code>## An object of class Seurat 
 ## 19273 features across 928 samples within 1 assay 
 ## Active assay: RNA (19273 features, 0 variable features)
@@ -621,13 +636,14 @@ graphique.</li>
 </ol>
 <div id="solution-1" class="section level3" number="3.4.1">
 <h3><span class="header-section-number">3.4.1</span> Solution</h3>
-<pre class="r"><code>pdac.seurat &lt;- FindVariableFeatures(pdac.seurat, selection.method = &quot;vst&quot;, nfeatures = 2000)
-
-top10 &lt;- head(VariableFeatures(pdac.seurat), 10)
+<pre class="r"><code>pdac.seurat &lt;- FindVariableFeatures(pdac.seurat, selection.method = &quot;vst&quot;, nfeatures = 2000)</code></pre>
+<pre><code>## Finding variable features for layer counts</code></pre>
+<pre class="r"><code>top10 &lt;- head(VariableFeatures(pdac.seurat), 10)
 
 plot &lt;- VariableFeaturePlot(pdac.seurat)
-plot &lt;- LabelPoints(plot = plot, points = top10, repel = TRUE)
-plot</code></pre>
+plot &lt;- LabelPoints(plot = plot, points = top10, repel = TRUE)</code></pre>
+<pre><code>## When using repel, set xnudge and ynudge to 0 for optimal results</code></pre>
+<pre class="r"><code>plot</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>pdac.seurat</code></pre>
 <pre><code>## An object of class Seurat 
@@ -645,9 +661,9 @@ class="section level2" number="3.5">
 <li>centrer et réduire l’expression de chaque gène dans la matrice de
 comptage avec <code>ScaleData</code>.</li>
 </ol>
-<pre class="r"><code>pdac.seurat &lt;- ScaleData(pdac.seurat) 
-
-pdac.seurat</code></pre>
+<pre class="r"><code>pdac.seurat &lt;- ScaleData(pdac.seurat) </code></pre>
+<pre><code>## Centering and scaling data matrix</code></pre>
+<pre class="r"><code>pdac.seurat</code></pre>
 <pre><code>## An object of class Seurat 
 ## 19273 features across 928 samples within 1 assay 
 ## Active assay: RNA (19273 features, 2000 variable features)
@@ -671,8 +687,43 @@ l’espace des composants principaux grâce à <code>DimHeatmap</code></li>
 </ol>
 <div id="solution-2" class="section level3" number="3.6.1">
 <h3><span class="header-section-number">3.6.1</span> Solution</h3>
-<pre class="r"><code>pdac.seurat &lt;- RunPCA(pdac.seurat, features = VariableFeatures(object = pdac.seurat))
-print(pdac.seurat[[&quot;pca&quot;]], dims = 1:5, nfeatures = 5)</code></pre>
+<pre class="r"><code>pdac.seurat &lt;- RunPCA(pdac.seurat, features = VariableFeatures(object = pdac.seurat))</code></pre>
+<pre><code>## PC_ 1 
+## Positive:  CTSB, CD68, TGFBI, GPNMB, MAFB, CTSL, CD163, GRN, LRP1, PSAP 
+##     APOC1, FPR3, APOE, MSR1, NPC2, MS4A4A, HNMT, SCARB2, CD86, LHFPL2 
+##     RNASE1, GPX1, LGMN, CREG1, CTSZ, MMP14, CTSH, CST3, SIGLEC1, DAB2 
+## Negative:  CD7, CD247, CTSW, PRF1, CCL5, GZMA, SAMD3, IL2RB, HOPX, IL32 
+##     AC092580.4, CCND2, TMIGD2, GZMB, LTB, KLRC1, TNFRSF18, NKG7, CST7, KLRC2 
+##     GNLY, FASLG, KLRD1, KLRB1, TIGIT, GZMM, CD3D, NDFIP2, GPR171, CD3G 
+## PC_ 2 
+## Positive:  SMIM22, C19orf33, GPRC5A, PMEPA1, PDZK1IP1, LAMC2, IGFBP3, CXADR, ERBB3, SERINC2 
+##     LINC01133, KRT8, CAMK2N1, BACE2, KRT19, S100A14, ITGB4, S100A16, PTRF, TEAD1 
+##     DEFB1, IFI27, MALL, MAL2, KRT7, SOX9, ADIRF, CFI, TRIM29, PITX1 
+## Negative:  FTL, AIF1, NCF2, S100A8, LST1, SPI1, LYZ, MNDA, BCL2A1, CTSS 
+##     FCGR2A, SLC11A1, SLC2A3, CD14, KCTD12, C5AR1, FGL2, AQP9, MARCH1, IL1B 
+##     S100A9, PLXDC2, PLEK, CLEC7A, OGFRL1, CYBB, TNFSF13B, MS4A7, MS4A6A, CCR1 
+## PC_ 3 
+## Positive:  CD7, CTSW, GZMA, CCND2, CCL5, IL2RB, HOPX, CD247, PRF1, AC092580.4 
+##     GZMB, TNFRSF18, TMIGD2, NKG7, KLRC2, KLRC1, NDFIP2, LGALS1, ID3, SPRY1 
+##     FASLG, ITGA1, SAMD3, PPDPF, RGS1, ACP5, GNLY, LDLRAD4, SUB1, PHYKPL 
+## Negative:  FCGR3B, S100A9, SOD2, MNDA, SERPINA1, S100A8, IL8, LST1, FTH1, CXCR2 
+##     LRRK2, FPR1, G0S2, CMTM2, NCF2, BCL2A1, TNFAIP2, GCA, PTGS2, AMICA1 
+##     S100P, IER3, CD55, SPI1, SELL, FFAR2, EGR1, GLUL, LINC00936, STEAP4 
+## PC_ 4 
+## Positive:  NUPR1, RNASE1, SPP1, CPA1, CLPS, PNLIP, CELA3A, CTRC, PLA2G1B, CPB1 
+##     REG1A, CELA2A, SPINK1, CELA3B, CTRB1, AMY2A, CPA2, CELA2B, SYCN, PRSS1 
+##     GP2, CEL, PRSS3, CTRB2, KLK1, AMY2B, PNLIPRP1, GPNMB, APOE, APOC1 
+## Negative:  FCN1, RP11-1143G9.4, CLEC12A, LGALS2, CCR2, F13A1, CD1D, MPEG1, MS4A6A, POU2F2 
+##     CFP, S100A12, ASGR1, CD300E, NRGN, S100A4, PLBD1, CPVL, CD302, CSTA 
+##     CYBB, AP1S2, C19orf38, LYZ, SLC46A2, ASGR2, ARL5B, GPBAR1, CD36, FGL2 
+## PC_ 5 
+## Positive:  S100A11, FCGR3B, IL8, CTSD, RARRES1, KRT19, S100P, FTH1, C15orf48, SPP1 
+##     G0S2, S100A14, SMIM22, CCR1, ISG15, SOD2, ERO1L, PLA2G16, C19orf33, TYMP 
+##     ZFP36L1, WFDC2, KRT7, MX1, APOL1, IFI6, EGLN3, AQP9, CXCL16, BCL2A1 
+## Negative:  C11orf96, BGN, EDNRA, SNHG18, TBX2, DCN, PCDH18, CDH11, COL4A2, IGFBP7 
+##     SPARC, COX7A1, COL1A1, COL3A1, LUM, PCOLCE, TAGLN, EMILIN1, PRELP, PKIG 
+##     COL1A2, SYNPO2, AEBP1, SEPT4, GNG11, SOD3, PDGFRB, CALD1, GUCY1A3, PTK7</code></pre>
+<pre class="r"><code>print(pdac.seurat[[&quot;pca&quot;]], dims = 1:5, nfeatures = 5)</code></pre>
 <pre><code>## PC_ 1 
 ## Positive:  CTSB, CD68, TGFBI, GPNMB, MAFB 
 ## Negative:  CD7, CD247, CTSW, PRF1, CCL5 
@@ -730,8 +781,10 @@ de Louvain pour grouper les cellules (fonction
 </ol>
 <div id="solution-3" class="section level3" number="3.7.1">
 <h3><span class="header-section-number">3.7.1</span> Solution</h3>
-<pre class="r"><code>pdac.seurat &lt;- FindNeighbors(pdac.seurat, reduction = &quot;pca&quot;, dims = 1:15)
-pdac.seurat &lt;- FindClusters(pdac.seurat, resolution = 0.5)</code></pre>
+<pre class="r"><code>pdac.seurat &lt;- FindNeighbors(pdac.seurat, reduction = &quot;pca&quot;, dims = 1:15)</code></pre>
+<pre><code>## Computing nearest neighbor graph</code></pre>
+<pre><code>## Computing SNN</code></pre>
+<pre class="r"><code>pdac.seurat &lt;- FindClusters(pdac.seurat, resolution = 0.5)</code></pre>
 <pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 ## 
 ## Number of nodes: 928
@@ -772,8 +825,23 @@ pouvoir le réutiliser plus tard.</li>
 </ol>
 <div id="solution-4" class="section level3" number="3.8.1">
 <h3><span class="header-section-number">3.8.1</span> Solution</h3>
-<pre class="r"><code>pdac.seurat &lt;- RunUMAP(pdac.seurat, dims = 1:15)
-DimPlot(pdac.seurat, reduction = &quot;umap&quot;)</code></pre>
+<pre class="r"><code>pdac.seurat &lt;- RunUMAP(pdac.seurat, dims = 1:15)</code></pre>
+<pre><code>## 20:27:33 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 20:27:33 Read 928 rows and found 15 numeric columns</code></pre>
+<pre><code>## 20:27:33 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 20:27:33 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
+<pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
+<pre><code>## **************************************************|
+## 20:27:33 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpYvXvhN/filea93748acb073
+## 20:27:33 Searching Annoy index using 1 thread, search_k = 3000
+## 20:27:33 Annoy recall = 100%
+## 20:27:33 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 20:27:34 Initializing from normalized Laplacian + noise (using RSpectra)
+## 20:27:34 Commencing optimization for 500 epochs, with 34120 positive edges
+## 20:27:34 Using rng type: pcg
+## 20:27:35 Optimization finished</code></pre>
+<pre class="r"><code>DimPlot(pdac.seurat, reduction = &quot;umap&quot;)</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>saveRDS(pdac.seurat, file = &quot;pdac_1.rds&quot;)
 
@@ -893,9 +961,17 @@ table(Idents(pdac.seurat))</code></pre>
 ##   0   1   2   3   4   5   6   7   8   9 
 ## 194 188 112  93  81  81  62  55  32  30</code></pre>
 <pre class="r"><code># 1. Table avec la liste des marqueurs DE
-cluster2.markers &lt;- FindMarkers(pdac.seurat, ident.1 = 2)
-
-# 2. afficher les 10 premiers marqueurs
+cluster2.markers &lt;- FindMarkers(pdac.seurat, ident.1 = 2)</code></pre>
+<pre><code>## For a (much!) faster implementation of the Wilcoxon Rank Sum Test,
+## (default method for FindMarkers) please install the presto package
+## --------------------------------------------
+## install.packages(&#39;devtools&#39;)
+## devtools::install_github(&#39;immunogenomics/presto&#39;)
+## --------------------------------------------
+## After installation of presto, Seurat will automatically use the more 
+## efficient implementation (no further action necessary).
+## This message will be shown once per session</code></pre>
+<pre class="r"><code># 2. afficher les 10 premiers marqueurs
 head(cluster2.markers, n = 10)</code></pre>
 <pre><code>##                   p_val avg_log2FC pct.1 pct.2     p_val_adj
 ## MAL       2.901016e-120   9.118145 0.643 0.004 5.591127e-116
@@ -923,11 +999,28 @@ head (cluster2.3.markers, n = 10)</code></pre>
 ## TYROBP   5.626096e-38  -6.928897 0.054 0.968 1.084317e-33
 ## TIMP2    5.816277e-38  -6.453160 0.054 0.968 1.120971e-33</code></pre>
 <pre class="r"><code># 4. marqueurs pour l&#39;ensemble des clusters
-pdac.all.markers &lt;- FindAllMarkers(pdac.seurat, only.pos = TRUE)
-
-# Filtrage du resultat (logFC&gt;1) et tri par cluster
-library(dplyr)
-pdac.all.markers %&gt;% dplyr::group_by(cluster) %&gt;% dplyr::filter(avg_log2FC &gt; 2.0) -&gt; filtered_markers</code></pre>
+pdac.all.markers &lt;- FindAllMarkers(pdac.seurat, only.pos = TRUE)</code></pre>
+<pre><code>## Calculating cluster 0</code></pre>
+<pre><code>## Calculating cluster 1</code></pre>
+<pre><code>## Calculating cluster 2</code></pre>
+<pre><code>## Calculating cluster 3</code></pre>
+<pre><code>## Calculating cluster 4</code></pre>
+<pre><code>## Calculating cluster 5</code></pre>
+<pre><code>## Calculating cluster 6</code></pre>
+<pre><code>## Calculating cluster 7</code></pre>
+<pre><code>## Calculating cluster 8</code></pre>
+<pre><code>## Calculating cluster 9</code></pre>
+<pre class="r"><code># Filtrage du resultat (logFC&gt;1) et tri par cluster
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>pdac.all.markers %&gt;% dplyr::group_by(cluster) %&gt;% dplyr::filter(avg_log2FC &gt; 2.0) -&gt; filtered_markers</code></pre>
 </div>
 <div id="représentation-de-lexpression-sous-forme-de-heatmap"
 class="section level2" number="3.11">
@@ -957,6 +1050,27 @@ pdac.all.markers %&gt;%
 DoHeatmap(pdac.seurat, features = top10$gene) + NoLegend()</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
 </div>
+</div>
+<div id="exemple-dutilisation-de-addmodulescore" class="section level2"
+number="3.12">
+<h2><span class="header-section-number">3.12</span> Exemple
+d’utilisation de <code>AddmoduleScore</code></h2>
+<p>Calcul du score de la signature ‘TOP10’</p>
+<pre class="r"><code>activation_genes &lt;- top10
+
+pdac.seurat &lt;- AddModuleScore(
+  pdac.seurat,
+  features = list(activation_genes),
+  name = &quot;TActivation&quot;
+)</code></pre>
+<p>Plot du score</p>
+<pre class="r"><code>FeaturePlot(
+  pdac.seurat,
+  features = &quot;TActivation1&quot;,
+  cols = c(&quot;lightgrey&quot;, &quot;red&quot;),
+  reduction = &quot;umap&quot;
+)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 </div>
 <div id="session-info" class="section level1" number="4">
