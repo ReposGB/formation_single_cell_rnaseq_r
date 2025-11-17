@@ -531,6 +531,22 @@ standard Seurat et Harmony</h2>
 séparant les échantillons (`orig.ident’)</li>
 <li>Faire un <code>ElbowPlot</code> sur la réduction Harmony</li>
 </ul>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- RunHarmony(seurat.norm.pdac.multi, group.by.vars =  &quot;orig.ident&quot;, plot_convergence = TRUE)</code></pre>
+<pre><code>## Transposing data matrix</code></pre>
+<pre><code>## Initializing state using k-means centroids initialization</code></pre>
+<pre><code>## Harmony 1/10</code></pre>
+<pre><code>## Harmony 2/10</code></pre>
+<pre><code>## Harmony 3/10</code></pre>
+<pre><code>## Harmony 4/10</code></pre>
+<pre><code>## Harmony 5/10</code></pre>
+<pre><code>## Harmony converged after 5 iterations</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony-1.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony-2.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;, split.by = &quot;orig.ident&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony-3.png" width="672" /></p>
+<pre class="r"><code>ElbowPlot(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony-4.png" width="672" /></p>
 <ol start="3" style="list-style-type: decimal">
 <li>Visualiser l’UMAP finale avec l’ensemble des clusters.</li>
 </ol>
@@ -558,21 +574,21 @@ condition</li>
 ## Number of communities: 15
 ## Elapsed time: 1 seconds</code></pre>
 <pre class="r"><code>seurat.norm.pdac.multi &lt;- RunUMAP(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;, dims = 1:30)</code></pre>
-<pre><code>## 14:08:28 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
-<pre><code>## 14:08:28 Read 14180 rows and found 30 numeric columns</code></pre>
-<pre><code>## 14:08:28 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
-<pre><code>## 14:08:28 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 15:34:05 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 15:34:05 Read 14180 rows and found 30 numeric columns</code></pre>
+<pre><code>## 15:34:05 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 15:34:05 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 <pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
 <pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
 <pre><code>## **************************************************|
-## 14:08:29 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpejztsC/file4bf86c5c5d5d
-## 14:08:29 Searching Annoy index using 1 thread, search_k = 3000
-## 14:08:32 Annoy recall = 100%
-## 14:08:32 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
-## 14:08:32 Initializing from normalized Laplacian + noise (using RSpectra)
-## 14:08:33 Commencing optimization for 200 epochs, with 619108 positive edges
-## 14:08:33 Using rng type: pcg
-## 14:08:39 Optimization finished</code></pre>
+## 15:34:06 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpCF5ij8/file74927310c99c
+## 15:34:06 Searching Annoy index using 1 thread, search_k = 3000
+## 15:34:09 Annoy recall = 100%
+## 15:34:09 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 15:34:09 Initializing from normalized Laplacian + noise (using RSpectra)
+## 15:34:10 Commencing optimization for 200 epochs, with 619108 positive edges
+## 15:34:10 Using rng type: pcg
+## 15:34:16 Optimization finished</code></pre>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;)</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony_umap_clustering-1.png" width="672" /></p>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)</code></pre>
@@ -599,6 +615,28 @@ procéder pour l’accélérer ?</li>
 </ol>
 <div id="solution" class="section level3" number="1.5.1">
 <h3><span class="header-section-number">1.5.1</span> Solution:</h3>
+<pre class="r"><code>Idents(seurat.norm.pdac.multi) &lt;- &quot;condition&quot;
+
+seurat.norm.pdac.multi &lt;- JoinLayers(seurat.norm.pdac.multi)
+
+
+markers_pdac_vs_norm &lt;- FindMarkers(
+  seurat.norm.pdac.multi,
+  ident.1 = &quot;PDAC&quot;,
+  ident.2 = &quot;Norm&quot;,
+  features = VariableFeatures(seurat.norm.pdac.multi),  # Pour accélérer le traitement on limite l&#39;analyse sur les &quot;variablesfeatures&quot;
+  logfc.threshold = 0.25,   # seuil log2FC
+  min.pct = 0.1             # gènes exprimés dans au moins 10% des cellules
+)</code></pre>
+<pre><code>## For a (much!) faster implementation of the Wilcoxon Rank Sum Test,
+## (default method for FindMarkers) please install the presto package
+## --------------------------------------------
+## install.packages(&#39;devtools&#39;)
+## devtools::install_github(&#39;immunogenomics/presto&#39;)
+## --------------------------------------------
+## After installation of presto, Seurat will automatically use the more 
+## efficient implementation (no further action necessary).
+## This message will be shown once per session</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Faire une représentation <code>EnhancedVolcano</code> des gènes
 différentiellement exprimés</li>
@@ -609,6 +647,19 @@ en utilisant les p-valeurs ajustées (utiliser
 </div>
 <div id="solution-1" class="section level3" number="1.5.2">
 <h3><span class="header-section-number">1.5.2</span> Solution</h3>
+<pre class="r"><code># Volcano plot
+library(EnhancedVolcano)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Loading required package: ggrepel</code></pre>
+<pre class="r"><code>EnhancedVolcano(markers_pdac_vs_norm,
+                lab = rownames(markers_pdac_vs_norm),
+                x = &#39;avg_log2FC&#39;,
+                y = &#39;p_val_adj&#39;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_genes_representation-1.png" width="672" /></p>
+<pre class="r"><code># Heatmap des top gènes par p_val_adj
+top20 &lt;- markers_pdac_vs_norm %&gt;% dplyr::arrange(p_val_adj) %&gt;% head(20)
+DoHeatmap(seurat.norm.pdac.multi, features = rownames(top20))</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_genes_representation-2.png" width="672" /></p>
 </div>
 </div>
 <div id="detection-automatisée-des-types-cellulaires---méthode-singler"
@@ -756,6 +807,42 @@ cellules. Par défaut, <code>SingleR</code> est lent, comment accélérer
 </ol>
 <div id="solution-2" class="section level3" number="1.6.1">
 <h3><span class="header-section-number">1.6.1</span> Solution</h3>
+<pre class="r"><code>pred &lt;- SingleR(
+  test = sce,
+  ref = ref,                # La base de référence
+  labels = ref$label.main,  # Niveau d’annotation principal
+  num.threads = 8           # 8 coeurs en parallèle pour accélerer
+)
+
+head(pred$labels)</code></pre>
+<pre><code>## [1] &quot;Tissue_stem_cells&quot; &quot;Endothelial_cells&quot; &quot;Hepatocytes&quot;      
+## [4] &quot;T_cells&quot;           &quot;Epithelial_cells&quot;  &quot;Macrophage&quot;</code></pre>
+<pre class="r"><code>table(pred$labels)</code></pre>
+<pre><code>## 
+##            Astrocyte               B_cell                   BM 
+##                   15                  324                    3 
+##           BM &amp; Prog.         Chondrocytes                  CMP 
+##                    4                   72                  220 
+##                   DC Embryonic_stem_cells    Endothelial_cells 
+##                   96                   21                  316 
+##     Epithelial_cells         Erythroblast          Fibroblasts 
+##                 4193                   20                  119 
+##          Gametocytes                  GMP          Hepatocytes 
+##                    2                   32                  865 
+##           HSC_-G-CSF            HSC_CD34+            iPS_cells 
+##                   20                   39                  162 
+##        Keratinocytes           Macrophage                  MEP 
+##                    3                 1146                    9 
+##             Monocyte                  MSC            Myelocyte 
+##                 1301                    5                    6 
+## Neuroepithelial_cell              Neurons          Neutrophils 
+##                    5                   47                  898 
+##              NK_cell          Osteoblasts            Platelets 
+##                  738                    2                    3 
+##     Pre-B_cell_CD34-     Pro-B_cell_CD34+        Pro-Myelocyte 
+##                   32                    7                    3 
+##  Smooth_muscle_cells              T_cells    Tissue_stem_cells 
+##                   41                 2855                  556</code></pre>
 </div>
 </div>
 <div
@@ -770,6 +857,25 @@ résultats dans l’objet <code>Seurat</code> dans une colonne
 </ol>
 <div id="solution-3" class="section level3" number="1.7.1">
 <h3><span class="header-section-number">1.7.1</span> Solution</h3>
+<pre class="r"><code># Ajouter les labels dans le meta.data
+seurat.norm.pdac.multi[[&#39;SingleR.labels&#39;]]  &lt;- pred$labels
+
+# Vérifie que la colonne a bien été ajoutée
+head(as.matrix(seurat.norm.pdac.multi@meta.data))</code></pre>
+<pre><code>##                        orig.ident         nCount_RNA nFeature_RNA condition
+## AAACCCAGTCCGACGT-1_1_1 &quot;AdjNorm_TISSUE_1&quot; &quot;  2163&quot;   &quot; 1003&quot;      &quot;Norm&quot;   
+## AAACCCATCTGCACCT-1_1_1 &quot;AdjNorm_TISSUE_1&quot; &quot;   630&quot;   &quot;  360&quot;      &quot;Norm&quot;   
+## AAACGAAAGCGACCCT-1_1_1 &quot;AdjNorm_TISSUE_1&quot; &quot; 16097&quot;   &quot;  827&quot;      &quot;Norm&quot;   
+## AAACGAAAGCGGACAT-1_1_1 &quot;AdjNorm_TISSUE_1&quot; &quot;  4165&quot;   &quot; 1527&quot;      &quot;Norm&quot;   
+## AAACGAAAGTCACACT-1_1_1 &quot;AdjNorm_TISSUE_1&quot; &quot;211093&quot;   &quot; 4506&quot;      &quot;Norm&quot;   
+## AAACGAACAACAGATA-1_1_1 &quot;AdjNorm_TISSUE_1&quot; &quot;  1214&quot;   &quot;  542&quot;      &quot;Norm&quot;   
+##                        RNA_snn_res.0.1 seurat_clusters SingleR.labels     
+## AAACCCAGTCCGACGT-1_1_1 &quot;7&quot;             &quot;7&quot;             &quot;Tissue_stem_cells&quot;
+## AAACCCATCTGCACCT-1_1_1 &quot;9&quot;             &quot;9&quot;             &quot;Endothelial_cells&quot;
+## AAACGAAAGCGACCCT-1_1_1 &quot;2&quot;             &quot;2&quot;             &quot;Hepatocytes&quot;      
+## AAACGAAAGCGGACAT-1_1_1 &quot;0&quot;             &quot;0&quot;             &quot;T_cells&quot;          
+## AAACGAAAGTCACACT-1_1_1 &quot;2&quot;             &quot;2&quot;             &quot;Epithelial_cells&quot; 
+## AAACGAACAACAGATA-1_1_1 &quot;3&quot;             &quot;3&quot;             &quot;Macrophage&quot;</code></pre>
 <p>Faire une visualisation avec <code>DimPlot</code>.</p>
 <pre class="r"><code>DimPlot(
   seurat.norm.pdac.multi,
@@ -872,6 +978,21 @@ Seurat.</li>
 </ol>
 <div id="solution-4" class="section level3" number="1.9.1">
 <h3><span class="header-section-number">1.9.1</span> Solution</h3>
+<pre class="r"><code>FeaturePlot(
+  seurat.norm.pdac.multi,
+  features = c(&quot;CD14&quot;, &quot;HLA-DRA&quot;),
+  reduction = &quot;umap&quot;
+)
+
+dimpplot.seurat.norm.pdac.multi &lt;- DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, pt.size = .1)
+
+plot(dimpplot.seurat.norm.pdac.multi)
+
+# Code for selection manuelle
+selected.cells.macrophages &lt;- CellSelector(plot = dimpplot.seurat.norm.pdac.multi)
+
+seurat.norm.pdac.multi.macrophages &lt;- subset(seurat.norm.pdac.multi, cells=selected.cells.macrophages )
+DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;, pt.size = .1)</code></pre>
 </div>
 </div>
 <div
@@ -940,21 +1061,21 @@ complète sur les macrophages pour découvrir des sous-populations</h2>
 ## Number of communities: 5
 ## Elapsed time: 0 seconds</code></pre>
 <pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- RunUMAP(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;, dims = 1:10)</code></pre>
-<pre><code>## 14:10:08 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
-<pre><code>## 14:10:08 Read 6520 rows and found 10 numeric columns</code></pre>
-<pre><code>## 14:10:08 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
-<pre><code>## 14:10:08 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 15:35:43 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 15:35:43 Read 6520 rows and found 10 numeric columns</code></pre>
+<pre><code>## 15:35:43 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 15:35:43 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 <pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
 <pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
 <pre><code>## **************************************************|
-## 14:10:08 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpejztsC/file4bf8372f069c
-## 14:10:08 Searching Annoy index using 1 thread, search_k = 3000
-## 14:10:09 Annoy recall = 100%
-## 14:10:10 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
-## 14:10:11 Initializing from normalized Laplacian + noise (using RSpectra)
-## 14:10:11 Commencing optimization for 500 epochs, with 263094 positive edges
-## 14:10:11 Using rng type: pcg
-## 14:10:17 Optimization finished</code></pre>
+## 15:35:44 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpCF5ij8/file7492713cddb4
+## 15:35:44 Searching Annoy index using 1 thread, search_k = 3000
+## 15:35:45 Annoy recall = 100%
+## 15:35:45 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 15:35:46 Initializing from normalized Laplacian + noise (using RSpectra)
+## 15:35:46 Commencing optimization for 500 epochs, with 263094 positive edges
+## 15:35:46 Using rng type: pcg
+## 15:35:53 Optimization finished</code></pre>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;)</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/umap_macrophage-3.png" width="672" /></p>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)</code></pre>
@@ -980,9 +1101,93 @@ PDAC</strong> avec <code>ClusterProfiler</code>.</li>
 </ol>
 <div id="solution-5" class="section level3" number="1.11.1">
 <h3><span class="header-section-number">1.11.1</span> 1. Solution:</h3>
+<pre class="r"><code># Seurat v5 : fusionner les layers si nécessaire
+seurat.norm.pdac.multi.macrophages &lt;- JoinLayers(seurat.norm.pdac.multi.macrophages)
+
+# Identité = condition biologique
+Idents(seurat.norm.pdac.multi.macrophages) &lt;- &quot;condition&quot;
+table(Idents(seurat.norm.pdac.multi.macrophages))  # contrôle PDAC vs Norm</code></pre>
+<pre><code>## 
+## Norm PDAC 
+## 1047 5473</code></pre>
+<pre class="r"><code># DE : PDAC vs Norm
+de_pdac_vs_norm &lt;- FindMarkers(
+  seurat.norm.pdac.multi.macrophages,
+  ident.1 = &quot;PDAC&quot;,
+  ident.2 = &quot;Norm&quot;,
+  logfc.threshold = 0,    # garde tout, on filtrera ensuite
+  min.pct = 0.1
+)
+
+# Ajouter le nom de gène comme colonne
+de_pdac_vs_norm$gene &lt;- rownames(de_pdac_vs_norm)
+
+# Un coup d’œil
+head(as.matrix(de_pdac_vs_norm))</code></pre>
+<pre><code>##         p_val           avg_log2FC      pct.1   pct.2   p_val_adj      
+## PRSS1   &quot; 0.000000e+00&quot; &quot;-8.143840e+00&quot; &quot;0.023&quot; &quot;0.951&quot; &quot; 0.000000e+00&quot;
+## CLPS    &quot; 0.000000e+00&quot; &quot;-7.596208e+00&quot; &quot;0.015&quot; &quot;0.877&quot; &quot; 0.000000e+00&quot;
+## PNLIP   &quot; 0.000000e+00&quot; &quot;-9.615724e+00&quot; &quot;0.005&quot; &quot;0.759&quot; &quot; 0.000000e+00&quot;
+## CTRB1   &quot; 0.000000e+00&quot; &quot;-8.091664e+00&quot; &quot;0.010&quot; &quot;0.629&quot; &quot; 0.000000e+00&quot;
+## CPA1    &quot; 0.000000e+00&quot; &quot;-8.894106e+00&quot; &quot;0.008&quot; &quot;0.623&quot; &quot; 0.000000e+00&quot;
+## PLA2G1B &quot; 0.000000e+00&quot; &quot;-8.579216e+00&quot; &quot;0.007&quot; &quot;0.577&quot; &quot; 0.000000e+00&quot;
+##         gene     
+## PRSS1   &quot;PRSS1&quot;  
+## CLPS    &quot;CLPS&quot;   
+## PNLIP   &quot;PNLIP&quot;  
+## CTRB1   &quot;CTRB1&quot;  
+## CPA1    &quot;CPA1&quot;   
+## PLA2G1B &quot;PLA2G1B&quot;</code></pre>
 </div>
 <div id="solution-6" class="section level3" number="1.11.2">
 <h3><span class="header-section-number">1.11.2</span> 2. Solution</h3>
+<pre class="r"><code>library(EnhancedVolcano)
+
+# 2) Volcano plot avec EnhancedVolcano
+EnhancedVolcano(
+  de_pdac_vs_norm,
+  lab = rownames(de_pdac_vs_norm),   # noms des gènes
+  x = &#39;avg_log2FC&#39;,                  # axe X : log2FC
+  y = &#39;p_val_adj&#39;,                   # axe Y : p-value ajustée
+  xlab = bquote(~Log[2]~ &quot;FC (PDAC vs Norm)&quot;),
+  ylab = bquote(~-Log[10]~ &quot;Adj P&quot;),
+  pCutoff = 0.05,                    # seuil de significativité
+  FCcutoff = 0.25,                   # seuil de log2FC
+  title = &quot;Macrophages: PDAC vs Norm&quot;,
+  subtitle = &quot;Differential expression&quot;,
+  legendLabels = c(&#39;NS&#39;,&#39;Log2FC&#39;,&#39;Adj.P&#39;,&#39;Adj.P &amp; Log2FC&#39;),
+  legendPosition = &#39;right&#39;,
+  pointSize = 2.0,
+  labSize = 3.0,
+  colAlpha = 1
+)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_macrophages_representation-1.png" width="672" /></p>
+<pre class="r"><code># Classement des gènes par p-value ajustée
+top50 &lt;- rownames(head(de_pdac_vs_norm[order(de_pdac_vs_norm$p_val_adj), ], 50))
+
+# Volcano avec annotation des top50
+EnhancedVolcano(
+  de_pdac_vs_norm,
+  lab = rownames(de_pdac_vs_norm),
+  selectLab = top50,                  # on force l’affichage des 50 gènes les plus significatifs
+  x = &#39;avg_log2FC&#39;,
+  y = &#39;p_val_adj&#39;,
+  drawConnectors = TRUE,
+  widthConnectors = 0.5,
+  xlab = bquote(~Log[2]~ &quot;FC (PDAC vs Norm)&quot;),
+  ylab = bquote(~-Log[10]~ &quot;Adj P&quot;),
+  pCutoff = 0.05,
+  FCcutoff = 0.25,
+  title = &quot;Macrophages: PDAC vs Norm&quot;,
+  subtitle = &quot;Top 10 DE genes highlighted&quot;,
+  legendLabels = c(&#39;NS&#39;,&#39;Log2FC&#39;,&#39;Adj.P&#39;,&#39;Adj.P &amp; Log2FC&#39;),
+  legendPosition = &#39;right&#39;,
+  pointSize = 2.0,
+  labSize = 3.5,
+  colAlpha = 1,
+  col = c(&#39;grey30&#39;, &#39;forestgreen&#39;, &#39;royalblue&#39;, &#39;red2&#39;) # couleurs cohérentes
+)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_macrophages_representation-2.png" width="672" /></p>
 </div>
 <div id="solution-7" class="section level3" number="1.11.3">
 <h3><span class="header-section-number">1.11.3</span> 3. Solution</h3>
@@ -1261,7 +1466,182 @@ appliquant la technique de compensation sur la différence
 <div id="solution-8" class="section level3" number="2.1.1">
 <h3><span class="header-section-number">2.1.1</span> Solution</h3>
 <p>Compensation standard avec S.Score et G2M.Score</p>
+<pre class="r"><code># La régression scaleData est lente: Pour accélérer:
+#library(future)
+#plan(&quot;multicore&quot;, workers = 8)
+
+seurat.norm.pdac.multi &lt;- ScaleData(
+  seurat.norm.pdac.multi,
+  vars.to.regress = c(&quot;S.Score&quot;, &quot;G2M.Score&quot;),
+#  features = rownames(seurat.norm.pdac.multi)
+  features = VariableFeatures(seurat.norm.pdac.multi)
+)</code></pre>
+<pre><code>## Regressing out S.Score, G2M.Score</code></pre>
+<pre><code>## Centering and scaling data matrix</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- RunPCA(seurat.norm.pdac.multi, features = VariableFeatures(seurat.norm.pdac.multi))</code></pre>
+<pre><code>## PC_ 1 
+## Positive:  KRT19, SMIM22, TM4SF1, KRT8, ELF3, EPCAM, FXYD3, TACSTD2, C19orf33, TSPAN8 
+##     CLDN4, IFI27, MAL2, SLPI, AGR2, LGALS4, TMC5, KRT18, TSPAN1, KRT7 
+##     CYSTM1, WFDC2, GOLM1, GPRC5A, SFTA2, CAMK2N1, SPATS2L, S100A14, LGALS3BP, SPTBN1 
+## Negative:  PTPRC, SRGN, LAPTM5, CORO1A, LCP1, CD37, CD53, CD52, HCST, CXCR4 
+##     CD48, TYROBP, ALOX5AP, ITGB2, LSP1, VIM, SLA, FYB, EVI2B, FCER1G 
+##     PTPRCAP, CCL4, PRSS1, SAMSN1, CD69, APBB1IP, CD2, CD3E, LST1, AIF1 
+## PC_ 2 
+## Positive:  FXYD3, C19orf33, SMIM22, AGR2, TSPAN1, MAL2, KRT19, EPCAM, RP11-462G2.1, ELF3 
+##     TMC5, CLDN4, GPRC5A, CEACAM6, S100P, VSIG2, TFF2, LGALS4, AMN, MUC1 
+##     TMPRSS4, CTSE, BCAS1, S100A14, KCNK1, SLPI, TFF1, TMEM238, CYP3A5, KLK11 
+## Negative:  SPARCL1, IGFBP7, CALD1, C11orf96, MYL9, TAGLN, PLAC9, COX7A1, ACTA2, CSRP2 
+##     FRZB, MYH11, MCAM, ADAMTS1, TIMP3, PPP1R14A, IGFBP5, GPX3, RCAN2, IGFBP4 
+##     TBX2, SOD3, NDUFA4L2, LMOD1, PLN, BGN, MYLK, CCDC3, PDGFRB, MGP 
+## PC_ 3 
+## Positive:  HLA-DRA, CD68, CTSB, TYROBP, FTL, AIF1, HLA-DRB1, FCER1G, PSAP, CD74 
+##     GRN, CTSS, CD14, CD163, MS4A7, HLA-DPA1, S100A11, CTSZ, TYMP, FCGR2A 
+##     MSR1, C1QC, HLA-DQB1, PLXDC2, C1QA, APOE, CTSD, KCTD12, HLA-DPB1, APOC1 
+## Negative:  CEL, AMY2B, KLK1, PRSS3, REG1A, CTRB2, SPINK1, PDIA2, PRSS1, CTRL 
+##     ERP27, GATM, MT1G, AZGP1, DPEP1, GNMT, IGFBP2, RARRES2, TMEM97, SLC43A1 
+##     RBP1, SLC39A5, NUCB2, GPT2, TMEM52, GAMT, MT1H, FKBP11, BACE1, CBS 
+## PC_ 4 
+## Positive:  SERPINA5, FXYD2, AMBP, RBP1, SFRP5, CFTR, AQP1, SLC4A4, SCTR, KCNJ16 
+##     HOMER2, GATM, CYS1, FGFR3, SLC3A1, PPP1R1B, C8orf47, PKHD1, VTN, DEFB1 
+##     CLU, FLRT2, REG1A, PHGDH, PRSS1, ANXA9, CEL, CTRB2, C21orf62, C14orf105 
+## Negative:  CRIP1, S100A6, S100A4, LBH, ISG20, PTPRCAP, CEACAM6, CCL5, MYH11, CAMK2N1 
+##     CD3E, CD2, MFGE8, EPS8, PHLDA2, C19orf33, CD7, NDUFA4L2, FRZB, CD3D 
+##     GPRC5A, CD55, PLN, ACTA2, LAMB3, CTSW, TBX2, SYTL2, CCDC3, CD69 
+## PC_ 5 
+## Positive:  SOD3, NTRK2, ID4, MYH11, RCAN2, FRZB, PLN, NDUFA4L2, ITGA7, CCDC3 
+##     LMOD1, TAGLN, EFHD1, TBX2, MYL9, GATM, KLHL23, NOTCH3, ACTA2, CNN1 
+##     CDH6, CSRP2, KCNAB1, RGS5, RASD1, GUCY1A3, RBPMS2, FILIP1L, PDGFA, NEXN 
+## Negative:  VWF, F2RL3, MMRN2, PTPRB, SDPR, FLT1, HYAL2, CDH5, AC011526.1, GPR116 
+##     LDB2, STC1, CYYR1, EGFL7, BTNL9, PIK3R3, SHANK3, SPRY1, PPAP2A, CD320 
+##     S1PR1, TMEM88, LIFR, NOTCH4, FAM167B, ROBO4, COL15A1, DLL4, CALCRL, KANK3</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- FindNeighbors(seurat.norm.pdac.multi, reduction = &quot;pca&quot;, dims = 1:20)</code></pre>
+<pre><code>## Computing nearest neighbor graph</code></pre>
+<pre><code>## Computing SNN</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- FindClusters(seurat.norm.pdac.multi, resolution = 0.5)</code></pre>
+<pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+## 
+## Number of nodes: 14180
+## Number of edges: 499300
+## 
+## Running Louvain algorithm...
+## Maximum modularity in 10 random starts: 0.9550
+## Number of communities: 24
+## Elapsed time: 1 seconds</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- RunUMAP(seurat.norm.pdac.multi, dims = 1:20)</code></pre>
+<pre><code>## 15:41:13 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 15:41:13 Read 14180 rows and found 20 numeric columns</code></pre>
+<pre><code>## 15:41:13 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 15:41:13 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
+<pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
+<pre><code>## **************************************************|
+## 15:41:14 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpCF5ij8/file7492561dfa8
+## 15:41:14 Searching Annoy index using 1 thread, search_k = 3000
+## 15:41:17 Annoy recall = 100%
+## 15:41:18 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 15:41:19 Initializing from normalized Laplacian + noise (using RSpectra)
+## 15:41:19 Commencing optimization for 200 epochs, with 601322 positive edges
+## 15:41:19 Using rng type: pcg
+## 15:41:25 Optimization finished</code></pre>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, group.by = &quot;Phase&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/cc_scaledata-1.png" width="672" /></p>
+<pre class="r"><code># Après correction: on peut vérifier que le cycle cellulaire ne structure plus l&#39;UMAP avec les marqueurs du cyle **MKI67**, **TOP2A**, **PCNA** (`FeaturePlot`)
+
+FeaturePlot(
+  seurat.norm.pdac.multi,
+  features = c(&quot;MKI67&quot;, &quot;TOP2A&quot;, &quot;PCNA&quot;), # marqueurs du cycle
+  cols = c(&quot;lightgrey&quot;, &quot;red&quot;)
+)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/cc_scaledata-2.png" width="672" /></p>
 <p>Compensation avec la différence S.Score-G2M.Score</p>
+<pre class="r"><code># La régression scaleData est lente: Pour accélérer:
+#library(future)
+#plan(&quot;multicore&quot;, workers = 8)
+
+seurat.norm.pdac.multi.diffcompensated &lt;- seurat.norm.pdac.multi
+
+seurat.norm.pdac.multi.diffcompensated$CC.Difference &lt;- seurat.norm.pdac.multi.diffcompensated$S.Score - seurat.norm.pdac.multi.diffcompensated$G2M.Score
+seurat.norm.pdac.multi.diffcompensated &lt;- ScaleData(seurat.norm.pdac.multi.diffcompensated,
+                    vars.to.regress = &quot;CC.Difference&quot;, 
+                    features = VariableFeatures(seurat.norm.pdac.multi.diffcompensated)
+                      )</code></pre>
+<pre><code>## Regressing out CC.Difference</code></pre>
+<pre><code>## Centering and scaling data matrix</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.diffcompensated &lt;- RunPCA(seurat.norm.pdac.multi.diffcompensated, features = VariableFeatures(seurat.norm.pdac.multi.diffcompensated))</code></pre>
+<pre><code>## PC_ 1 
+## Positive:  KRT19, SMIM22, TM4SF1, ELF3, KRT8, EPCAM, FXYD3, TACSTD2, C19orf33, TSPAN8 
+##     CLDN4, IFI27, MAL2, SLPI, LGALS4, TMC5, AGR2, KRT18, TSPAN1, KRT7 
+##     CYSTM1, GPRC5A, WFDC2, GOLM1, CAMK2N1, SFTA2, SPATS2L, S100A14, SPTBN1, SERINC2 
+## Negative:  PTPRC, SRGN, LAPTM5, CORO1A, LCP1, CD37, CD53, CD52, HCST, CXCR4 
+##     CD48, TYROBP, LSP1, ALOX5AP, ITGB2, VIM, SLA, FYB, EVI2B, FCER1G 
+##     PTPRCAP, CCL4, CD69, SAMSN1, APBB1IP, PRSS1, CD2, CD3E, CCL5, AIF1 
+## PC_ 2 
+## Positive:  FXYD3, SMIM22, C19orf33, AGR2, KRT19, TSPAN1, MAL2, EPCAM, RP11-462G2.1, ELF3 
+##     TMC5, CTSE, S100P, GPRC5A, MUC1, LGALS4, VSIG2, CLDN4, TFF2, TMEM238 
+##     TMPRSS4, AMN, CEACAM6, S100A14, SLPI, TFF1, KCNK1, BCAS1, KLK11, CYP3A5 
+## Negative:  SPARCL1, CALD1, IGFBP7, C11orf96, MYL9, TAGLN, PLAC9, COX7A1, ACTA2, CSRP2 
+##     FRZB, MYH11, MCAM, ADAMTS1, TIMP3, PPP1R14A, IGFBP5, GPX3, RCAN2, IGFBP4 
+##     TBX2, SOD3, NDUFA4L2, LMOD1, PLN, BGN, CCDC3, MYLK, PDGFRB, MGP 
+## PC_ 3 
+## Positive:  HLA-DRA, CD68, CTSB, TYROBP, FTL, AIF1, FCER1G, PSAP, HLA-DRB1, GRN 
+##     CD74, CTSS, CD14, CD163, MS4A7, HLA-DPA1, S100A11, FCGR2A, TYMP, CTSZ 
+##     MSR1, C1QC, PLXDC2, C1QA, APOE, HLA-DQB1, CTSD, KCTD12, HLA-DPB1, APOC1 
+## Negative:  CEL, AMY2B, KLK1, PRSS3, REG1A, CTRB2, PDIA2, PRSS1, SPINK1, CTRL 
+##     ERP27, GATM, MT1G, AZGP1, DPEP1, IGFBP2, GNMT, RARRES2, TMEM97, SLC43A1 
+##     NUCB2, RBP1, SLC39A5, GAMT, GPT2, TMEM52, FKBP11, MT1H, BACE1, CBS 
+## PC_ 4 
+## Positive:  SERPINA5, FXYD2, RBP1, AMBP, SFRP5, CFTR, HOMER2, SCTR, SLC4A4, AQP1 
+##     KCNJ16, GATM, CYS1, FGFR3, REG1A, SLC3A1, PRSS1, CEL, CTRB2, C8orf47 
+##     PPP1R1B, PKHD1, MT1G, VTN, CLU, DEFB1, FLRT2, PHGDH, ERP27, ANXA9 
+## Negative:  CRIP1, S100A6, S100A4, PTPRCAP, LBH, ISG20, CCL5, CD3E, CD2, CD7 
+##     CTSW, CD3D, CD69, NKG7, CD3G, GZMA, HCST, CAMK2N1, CD247, CEACAM6 
+##     MYH11, PRF1, MFGE8, CD52, GZMM, AC092580.4, PHLDA2, C19orf33, CORO1A, EPS8 
+## PC_ 5 
+## Positive:  VWF, MMRN2, F2RL3, HYAL2, SDPR, PTPRB, AC011526.1, CDH5, CD320, SPRY1 
+##     FLT1, GPR116, LDB2, STC1, CYYR1, IFITM1, PIK3R3, PPAP2A, BTNL9, S1PR1 
+##     SHANK3, EGFL7, ITM2A, NOTCH4, TMEM88, FAM167B, KANK3, ROBO4, COL15A1, CALCRL 
+## Negative:  MYH11, SPINK1, SOD3, NUPR1, NDUFA4L2, PLN, FRZB, RCAN2, TAGLN, CCDC3 
+##     LMOD1, ITGA7, PDGFA, TBX2, EFHD1, MYL9, ID4, GATM, KLK1, GPRC5C 
+##     CTRL, CDH6, CNN1, AMY2B, ACTA2, PRSS3, NTRK2, RBPMS2, PDIA2, CTRB2</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.diffcompensated &lt;- FindNeighbors(seurat.norm.pdac.multi.diffcompensated, reduction = &quot;pca&quot;, dims = 1:20)</code></pre>
+<pre><code>## Computing nearest neighbor graph</code></pre>
+<pre><code>## Computing SNN</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.diffcompensated &lt;- FindClusters(seurat.norm.pdac.multi.diffcompensated, resolution = 0.5)</code></pre>
+<pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+## 
+## Number of nodes: 14180
+## Number of edges: 501625
+## 
+## Running Louvain algorithm...
+## Maximum modularity in 10 random starts: 0.9554
+## Number of communities: 24
+## Elapsed time: 1 seconds</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.diffcompensated &lt;- RunUMAP(seurat.norm.pdac.multi.diffcompensated, dims = 1:20)</code></pre>
+<pre><code>## 15:42:00 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 15:42:00 Read 14180 rows and found 20 numeric columns</code></pre>
+<pre><code>## 15:42:00 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 15:42:00 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
+<pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
+<pre><code>## **************************************************|
+## 15:42:01 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpCF5ij8/file749237649658
+## 15:42:01 Searching Annoy index using 1 thread, search_k = 3000
+## 15:42:04 Annoy recall = 100%
+## 15:42:04 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 15:42:05 Initializing from normalized Laplacian + noise (using RSpectra)
+## 15:42:06 Commencing optimization for 200 epochs, with 598440 positive edges
+## 15:42:06 Using rng type: pcg
+## 15:42:12 Optimization finished</code></pre>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi.diffcompensated, reduction = &quot;umap&quot;, group.by = &quot;Phase&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/cc_scaledata_diff-1.png" width="672" /></p>
+<pre class="r"><code># Après correction: on peut vérifier que le cycle cellulaire ne structure plus l&#39;UMAP avec les marqueurs du cyle **MKI67**, **TOP2A**, **PCNA** (`FeaturePlot`)
+
+FeaturePlot(
+  seurat.norm.pdac.multi.diffcompensated,
+  features = c(&quot;MKI67&quot;, &quot;TOP2A&quot;, &quot;PCNA&quot;), # marqueurs du cycle
+  cols = c(&quot;lightgrey&quot;, &quot;red&quot;)
+)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/cc_scaledata_diff-2.png" width="672" /></p>
 </div>
 </div>
 </div>
