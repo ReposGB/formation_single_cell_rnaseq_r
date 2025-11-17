@@ -368,14 +368,28 @@ permettant une analyse intégrée avec la librairie <em>Harmony</em>.</p>
 <li>Comparaison Normal/PDAC</li>
 <li>Clusterisation hiérarchique (cluster de cluster)</li>
 <li>Compensation du cycle cellulaire</li>
-<li>Analyse de sa propre liste de gènes</li>
 <li>Annotation automatisée</li>
+<li>Enrichissement GO</li>
 </ul>
 <div id="chargement-des-librairies" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Chargement des
 librairies</h2>
-<pre class="r"><code>library(Seurat)
-library(harmony)</code></pre>
+<pre class="r"><code>library(Seurat)</code></pre>
+<pre><code>## Loading required package: SeuratObject</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre><code>## &#39;SeuratObject&#39; was built under R 4.5.0 but the current version is
+## 4.5.1; it is recomended that you reinstall &#39;SeuratObject&#39; as the ABI
+## for R may have changed</code></pre>
+<pre><code>## &#39;SeuratObject&#39; was built with package &#39;Matrix&#39; 1.7.3 but the current
+## version is 1.7.4; it is recomended that you reinstall &#39;SeuratObject&#39; as
+## the ABI for &#39;Matrix&#39; may have changed</code></pre>
+<pre><code>## 
+## Attaching package: &#39;SeuratObject&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, t</code></pre>
+<pre class="r"><code>library(harmony)</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
 </div>
 <div id="fixation-de-la-racine-aléatoire" class="section level2"
 number="1.2">
@@ -392,9 +406,9 @@ standards</strong>, je les ai supprimés.</p>
 <p>Pour finir, on fait une <strong>table récapitulative</strong> du
 nombre de cellules pour chaque échantillon.</p>
 <pre class="r"><code># Répertoire racine contenant tous les échantillons
-#input_dir &lt;- &quot;GSE155698_RAW&quot;
+input_dir &lt;- &quot;GSE155698_RAW&quot;
 
-input_dir &lt;- &quot;/shared/projects/tp_2529_ngs_amu_181496/data/GSE155698_RAW&quot; 
+#input_dir &lt;- &quot;/shared/projects/tp_2529_ngs_amu_181496/data/GSE155698_RAW&quot; 
 
 # Liste des sous-répertoires (échantillons)
 sample_dirs &lt;- list.dirs(input_dir, recursive = FALSE)
@@ -413,12 +427,17 @@ seurat_list &lt;- lapply(sample_dirs, function(dir) {
   seu$orig.ident &lt;- sample_name
   
   return(seu)
-})
-
-# Fusionner tous les objets en un seul
+})</code></pre>
+<pre><code>## [1] &quot;read sample  AdjNorm_TISSUE_1&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  AdjNorm_TISSUE_2&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  AdjNorm_TISSUE_3&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_1&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_2&quot;</code></pre>
+<pre><code>## [1] &quot;read sample  PDAC_TISSUE_3&quot;</code></pre>
+<pre class="r"><code># Fusionner tous les objets en un seul
 seurat.norm.pdac.multi &lt;- Reduce(function(x, y) merge(x, y), seurat_list)
 
-# Ajout d&#39;une matadata pour le type d&#39;échantillon (normal ou PDAC)
+# Ajout d&#39;une colonne dans metadata correspondante au type d&#39;échantillon (normal ou PDAC)
 seurat.norm.pdac.multi$condition &lt;- ifelse(
   grepl(&quot;PDAC&quot;, seurat.norm.pdac.multi$orig.ident, ignore.case = TRUE),
   &quot;PDAC&quot;,
@@ -426,10 +445,21 @@ seurat.norm.pdac.multi$condition &lt;- ifelse(
 )
 
 # Vérifier combien de cellules par échantillon
-table(seurat.norm.pdac.multi$orig.ident)
-table(seurat.norm.pdac.multi$condition)
-
-seurat.norm.pdac.multi</code></pre>
+table(seurat.norm.pdac.multi$orig.ident)</code></pre>
+<pre><code>## 
+## AdjNorm_TISSUE_1 AdjNorm_TISSUE_2 AdjNorm_TISSUE_3    PDAC_TISSUE_1 
+##             4326             3174             1098             1410 
+##    PDAC_TISSUE_2    PDAC_TISSUE_3 
+##             1782             2390</code></pre>
+<pre class="r"><code>table(seurat.norm.pdac.multi$condition)</code></pre>
+<pre><code>## 
+## Norm PDAC 
+## 8598 5582</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi</code></pre>
+<pre><code>## An object of class Seurat 
+## 22746 features across 14180 samples within 1 assay 
+## Active assay: RNA (22746 features, 0 variable features)
+##  6 layers present: counts.AdjNorm_TISSUE_1.SeuratProject.SeuratProject.SeuratProject.SeuratProject, counts.AdjNorm_TISSUE_2.SeuratProject.SeuratProject.SeuratProject.SeuratProject, counts.AdjNorm_TISSUE_3.SeuratProject.SeuratProject.SeuratProject, counts.PDAC_TISSUE_1.SeuratProject.SeuratProject, counts.PDAC_TISSUE_2.SeuratProject, counts.PDAC_TISSUE_3</code></pre>
 </div>
 <div id="appliquer-le-pipeline-standard-seurat-et-harmony"
 class="section level2" number="1.4">
@@ -438,11 +468,60 @@ standard Seurat et Harmony</h2>
 <ol style="list-style-type: decimal">
 <li>Appliquer l’ensemble des étapes standards Seurat</li>
 </ol>
-<pre class="r"><code>seurat.norm.pdac.multi &lt;- NormalizeData(seurat.norm.pdac.multi, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000) 
-seurat.norm.pdac.multi &lt;- FindVariableFeatures(seurat.norm.pdac.multi, selection.method = &quot;vst&quot;, nfeatures = 2000)
-seurat.norm.pdac.multi &lt;- ScaleData(seurat.norm.pdac.multi) 
-seurat.norm.pdac.multi &lt;- RunPCA(seurat.norm.pdac.multi, features = VariableFeatures(object = seurat.norm.pdac.multi))
-DimPlot(seurat.norm.pdac.multi, reduction = &quot;pca&quot;)</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- NormalizeData(seurat.norm.pdac.multi, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000) </code></pre>
+<pre><code>## Normalizing layer: counts.AdjNorm_TISSUE_1.SeuratProject.SeuratProject.SeuratProject.SeuratProject</code></pre>
+<pre><code>## Normalizing layer: counts.AdjNorm_TISSUE_2.SeuratProject.SeuratProject.SeuratProject.SeuratProject</code></pre>
+<pre><code>## Normalizing layer: counts.AdjNorm_TISSUE_3.SeuratProject.SeuratProject.SeuratProject</code></pre>
+<pre><code>## Normalizing layer: counts.PDAC_TISSUE_1.SeuratProject.SeuratProject</code></pre>
+<pre><code>## Normalizing layer: counts.PDAC_TISSUE_2.SeuratProject</code></pre>
+<pre><code>## Normalizing layer: counts.PDAC_TISSUE_3</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- FindVariableFeatures(seurat.norm.pdac.multi, selection.method = &quot;vst&quot;, nfeatures = 2000)</code></pre>
+<pre><code>## Finding variable features for layer counts.AdjNorm_TISSUE_1.SeuratProject.SeuratProject.SeuratProject.SeuratProject</code></pre>
+<pre><code>## Finding variable features for layer counts.AdjNorm_TISSUE_2.SeuratProject.SeuratProject.SeuratProject.SeuratProject</code></pre>
+<pre><code>## Finding variable features for layer counts.AdjNorm_TISSUE_3.SeuratProject.SeuratProject.SeuratProject</code></pre>
+<pre><code>## Finding variable features for layer counts.PDAC_TISSUE_1.SeuratProject.SeuratProject</code></pre>
+<pre><code>## Finding variable features for layer counts.PDAC_TISSUE_2.SeuratProject</code></pre>
+<pre><code>## Finding variable features for layer counts.PDAC_TISSUE_3</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- ScaleData(seurat.norm.pdac.multi) </code></pre>
+<pre><code>## Centering and scaling data matrix</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- RunPCA(seurat.norm.pdac.multi, features = VariableFeatures(object = seurat.norm.pdac.multi))</code></pre>
+<pre><code>## PC_ 1 
+## Positive:  KRT19, SMIM22, TM4SF1, ELF3, KRT8, EPCAM, FXYD3, C19orf33, TACSTD2, CLDN4 
+##     TSPAN8, IFI27, MAL2, SLPI, AGR2, TMC5, LGALS4, KRT18, TSPAN1, KRT7 
+##     GPRC5A, CYSTM1, GOLM1, WFDC2, SFTA2, S100A14, CAMK2N1, SPATS2L, SERINC2, RAB25 
+## Negative:  PTPRC, SRGN, LAPTM5, CORO1A, CD37, LCP1, CD53, CD52, HCST, CD48 
+##     CXCR4, VIM, LSP1, TYROBP, ITGB2, ALOX5AP, SLA, FYB, PTPRCAP, CCL4 
+##     EVI2B, FCER1G, CD69, PRSS1, CD3E, CD2, APBB1IP, SAMSN1, CCL5, CD3D 
+## PC_ 2 
+## Positive:  FXYD3, AGR2, C19orf33, SMIM22, MAL2, TSPAN1, KRT19, S100P, RP11-462G2.1, EPCAM 
+##     CTSE, GPRC5A, TMC5, TMPRSS4, TFF2, VSIG2, MUC1, CEACAM6, ELF3, CLDN4 
+##     LGALS4, TMEM238, S100A14, AMN, TFF1, SLPI, KCNK1, BCAS1, KLK11, SFTA2 
+## Negative:  SPARCL1, IGFBP7, CALD1, C11orf96, MYL9, TAGLN, PLAC9, COX7A1, ACTA2, CSRP2 
+##     FRZB, MYH11, MCAM, ADAMTS1, TIMP3, PPP1R14A, IGFBP5, SOD3, IGFBP4, RCAN2 
+##     GPX3, TBX2, NDUFA4L2, LMOD1, PLN, CCDC3, MYLK, BGN, MT1M, MGP 
+## PC_ 3 
+## Positive:  HLA-DRA, TYROBP, CD68, CTSB, AIF1, FTL, FCER1G, PSAP, HLA-DRB1, GRN 
+##     CTSS, CD74, CD14, CD163, MS4A7, HLA-DPA1, FCGR2A, TYMP, S100A11, CTSZ 
+##     MSR1, C1QC, PLXDC2, C1QA, KCTD12, APOE, HLA-DQB1, CTSD, CYBB, SPI1 
+## Negative:  CEL, AMY2B, KLK1, PRSS3, REG1A, CTRB2, SPINK1, PDIA2, PRSS1, CTRL 
+##     ERP27, GATM, MT1G, AZGP1, DPEP1, IGFBP2, GNMT, RARRES2, TMEM97, RBP1 
+##     SLC43A1, NUCB2, SLC39A5, GPT2, TMEM52, GAMT, FKBP11, MT1H, BACE1, CBS 
+## PC_ 4 
+## Positive:  SERPINA5, FXYD2, AMBP, SFRP5, CFTR, RBP1, SCTR, AQP1, SLC4A4, KCNJ16 
+##     HOMER2, GATM, CYS1, FGFR3, SLC3A1, C8orf47, PPP1R1B, PKHD1, VTN, CLU 
+##     FLRT2, REG1A, ANXA9, PRSS1, DEFB1, CEL, C21orf62, CTRB2, PHGDH, C14orf105 
+## Negative:  CRIP1, S100A6, S100A4, LBH, PTPRCAP, ISG20, CCL5, CD3E, CD2, CD7 
+##     CD3D, CTSW, MYH11, CD69, CD3G, MFGE8, NKG7, GZMA, CAMK2N1, CD247 
+##     ACTA2, HCST, NDUFA4L2, FRZB, PHLDA2, PRF1, CORO1A, CEACAM6, AC092580.4, TPM2 
+## PC_ 5 
+## Positive:  SOD3, MYH11, NDUFA4L2, PLN, FRZB, RCAN2, TAGLN, CCDC3, LMOD1, ITGA7 
+##     ID4, NTRK2, TBX2, EFHD1, MYL9, NUPR1, PDGFA, SPINK1, CDH6, CNN1 
+##     ACTA2, GATM, GPRC5C, NOTCH3, RBPMS2, RGS5, CSRP2, KCNAB1, NEXN, RASD1 
+## Negative:  VWF, MMRN2, F2RL3, HYAL2, SDPR, PTPRB, AC011526.1, CDH5, FLT1, GPR116 
+##     LDB2, STC1, SPRY1, CD320, CYYR1, PIK3R3, BTNL9, PPAP2A, EGFL7, SHANK3 
+##     S1PR1, TMEM88, NOTCH4, FAM167B, ROBO4, LIFR, KANK3, COL15A1, IFITM1, CALCRL</code></pre>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;pca&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/full_pipeline-1.png" width="672" /></p>
 <ol start="2" style="list-style-type: decimal">
 <li>Faire un RunHarmony sur les échantillons</li>
 </ol>
@@ -462,15 +541,46 @@ séparant les échantillons (`orig.ident’)</li>
 <strong>conditions</strong> (PDAC- Normal)</li>
 <li>Visualiser l’UMAP Harmony avec <code>Dimplot</code> en séparant les
 <strong>échantillons</strong></li>
+<li>Visualiser l’UMAP Harmony en groupant par sample et en séparant ^par
+condition</li>
 </ul>
-<pre class="r"><code>seurat.norm.pdac.multi &lt;- FindNeighbors(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;, dims = 1:30)
-seurat.norm.pdac.multi &lt;- FindClusters(seurat.norm.pdac.multi, resolution = 0.1)
-seurat.norm.pdac.multi &lt;- RunUMAP(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;, dims = 1:30)
-
-DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;)
-DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)
-
-DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, split.by = &quot;orig.ident&quot;)</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- FindNeighbors(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;, dims = 1:30)</code></pre>
+<pre><code>## Computing nearest neighbor graph</code></pre>
+<pre><code>## Computing SNN</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- FindClusters(seurat.norm.pdac.multi, resolution = 0.1)</code></pre>
+<pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+## 
+## Number of nodes: 14180
+## Number of edges: 565353
+## 
+## Running Louvain algorithm...
+## Maximum modularity in 10 random starts: 0.9820
+## Number of communities: 15
+## Elapsed time: 1 seconds</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi &lt;- RunUMAP(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;, dims = 1:30)</code></pre>
+<pre><code>## 14:08:28 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 14:08:28 Read 14180 rows and found 30 numeric columns</code></pre>
+<pre><code>## 14:08:28 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 14:08:28 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
+<pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
+<pre><code>## **************************************************|
+## 14:08:29 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpejztsC/file4bf86c5c5d5d
+## 14:08:29 Searching Annoy index using 1 thread, search_k = 3000
+## 14:08:32 Annoy recall = 100%
+## 14:08:32 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 14:08:32 Initializing from normalized Laplacian + noise (using RSpectra)
+## 14:08:33 Commencing optimization for 200 epochs, with 619108 positive edges
+## 14:08:33 Using rng type: pcg
+## 14:08:39 Optimization finished</code></pre>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony_umap_clustering-1.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony_umap_clustering-2.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, split.by = &quot;orig.ident&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony_umap_clustering-3.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, group.by = &quot;condition&quot;, split.by = &quot;orig.ident&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony_umap_clustering-4.png" width="672" /></p>
 <p>Je sauve l’objet UMAP pour pouvoir le réutiliser plus tard.</p>
 <pre class="r"><code>saveRDS(object = seurat.norm.pdac.multi, file = &quot;seurat.norm.pdac.multi.rds&quot;)
 #seurat.norm.pdac.multi &lt;- readRDS(file = &quot;seurat.norm.pdac.multi.rds&quot;)</code></pre>
@@ -507,18 +617,123 @@ class="section level2" number="1.6">
 des types cellulaires - Méthode “SingleR”</h2>
 <p>Nous allons utiliser le package <strong>SingleR</strong>.</p>
 <p>Charger les librairies suivantes:</p>
-<pre class="r"><code>library(SingleCellExperiment)
-library(SingleR)
+<pre class="r"><code>library(SingleCellExperiment)</code></pre>
+<pre><code>## Loading required package: SummarizedExperiment</code></pre>
+<pre><code>## Loading required package: MatrixGenerics</code></pre>
+<pre><code>## Loading required package: matrixStats</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MatrixGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:matrixStats&#39;:
+## 
+##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
+##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
+##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
+##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
+##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
+##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
+##     colWeightedMeans, colWeightedMedians, colWeightedSds,
+##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
+##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
+##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
+##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
+##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
+##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
+##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
+##     rowWeightedSds, rowWeightedVars</code></pre>
+<pre><code>## Loading required package: GenomicRanges</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: generics</code></pre>
+<pre><code>## 
+## Attaching package: &#39;generics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.difftime, as.factor, as.ordered, intersect, is.element, setdiff,
+##     setequal, union</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, aperm, append, as.data.frame, basename, cbind,
+##     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
+##     get, grep, grepl, is.unsorted, lapply, Map, mapply, match, mget,
+##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+##     rbind, Reduce, rownames, sapply, saveRDS, table, tapply, unique,
+##     unsplit, which.max, which.min</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     findMatches</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     expand.grid, I, unname</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## 
+## Attaching package: &#39;IRanges&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:sp&#39;:
+## 
+##     %over%</code></pre>
+<pre><code>## Loading required package: GenomeInfoDb</code></pre>
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Biobase&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:MatrixGenerics&#39;:
+## 
+##     rowMedians</code></pre>
+<pre><code>## The following objects are masked from &#39;package:matrixStats&#39;:
+## 
+##     anyMissing, rowMedians</code></pre>
+<pre><code>## 
+## Attaching package: &#39;SummarizedExperiment&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Seurat&#39;:
+## 
+##     Assays</code></pre>
+<pre><code>## The following object is masked from &#39;package:SeuratObject&#39;:
+## 
+##     Assays</code></pre>
+<pre class="r"><code>library(SingleR)
 library(celldex) # celldex fournit des jeux de référence annotés de transcriptomes de types cellulaires humains ou murins.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;celldex&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:SingleR&#39;:
+## 
+##     BlueprintEncodeData, DatabaseImmuneCellExpressionData,
+##     HumanPrimaryCellAtlasData, ImmGenData, MonacoImmuneData,
+##     MouseRNAseqData, NovershternHematopoieticData</code></pre>
 <p>SingleR attend des données <strong>log-normalisées</strong> au format
 <strong>SinGleCellExperiment</strong>. On transforme notre objet
 <strong>Seurat</strong> en objet <strong>SinGleCellExperiment</strong>
 grace à la fonction <code>as.SingleCellExperiment</code>.</p>
 <p>Vu qu’il y a des warnings, on vérifie bien que l’objet
 <code>sce</code>contient bien des données.</p>
-<pre class="r"><code>sce &lt;- as.SingleCellExperiment(seurat.norm.pdac.multi, assay = &quot;RNA&quot;)
-assayNames(sce)
-colnames(colData(sce))</code></pre>
+<pre class="r"><code>sce &lt;- as.SingleCellExperiment(seurat.norm.pdac.multi, assay = &quot;RNA&quot;)</code></pre>
+<pre><code>## Found more than one class &quot;package_version&quot; in cache; using the first, from namespace &#39;SeuratObject&#39;</code></pre>
+<pre><code>## Also defined by &#39;alabaster.base&#39;</code></pre>
+<pre><code>## Found more than one class &quot;package_version&quot; in cache; using the first, from namespace &#39;SeuratObject&#39;</code></pre>
+<pre><code>## Also defined by &#39;alabaster.base&#39;</code></pre>
+<pre><code>## Found more than one class &quot;package_version&quot; in cache; using the first, from namespace &#39;SeuratObject&#39;</code></pre>
+<pre><code>## Also defined by &#39;alabaster.base&#39;</code></pre>
+<pre><code>## Found more than one class &quot;package_version&quot; in cache; using the first, from namespace &#39;SeuratObject&#39;</code></pre>
+<pre><code>## Also defined by &#39;alabaster.base&#39;</code></pre>
+<pre><code>## Found more than one class &quot;package_version&quot; in cache; using the first, from namespace &#39;SeuratObject&#39;</code></pre>
+<pre><code>## Also defined by &#39;alabaster.base&#39;</code></pre>
+<pre><code>## Found more than one class &quot;package_version&quot; in cache; using the first, from namespace &#39;SeuratObject&#39;</code></pre>
+<pre><code>## Also defined by &#39;alabaster.base&#39;</code></pre>
+<pre class="r"><code>assayNames(sce)</code></pre>
+<pre><code>## [1] &quot;counts&quot;    &quot;logcounts&quot;</code></pre>
+<pre class="r"><code>colnames(colData(sce))</code></pre>
+<pre><code>## [1] &quot;orig.ident&quot;      &quot;nCount_RNA&quot;      &quot;nFeature_RNA&quot;    &quot;condition&quot;      
+## [5] &quot;RNA_snn_res.0.1&quot; &quot;seurat_clusters&quot; &quot;ident&quot;</code></pre>
 <p>Chargement d’un Atlas de référence:</p>
 <p>Le package <code>celldex</code> fournit plusieurs références annotées
 :</p>
@@ -562,6 +777,7 @@ résultats dans l’objet <code>Seurat</code> dans une colonne
   label = TRUE,
   repel = TRUE
 ) + ggtitle(&quot;Annotation automatique (SingleR + HumanPrimaryCellAtlas)&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/singler_visualisation-1.png" width="672" /></p>
 </div>
 </div>
 <div id="annotation-par-cluster" class="section level2" number="1.8">
@@ -570,17 +786,33 @@ cluster</h2>
 <p>Par opposition à l’assignation cellule par cellule, on peut aussi
 assigner un <strong>type cellulaire moyen</strong> par
 <strong>cluster</strong> pour en améliorer l’interprétation.</p>
-<pre class="r"><code>pred.cluster &lt;- SingleR(
+<pre class="r"><code># Le package scrapper est necessaire:
+# Pour l&#39;installer:
+
+#if (!require(&quot;BiocManager&quot;, quietly = TRUE))
+#    install.packages(&quot;BiocManager&quot;)
+
+#BiocManager::install(&quot;scrapper&quot;)
+
+pred.cluster &lt;- SingleR(
   test = sce,
   ref = ref,
   labels = ref$label.main,
   clusters = seurat.norm.pdac.multi$seurat_clusters
 )
 
-head(pred.cluster$labels)
-table(pred.cluster$labels)
-
-# On s&#39;assure que les identifiants sont bien les clusters
+head(pred.cluster$labels)</code></pre>
+<pre><code>## [1] &quot;T_cells&quot;          &quot;Epithelial_cells&quot; &quot;Epithelial_cells&quot; &quot;Macrophage&quot;      
+## [5] &quot;Epithelial_cells&quot; &quot;Monocyte&quot;</code></pre>
+<pre class="r"><code>table(pred.cluster$labels)</code></pre>
+<pre><code>## 
+##            B_cell Endothelial_cells  Epithelial_cells        Macrophage 
+##                 2                 1                 4                 1 
+##          Monocyte           Neurons       Neutrophils           NK_cell 
+##                 1                 1                 1                 2 
+##           T_cells Tissue_stem_cells 
+##                 1                 1</code></pre>
+<pre class="r"><code># On s&#39;assure que les identifiants sont bien les clusters
 Idents(seurat.norm.pdac.multi) &lt;- &quot;seurat_clusters&quot;
 
 # Aligner les labels
@@ -594,10 +826,9 @@ names(cluster.labels) &lt;- clusters
 seurat.norm.pdac.multi &lt;- RenameIdents(seurat.norm.pdac.multi, cluster.labels)
 
 # Visualisation
-DimPlot(seurat.norm.pdac.multi, label = TRUE, repel = TRUE) + ggtitle(&quot;Annotation par cluster (SingleR)&quot;)
-
-
-# Créer la table de correspondance
+DimPlot(seurat.norm.pdac.multi, label = TRUE, repel = TRUE) + ggtitle(&quot;Annotation par cluster (SingleR)&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/singler_cluster-1.png" width="672" /></p>
+<pre class="r"><code># Créer la table de correspondance
 cluster_table &lt;- data.frame(
   Cluster = clusters,
   CellType_SingleR = cluster.labels
@@ -605,6 +836,22 @@ cluster_table &lt;- data.frame(
 
 # Afficher la table
 as.matrix(cluster_table)</code></pre>
+<pre><code>##    Cluster CellType_SingleR   
+## 0  &quot;0&quot;     &quot;T_cells&quot;          
+## 1  &quot;1&quot;     &quot;Epithelial_cells&quot; 
+## 2  &quot;2&quot;     &quot;Epithelial_cells&quot; 
+## 3  &quot;3&quot;     &quot;Macrophage&quot;       
+## 4  &quot;4&quot;     &quot;Epithelial_cells&quot; 
+## 5  &quot;5&quot;     &quot;Monocyte&quot;         
+## 6  &quot;6&quot;     &quot;Neutrophils&quot;      
+## 7  &quot;7&quot;     &quot;Tissue_stem_cells&quot;
+## 8  &quot;8&quot;     &quot;NK_cell&quot;          
+## 9  &quot;9&quot;     &quot;Endothelial_cells&quot;
+## 10 &quot;10&quot;    &quot;NK_cell&quot;          
+## 11 &quot;11&quot;    &quot;Epithelial_cells&quot; 
+## 12 &quot;12&quot;    &quot;B_cell&quot;           
+## 13 &quot;13&quot;    &quot;B_cell&quot;           
+## 14 &quot;14&quot;    &quot;Neurons&quot;</code></pre>
 </div>
 <div
 id="sélection-des-cellules-à-analyser-par-sélection-visuelle-sur-umap"
@@ -633,24 +880,87 @@ class="section level2" number="1.10">
 <h2><span class="header-section-number">1.10</span> Refaire une analyse
 complète sur les macrophages pour découvrir des sous-populations</h2>
 <p>On applique le pipeline complet habituel.</p>
-<pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- NormalizeData(seurat.norm.pdac.multi.macrophages, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000) 
-seurat.norm.pdac.multi.macrophages &lt;- FindVariableFeatures(seurat.norm.pdac.multi.macrophages, selection.method = &quot;vst&quot;, nfeatures = 2000)
-seurat.norm.pdac.multi.macrophages &lt;- ScaleData(seurat.norm.pdac.multi.macrophages) 
-seurat.norm.pdac.multi.macrophages &lt;- RunPCA(seurat.norm.pdac.multi.macrophages, features = VariableFeatures(object = seurat.norm.pdac.multi.macrophages))
-
-DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;)
-
-ElbowPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;)
-
-seurat.norm.pdac.multi.macrophages &lt;- FindNeighbors(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;, dims = 1:10)
-seurat.norm.pdac.multi.macrophages &lt;- FindClusters(seurat.norm.pdac.multi.macrophages, resolution = 0.05)
-seurat.norm.pdac.multi.macrophages &lt;- RunUMAP(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;, dims = 1:10)
-
-
-DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;)
-DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)
-
-DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;, split.by = &quot;orig.ident&quot;)</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- NormalizeData(seurat.norm.pdac.multi.macrophages, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000) </code></pre>
+<pre><code>## Normalizing layer: counts</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- FindVariableFeatures(seurat.norm.pdac.multi.macrophages, selection.method = &quot;vst&quot;, nfeatures = 2000)</code></pre>
+<pre><code>## Finding variable features for layer counts</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- ScaleData(seurat.norm.pdac.multi.macrophages) </code></pre>
+<pre><code>## Centering and scaling data matrix</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- RunPCA(seurat.norm.pdac.multi.macrophages, features = VariableFeatures(object = seurat.norm.pdac.multi.macrophages))</code></pre>
+<pre><code>## PC_ 1 
+## Positive:  RGS1, C1QB, USP53, F13A1, C1QC, C1QA, FGL2, SEPP1, FOLR2, EPB41L2 
+##     HERPUD1, RGS2, A2M, SLC40A1, PDE4B, FILIP1L, IGSF21, STAB1, HLA-DQA2, GPR183 
+##     CPM, ADORA3, GSN, LTC4S, EMP2, GPR155, CST3, NR4A2, IL2RA, AXL 
+## Negative:  CSTB, PLIN2, VCAN, ERO1L, CD52, MARCO, HK2, NDRG1, AQP9, C15orf48 
+##     SLC2A1, ANGPTL4, RP11-290F20.3, C19orf59, SEMA3C, TIMP1, ZNF395, MGST1, CTSD, EGLN3 
+##     ADM, SPP1, EAF1, FTL, CTSL, CXXC5, S100A6, SLAMF9, PPAP2B, ANPEP 
+## PC_ 2 
+## Positive:  RP5-839B4.8, MRC1L1, SCPEP1, PTPMT1, ACP5, AQP3, RP11-1008C21.1, BIRC7, IL17RB, RP11-283G6.4 
+##     CHDH, B3GNT7, COLEC12, LPL, FBP1, MDH1, CTSZ, ADTRP, TRPV2, CCL18 
+##     PPIC, LIPA, ZBTB7C, GSTT1, ANXA11, PNPLA6, ANXA2, CYP27A1, SPN, ACE 
+## Negative:  PRSS1, CLPS, PNLIP, CPA1, CTRB1, CPB1, PLA2G1B, CELA3B, CTRC, CELA2A 
+##     CELA3A, AMY2A, CTRB2, CEL, GP2, SYCN, REG1A, CPA2, PRSS3, DDIT4 
+##     SERPINB9, LTC4S, SPINK1, SLC25A37, PKIB, CELA2B, PLD4, C3, USP53, CLEC9A 
+## PC_ 3 
+## Positive:  SLC2A3, IL1B, DDIT4, VCAN, SLC25A37, TNFAIP3, HBEGF, HSPA1A, ADM, ATF3 
+##     ANGPTL4, CLEC5A, HSPA1B, PHLDA1, NR4A1, ALOX5AP, NLRP3, DNAJB1, NR4A2, DUSP2 
+##     HIF1A-AS2, TNF, PLIN2, MTRNR2L1, THBD, NDRG1, CCL20, LINC00910, IL8, HK2 
+## Negative:  FTL, APOC1, CHIT1, APOE, LIPA, NUPR1, ACP5, PRDX1, CTSD, LGALS3 
+##     PLA2G7, ALDH1A1, C1QB, HLA-DRB5, CD59, EPHX1, RBP4, CCL18, CTSZ, IFI27 
+##     C1QA, BIRC7, CYP27A1, HS3ST2, OTOA, DNAJC5B, CES1, GPNMB, TREM2, FOLR2 
+## PC_ 4 
+## Positive:  FBP1, AQP3, RP11-283G6.4, RPS4Y1, PRSS1, CLPS, CD69, RGCC, CLEC12A, RP5-839B4.8 
+##     ALOX5AP, HCST, PNLIP, IL17RB, S100A4, LPL, EGR2, FCGBP, CPE, C19orf59 
+##     CCL3L1, HBEGF, RAC2, CCND3, CPB1, COL22A1, SLC19A3, CPA1, INHBA, AMICA1 
+## Negative:  RNASE1, ARL4C, PLD3, ABCA1, SLC40A1, CTSB, LGMN, SDC3, GAL3ST4, GPNMB 
+##     OLFML2B, SEPP1, CTSD, MMP14, PLTP, CTSL, SCD, STAB1, NPL, ZFAND5 
+##     ME1, GPX3, ADAM8, GM2A, SLC7A8, IL2RA, ERRFI1, FOLR2, TDP2, IDH1 
+## PC_ 5 
+## Positive:  PRSS1, APOE, VSIG4, CLPS, PNLIP, CTRB1, CPA1, PLA2G1B, APOC1, RMDN3 
+##     MS4A4A, PCOLCE2, LINC00910, GCHFR, CPB1, MARCO, CELA3B, FABP4, CTRC, TGM2 
+##     CELA3A, CELA2A, REG1A, CCL2, AMY2A, CTRB2, AGRP, FOLR3, C1QC, CEL 
+## Negative:  LCN2, TFF1, CLDN4, PPDPF, IL3RA, CST7, XIST, SLAMF9, CLDN18, TACSTD2 
+##     KRT7, C19orf33, CAMK2N1, KRT19, FXYD3, EPCAM, GPRC5A, PERP, TFF2, SLC7A11 
+##     C15orf48, SMIM22, KRT18, CD109, MAL2, TM4SF1, SLPI, HSPB1, CTSE, S100A6</code></pre>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/umap_macrophage-1.png" width="672" /></p>
+<pre class="r"><code>ElbowPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/umap_macrophage-2.png" width="672" /></p>
+<pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- FindNeighbors(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;, dims = 1:10)</code></pre>
+<pre><code>## Computing nearest neighbor graph</code></pre>
+<pre><code>## Computing SNN</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- FindClusters(seurat.norm.pdac.multi.macrophages, resolution = 0.05)</code></pre>
+<pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+## 
+## Number of nodes: 6520
+## Number of edges: 208923
+## 
+## Running Louvain algorithm...
+## Maximum modularity in 10 random starts: 0.9671
+## Number of communities: 5
+## Elapsed time: 0 seconds</code></pre>
+<pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- RunUMAP(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;, dims = 1:10)</code></pre>
+<pre><code>## 14:10:08 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 14:10:08 Read 6520 rows and found 10 numeric columns</code></pre>
+<pre><code>## 14:10:08 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 14:10:08 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
+<pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
+<pre><code>## **************************************************|
+## 14:10:08 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpejztsC/file4bf8372f069c
+## 14:10:08 Searching Annoy index using 1 thread, search_k = 3000
+## 14:10:09 Annoy recall = 100%
+## 14:10:10 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 14:10:11 Initializing from normalized Laplacian + noise (using RSpectra)
+## 14:10:11 Commencing optimization for 500 epochs, with 263094 positive edges
+## 14:10:11 Using rng type: pcg
+## 14:10:17 Optimization finished</code></pre>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/umap_macrophage-3.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/umap_macrophage-4.png" width="672" /></p>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;, split.by = &quot;orig.ident&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/umap_macrophage-5.png" width="672" /></p>
 </div>
 <div
 id="de-entre-macrophages-des-sains-et-macrophages-infiltrant-les-tumeurs"
@@ -683,22 +993,85 @@ PDAC</strong> avec <code>ClusterProfiler</code>.</li>
   label = TRUE,
   size = 3
 )</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_macrophage_heatmap-1.png" width="672" /></p>
 </div>
 <div id="solution-4." class="section level3" number="1.11.4">
 <h3><span class="header-section-number">1.11.4</span> Solution 4.</h3>
-<pre class="r"><code>library(clusterProfiler)
-library(org.Hs.eg.db)
-library(dplyr)
-
-# 1) Sélectionner les gènes up dans PDAC (log2FC &gt; 0, p.adj &lt; 0.05)
+<pre class="r"><code>library(clusterProfiler)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## clusterProfiler v4.16.0 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
+## 
+## Please cite:
+## 
+## Guangchuang Yu, Li-Gen Wang, Yanyan Han and Qing-Yu He.
+## clusterProfiler: an R package for comparing biological themes among
+## gene clusters. OMICS: A Journal of Integrative Biology. 2012,
+## 16(5):284-287</code></pre>
+<pre><code>## 
+## Attaching package: &#39;clusterProfiler&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     slice</code></pre>
+<pre><code>## The following object is masked from &#39;package:S4Vectors&#39;:
+## 
+##     rename</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre class="r"><code>library(org.Hs.eg.db)</code></pre>
+<pre><code>## Loading required package: AnnotationDbi</code></pre>
+<pre><code>## 
+## Attaching package: &#39;AnnotationDbi&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:clusterProfiler&#39;:
+## 
+##     select</code></pre>
+<pre><code>## </code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:AnnotationDbi&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following object is masked from &#39;package:Biobase&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following objects are masked from &#39;package:GenomicRanges&#39;:
+## 
+##     intersect, setdiff, union</code></pre>
+<pre><code>## The following object is masked from &#39;package:GenomeInfoDb&#39;:
+## 
+##     intersect</code></pre>
+<pre><code>## The following objects are masked from &#39;package:IRanges&#39;:
+## 
+##     collapse, desc, intersect, setdiff, slice, union</code></pre>
+<pre><code>## The following objects are masked from &#39;package:S4Vectors&#39;:
+## 
+##     first, intersect, rename, setdiff, setequal, union</code></pre>
+<pre><code>## The following objects are masked from &#39;package:BiocGenerics&#39;:
+## 
+##     combine, intersect, setdiff, setequal, union</code></pre>
+<pre><code>## The following object is masked from &#39;package:generics&#39;:
+## 
+##     explain</code></pre>
+<pre><code>## The following object is masked from &#39;package:matrixStats&#39;:
+## 
+##     count</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code># 1) Sélectionner les gènes up dans PDAC (log2FC &gt; 0, p.adj &lt; 0.05)
 up_genes_pdac &lt;- de_pdac_vs_norm %&gt;%
   filter(avg_log2FC &gt; 0 &amp; p_val_adj &lt; 0.05) %&gt;%
   pull(gene) %&gt;%
   unique()
 
 # 2) Convertir SYMBOL → ENTREZID pour clusterProfiler
-gene_map &lt;- bitr(up_genes_pdac, fromType = &quot;SYMBOL&quot;, toType = &quot;ENTREZID&quot;, OrgDb = org.Hs.eg.db)
-entrez_up &lt;- unique(gene_map$ENTREZID)
+gene_map &lt;- bitr(up_genes_pdac, fromType = &quot;SYMBOL&quot;, toType = &quot;ENTREZID&quot;, OrgDb = org.Hs.eg.db)</code></pre>
+<pre><code>## &#39;select()&#39; returned 1:many mapping between keys and columns</code></pre>
+<pre class="r"><code>entrez_up &lt;- unique(gene_map$ENTREZID)
 
 # 3) Enrichissement GO (Biological Process)
 ego &lt;- enrichGO(
@@ -712,13 +1085,117 @@ ego &lt;- enrichGO(
 )
 
 # 4) Résultats et visualisation
-head(as.data.frame(ego), 10)      # top 10 GO terms
-
-# Barplot
-barplot(ego, showCategory = 20, title = &quot;GO BP – Up in PDAC (Macrophages)&quot;)
-
-# Dotplot (alternative)
+library(knitr)
+kable(as.data.frame(ego[1:10,1:5]))      # top 10 GO terms</code></pre>
+<table>
+<colgroup>
+<col width="9%" />
+<col width="9%" />
+<col width="55%" />
+<col width="8%" />
+<col width="8%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">ID</th>
+<th align="left">Description</th>
+<th align="left">GeneRatio</th>
+<th align="left">BgRatio</th>
+<th align="right">RichFactor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><a href="GO:0016236" class="uri">GO:0016236</a></td>
+<td align="left"><a href="GO:0016236" class="uri">GO:0016236</a></td>
+<td align="left">macroautophagy</td>
+<td align="left">204/4794</td>
+<td align="left">374/18805</td>
+<td align="right">0.5454545</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="GO:0048193" class="uri">GO:0048193</a></td>
+<td align="left"><a href="GO:0048193" class="uri">GO:0048193</a></td>
+<td align="left">Golgi vesicle transport</td>
+<td align="left">172/4794</td>
+<td align="left">306/18805</td>
+<td align="right">0.5620915</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="GO:0007033" class="uri">GO:0007033</a></td>
+<td align="left"><a href="GO:0007033" class="uri">GO:0007033</a></td>
+<td align="left">vacuole organization</td>
+<td align="left">138/4794</td>
+<td align="left">238/18805</td>
+<td align="right">0.5798319</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="GO:0007034" class="uri">GO:0007034</a></td>
+<td align="left"><a href="GO:0007034" class="uri">GO:0007034</a></td>
+<td align="left">vacuolar transport</td>
+<td align="left">107/4794</td>
+<td align="left">172/18805</td>
+<td align="right">0.6220930</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="GO:0016197" class="uri">GO:0016197</a></td>
+<td align="left"><a href="GO:0016197" class="uri">GO:0016197</a></td>
+<td align="left">endosomal transport</td>
+<td align="left">155/4794</td>
+<td align="left">293/18805</td>
+<td align="right">0.5290102</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="GO:0043161" class="uri">GO:0043161</a></td>
+<td align="left"><a href="GO:0043161" class="uri">GO:0043161</a></td>
+<td align="left">proteasome-mediated ubiquitin-dependent protein
+catabolic process</td>
+<td align="left">215/4794</td>
+<td align="left">467/18805</td>
+<td align="right">0.4603854</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="GO:0010506" class="uri">GO:0010506</a></td>
+<td align="left"><a href="GO:0010506" class="uri">GO:0010506</a></td>
+<td align="left">regulation of autophagy</td>
+<td align="left">175/4794</td>
+<td align="left">359/18805</td>
+<td align="right">0.4874652</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="GO:0045088" class="uri">GO:0045088</a></td>
+<td align="left"><a href="GO:0045088" class="uri">GO:0045088</a></td>
+<td align="left">regulation of innate immune response</td>
+<td align="left">214/4794</td>
+<td align="left">482/18805</td>
+<td align="right">0.4439834</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="GO:0007040" class="uri">GO:0007040</a></td>
+<td align="left"><a href="GO:0007040" class="uri">GO:0007040</a></td>
+<td align="left">lysosome organization</td>
+<td align="left">73/4794</td>
+<td align="left">111/18805</td>
+<td align="right">0.6576577</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="GO:0080171" class="uri">GO:0080171</a></td>
+<td align="left"><a href="GO:0080171" class="uri">GO:0080171</a></td>
+<td align="left">lytic vacuole organization</td>
+<td align="left">73/4794</td>
+<td align="left">111/18805</td>
+<td align="right">0.6576577</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># Barplot
+barplot(ego, showCategory = 20, title = &quot;GO BP – Up in PDAC (Macrophages)&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_macrophages_clusterprofiler-1.png" width="672" /></p>
+<pre class="r"><code># Dotplot (alternative)
 dotplot(ego, showCategory = 20, title = &quot;GO BP – Up in PDAC (Macrophages)&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_macrophages_clusterprofiler-2.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -749,7 +1226,10 @@ class="email">seurat.norm.pdac.multi@meta.data</a> : -
 <strong>S.Score</strong> : score de phase S - <strong>G2M.Score</strong>
 : score de phase G2/M - <strong>Phase</strong> : phase dominante de la
 cellule (G1, S ou G2M)</p>
-<p><strong>Question</strong>: Que peut-on conclure ?</p>
+<p>On fait un <code>FeaturePlot</code>avec les marqueurs de cycle
+“MKI67”, “TOP2A” et “PCNA”.</p>
+<p><strong>Question</strong>: Que peut-on conclure de ces dernières
+figures ?</p>
 <pre class="r"><code>seurat.norm.pdac.multi &lt;- CellCycleScoring(
   seurat.norm.pdac.multi,
   s.features = s.genes,
@@ -757,79 +1237,159 @@ cellule (G1, S ou G2M)</p>
   set.ident = TRUE
 )
 
-table(seurat.norm.pdac.multi$Phase)
-DimPlot(seurat.norm.pdac.multi, group.by = &quot;Phase&quot;)</code></pre>
-<p><strong>Question:</strong> faire un pipeline en régressant pour le
-cycle cellulaire en donnant les bonnes options à
-<code>ScaleData</code>.</p>
+table(seurat.norm.pdac.multi$Phase)</code></pre>
+<pre><code>## 
+##   G1  G2M    S 
+## 7969 1939 4272</code></pre>
+<pre class="r"><code>DimPlot(seurat.norm.pdac.multi, group.by = &quot;Phase&quot;)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/cc_scoring-1.png" width="672" /></p>
+<pre class="r"><code>FeaturePlot(
+  seurat.norm.pdac.multi,
+  features = c(&quot;MKI67&quot;, &quot;TOP2A&quot;, &quot;PCNA&quot;), # marqueurs du cycle
+  cols = c(&quot;lightgrey&quot;, &quot;red&quot;)
+)</code></pre>
+<p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/cc_scoring-2.png" width="672" /></p>
+<p><strong>Question:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Appliquer le pipeline standard en régressant pour le cycle
+cellulaire en donnant les bonnes options à <code>ScaleData</code>.</li>
+<li>Appliquer le pipeline standard en régressant pour le cycle
+cellulaire en donnant les bonnes options à <code>ScaleData</code> en
+appliquant la technique de compensation sur la différence
+<code>S.Score-G2M.Score</code>.</li>
+</ol>
 <div id="solution-8" class="section level3" number="2.1.1">
 <h3><span class="header-section-number">2.1.1</span> Solution</h3>
-<p>Après correction: on peut vérifier que le cycle cellulaire ne
-structure plus l’UMAP avec les marquers du cyle <strong>MKI67</strong>,
-<strong>TOP2A</strong>, <strong>PCNA</strong>
-(<code>FeaturePlot</code>)</p>
-</div>
-<div id="solution-9" class="section level3" number="2.1.2">
-<h3><span class="header-section-number">2.1.2</span> Solution</h3>
-</div>
-</div>
-<div
-id="apporter-sa-propre-liste-de-genes-variablefeature-pour-le-clustering"
-class="section level2" number="2.2">
-<h2><span class="header-section-number">2.2</span> Apporter sa propre
-liste de genes VariableFeature pour le clustering</h2>
-<p>On va refaire une analyse de clustering sur l’objet de départ en
-apportant <strong>sa propre liste de gènes</strong>.</p>
-<p>Pour cela, <strong>on ne fait pas</strong> appel à
-<code>FindVariableFeatures</code> et on apporte plutot une liste issue
-de l’expertise d’un biologiste.</p>
-<p><strong>Etape1:</strong> On repart de notre objet Seurat
-“vierge”.</p>
-<pre class="r"><code>seurat.norm.pdac.multi &lt;- readRDS(file=&quot;seurat.norm.pdac.multi_ORIG.RDS&quot;)</code></pre>
-<p>On définit une liste de gènes PDAC. Une lecture attentive de la
-litérature me permet de définir la liste suivante:</p>
-<pre class="r"><code>pdac_genes &lt;- c(
-  # Épithéliaux / tumoraux
-  &quot;EPCAM&quot;, &quot;KRT19&quot;, &quot;KRT7&quot;, &quot;KRT8&quot;, &quot;KRT18&quot;, &quot;MUC1&quot;, &quot;MUC5AC&quot;,
-  &quot;CEACAM5&quot;, &quot;CEACAM6&quot;, &quot;CLDN3&quot;, &quot;CLDN4&quot;, &quot;TACSTD2&quot;,
-  &quot;SOX9&quot;, &quot;AGR2&quot;, &quot;S100P&quot;, &quot;CA2&quot;, &quot;LGALS4&quot;, &quot;ANXA2&quot;, &quot;MMP7&quot;,
-  
-  # Marqueurs EMT (transition épithélio-mésenchymateuse)
-  &quot;VIM&quot;, &quot;SNAI1&quot;, &quot;SNAI2&quot;, &quot;ZEB1&quot;, &quot;TWIST1&quot;, &quot;FN1&quot;, &quot;CDH2&quot;,
-  
-  # Fibroblastes / CAF
-  &quot;ACTA2&quot;, &quot;TAGLN&quot;, &quot;COL1A1&quot;, &quot;COL3A1&quot;, &quot;FAP&quot;, &quot;PDPN&quot;, &quot;DCN&quot;,
-  &quot;THY1&quot;, &quot;LUM&quot;, &quot;MMP2&quot;, &quot;SPARC&quot;, &quot;BGN&quot;,
-  
-  # Endothéliaux
-  &quot;PECAM1&quot;, &quot;VWF&quot;, &quot;CDH5&quot;, &quot;ENG&quot;, &quot;KDR&quot;, &quot;CLDN5&quot;,
-  
-  # Macrophages / myéloïdes
-  &quot;CD68&quot;, &quot;CD14&quot;, &quot;CSF1R&quot;, &quot;MRC1&quot;, &quot;MARCO&quot;, &quot;MSR1&quot;, &quot;LYZ&quot;, &quot;S100A8&quot;, &quot;S100A9&quot;,
-  
-  # Lymphocytes T
-  &quot;CD3D&quot;, &quot;CD3E&quot;, &quot;CD3G&quot;, &quot;CD4&quot;, &quot;CD8A&quot;, &quot;CD8B&quot;, &quot;TRAC&quot;,
-  
-  # Lymphocytes B
-  &quot;CD79A&quot;, &quot;MS4A1&quot;, &quot;CD19&quot;, &quot;MZB1&quot;, &quot;IGHM&quot;, &quot;IGKC&quot;,
-  
-  # NK
-  &quot;NCAM1&quot;, &quot;KLRD1&quot;, &quot;NKG7&quot;, &quot;GNLY&quot;, &quot;GZMB&quot;,
-  
-  # Marqueurs pancréatiques normaux (ductaux, acinaires, endocrines)
-  &quot;CFTR&quot;, &quot;REG1A&quot;, &quot;PRSS1&quot;, &quot;CELA3A&quot;, &quot;INS&quot;, &quot;GCG&quot;, &quot;SST&quot;
-)</code></pre>
-<p><strong>Question</strong>: utiliser cette liste comme liste de gènes
-variables. Appliquer le pipeline <strong>Harmony</strong> et visualiser
-les échantillons et les clusters obtenus sur une UMAP.</p>
-<div id="solution-10" class="section level3" number="2.2.1">
-<h3><span class="header-section-number">2.2.1</span> Solution</h3>
+<p>Compensation standard avec S.Score et G2M.Score</p>
+<p>Compensation avec la différence S.Score-G2M.Score</p>
 </div>
 </div>
 </div>
 <div id="session-info" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Session Info</h1>
 <pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.5.1 (2025-06-13)
+## Platform: aarch64-apple-darwin20
+## Running under: macOS Sequoia 15.7.1
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: Europe/Paris
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats4    stats     graphics  grDevices datasets  utils     methods  
+## [8] base     
+## 
+## other attached packages:
+##  [1] knitr_1.50                  dplyr_1.1.4                
+##  [3] org.Hs.eg.db_3.21.0         AnnotationDbi_1.70.0       
+##  [5] clusterProfiler_4.16.0      celldex_1.18.0             
+##  [7] SingleR_2.10.0              SingleCellExperiment_1.30.1
+##  [9] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+## [11] GenomicRanges_1.60.0        GenomeInfoDb_1.44.3        
+## [13] IRanges_2.42.0              S4Vectors_0.46.0           
+## [15] BiocGenerics_0.54.1         generics_0.1.4             
+## [17] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+## [19] EnhancedVolcano_1.26.0      ggrepel_0.9.6              
+## [21] ggplot2_4.0.0               future_1.67.0              
+## [23] harmony_1.2.4               Rcpp_1.1.0                 
+## [25] Seurat_5.3.1                SeuratObject_5.2.0         
+## [27] sp_2.2-0                   
+## 
+## loaded via a namespace (and not attached):
+##   [1] fs_1.6.6                  spatstat.sparse_3.1-0    
+##   [3] enrichplot_1.28.4         httr_1.4.7               
+##   [5] RColorBrewer_1.1-3        tools_4.5.1              
+##   [7] sctransform_0.4.2         alabaster.base_1.8.1     
+##   [9] R6_2.6.1                  HDF5Array_1.36.0         
+##  [11] lazyeval_0.2.2            uwot_0.2.3               
+##  [13] rhdf5filters_1.20.0       withr_3.0.2              
+##  [15] gridExtra_2.3             progressr_0.17.0         
+##  [17] cli_3.6.5                 spatstat.explore_3.5-3   
+##  [19] fastDummies_1.7.5         alabaster.se_1.8.0       
+##  [21] labeling_0.4.3            sass_0.4.10              
+##  [23] S7_0.2.0                  spatstat.data_3.1-9      
+##  [25] ggridges_0.5.7            pbapply_1.7-4            
+##  [27] yulab.utils_0.2.1         gson_0.1.0               
+##  [29] DOSE_4.2.0                R.utils_2.13.0           
+##  [31] parallelly_1.45.1         limma_3.64.3             
+##  [33] rstudioapi_0.17.1         RSQLite_2.4.3            
+##  [35] gridGraphics_0.5-1        ica_1.0-3                
+##  [37] spatstat.random_3.4-2     GO.db_3.21.0             
+##  [39] Matrix_1.7-4              scrapper_1.2.1           
+##  [41] abind_1.4-8               R.methodsS3_1.8.2        
+##  [43] lifecycle_1.0.4           yaml_2.3.10              
+##  [45] qvalue_2.40.0             rhdf5_2.52.1             
+##  [47] SparseArray_1.8.1         BiocFileCache_2.16.2     
+##  [49] Rtsne_0.17                grid_4.5.1               
+##  [51] blob_1.2.4                promises_1.5.0           
+##  [53] ExperimentHub_2.16.1      crayon_1.5.3             
+##  [55] ggtangle_0.0.7            miniUI_0.1.2             
+##  [57] lattice_0.22-7            beachmat_2.24.0          
+##  [59] cowplot_1.2.0             KEGGREST_1.48.1          
+##  [61] pillar_1.11.1             fgsea_1.34.2             
+##  [63] future.apply_1.20.0       codetools_0.2-20         
+##  [65] fastmatch_1.1-6           glue_1.8.0               
+##  [67] ggfun_0.2.0               spatstat.univar_3.1-4    
+##  [69] data.table_1.17.8         treeio_1.32.0            
+##  [71] vctrs_0.6.5               png_0.1-8                
+##  [73] gypsum_1.4.0              spam_2.11-1              
+##  [75] gtable_0.3.6              cachem_1.1.0             
+##  [77] xfun_0.54                 S4Arrays_1.8.1           
+##  [79] mime_0.13                 survival_3.8-3           
+##  [81] statmod_1.5.1             fitdistrplus_1.2-4       
+##  [83] ROCR_1.0-11               nlme_3.1-168             
+##  [85] ggtree_3.16.3             bit64_4.6.0-1            
+##  [87] alabaster.ranges_1.8.0    filelock_1.0.3           
+##  [89] RcppAnnoy_0.0.22          bslib_0.9.0              
+##  [91] irlba_2.3.5.1             KernSmooth_2.23-26       
+##  [93] otel_0.2.0                DBI_1.2.3                
+##  [95] tidyselect_1.2.1          bit_4.6.0                
+##  [97] compiler_4.5.1            curl_7.0.0               
+##  [99] httr2_1.2.1               BiocNeighbors_2.2.0      
+## [101] h5mread_1.0.1             DelayedArray_0.34.1      
+## [103] plotly_4.11.0             scales_1.4.0             
+## [105] lmtest_0.9-40             rappdirs_0.3.3           
+## [107] stringr_1.5.2             digest_0.6.37            
+## [109] goftest_1.2-3             spatstat.utils_3.2-0     
+## [111] alabaster.matrix_1.8.0    rmarkdown_2.30           
+## [113] XVector_0.48.0            RhpcBLASctl_0.23-42      
+## [115] htmltools_0.5.8.1         pkgconfig_2.0.3          
+## [117] sparseMatrixStats_1.20.0  dbplyr_2.5.1             
+## [119] fastmap_1.2.0             rlang_1.1.6              
+## [121] htmlwidgets_1.6.4         UCSC.utils_1.4.0         
+## [123] shiny_1.11.1              DelayedMatrixStats_1.30.0
+## [125] farver_2.1.2              jquerylib_0.1.4          
+## [127] zoo_1.8-14                jsonlite_2.0.0           
+## [129] BiocParallel_1.42.2       GOSemSim_2.34.0          
+## [131] R.oo_1.27.1               magrittr_2.0.4           
+## [133] ggplotify_0.1.3           GenomeInfoDbData_1.2.14  
+## [135] dotCall64_1.2             patchwork_1.3.2          
+## [137] Rhdf5lib_1.30.0           ape_5.8-1                
+## [139] reticulate_1.44.0         stringi_1.8.7            
+## [141] alabaster.schemas_1.8.0   MASS_7.3-65              
+## [143] AnnotationHub_3.16.1      plyr_1.8.9               
+## [145] parallel_4.5.1            listenv_0.10.0           
+## [147] deldir_2.0-4              Biostrings_2.76.0        
+## [149] splines_4.5.1             tensor_1.5.1             
+## [151] igraph_2.2.1              spatstat.geom_3.6-0      
+## [153] RcppHNSW_0.6.0            reshape2_1.4.4           
+## [155] BiocVersion_3.21.1        evaluate_1.0.5           
+## [157] renv_1.1.5                BiocManager_1.30.26      
+## [159] httpuv_1.6.16             RANN_2.6.2               
+## [161] tidyr_1.3.1               purrr_1.1.0              
+## [163] polyclip_1.10-7           scattermore_1.2          
+## [165] xtable_1.8-4              tidytree_0.4.6           
+## [167] RSpectra_0.16-2           later_1.4.4              
+## [169] viridisLite_0.4.2         tibble_3.3.0             
+## [171] aplot_0.2.9               memoise_2.0.1            
+## [173] cluster_2.1.8.1           globals_0.18.0</code></pre>
 <hr />
 <div style="text-align: center">
 <p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img src="https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png" alt="Licence Creative Commons" style="border-width:0"/></a><br></p>
