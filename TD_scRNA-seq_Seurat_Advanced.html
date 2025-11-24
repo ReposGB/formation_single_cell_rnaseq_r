@@ -574,21 +574,21 @@ condition</li>
 ## Number of communities: 15
 ## Elapsed time: 1 seconds</code></pre>
 <pre class="r"><code>seurat.norm.pdac.multi &lt;- RunUMAP(seurat.norm.pdac.multi, reduction = &quot;harmony&quot;, dims = 1:30)</code></pre>
-<pre><code>## 09:30:22 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
-<pre><code>## 09:30:22 Read 14180 rows and found 30 numeric columns</code></pre>
-<pre><code>## 09:30:22 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
-<pre><code>## 09:30:22 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 13:29:15 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 13:29:15 Read 14180 rows and found 30 numeric columns</code></pre>
+<pre><code>## 13:29:15 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 13:29:15 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 <pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
 <pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
 <pre><code>## **************************************************|
-## 09:30:23 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpgQSxGF/file9191671b458f
-## 09:30:23 Searching Annoy index using 1 thread, search_k = 3000
-## 09:30:26 Annoy recall = 100%
-## 09:30:26 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
-## 09:30:26 Initializing from normalized Laplacian + noise (using RSpectra)
-## 09:30:27 Commencing optimization for 200 epochs, with 619108 positive edges
-## 09:30:27 Using rng type: pcg
-## 09:30:32 Optimization finished</code></pre>
+## 13:29:15 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpdWTlTe/file10909708b59c1
+## 13:29:15 Searching Annoy index using 1 thread, search_k = 3000
+## 13:29:18 Annoy recall = 100%
+## 13:29:18 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 13:29:19 Initializing from normalized Laplacian + noise (using RSpectra)
+## 13:29:19 Commencing optimization for 200 epochs, with 619108 positive edges
+## 13:29:19 Using rng type: pcg
+## 13:29:25 Optimization finished</code></pre>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;)</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/harmony_umap_clustering-1.png" width="672" /></p>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)</code></pre>
@@ -800,20 +800,22 @@ immunitaire</li>
 <pre class="r"><code>ref &lt;- celldex::HumanPrimaryCellAtlasData()</code></pre>
 <ol style="list-style-type: decimal">
 <li>Ecrire l’appel de fonction <code>SingleR</code> pour annoter des
-cellules. Par défaut, <code>SingleR</code> est lent, comment accélérer
-?</li>
+cellules au niveau <code>label.main</code>. Par défaut,
+<code>SingleR</code> est lent, comment accélérer ?</li>
 <li>Afficher les résultats de l’objet obtenu avec
 <code>table</code>.</li>
 </ol>
 <div id="solution-2" class="section level3" number="1.6.1">
 <h3><span class="header-section-number">1.6.1</span> Solution</h3>
-<pre class="r"><code>pred &lt;- SingleR(
+<pre class="r"><code># 1.
+pred &lt;- SingleR(
   test = sce,
   ref = ref,                # La base de référence
   labels = ref$label.main,  # Niveau d’annotation principal
   num.threads = 8           # 8 coeurs en parallèle pour accélerer
 )
 
+# 2.
 head(pred$labels)</code></pre>
 <pre><code>## [1] &quot;Tissue_stem_cells&quot; &quot;Endothelial_cells&quot; &quot;Hepatocytes&quot;      
 ## [4] &quot;T_cells&quot;           &quot;Epithelial_cells&quot;  &quot;Macrophage&quot;</code></pre>
@@ -859,6 +861,7 @@ résultats dans l’objet <code>Seurat</code> dans une colonne
 <h3><span class="header-section-number">1.7.1</span> Solution</h3>
 <pre class="r"><code># Ajouter les labels dans le meta.data
 seurat.norm.pdac.multi[[&#39;SingleR.labels&#39;]]  &lt;- pred$labels
+
 
 # Vérifie que la colonne a bien été ajoutée
 head(as.matrix(seurat.norm.pdac.multi@meta.data))</code></pre>
@@ -984,7 +987,8 @@ Seurat.</li>
   reduction = &quot;umap&quot;
 )
 
-dimpplot.seurat.norm.pdac.multi &lt;- DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, pt.size = .1)
+
+dimpplot.seurat.norm.pdac.multi &lt;- DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, pt.size = .1, label = TRUE, repel = TRUE)
 
 plot(dimpplot.seurat.norm.pdac.multi)
 
@@ -1061,21 +1065,21 @@ complète sur les macrophages pour découvrir des sous-populations</h2>
 ## Number of communities: 5
 ## Elapsed time: 0 seconds</code></pre>
 <pre class="r"><code>seurat.norm.pdac.multi.macrophages &lt;- RunUMAP(seurat.norm.pdac.multi.macrophages, reduction = &quot;pca&quot;, dims = 1:10)</code></pre>
-<pre><code>## 09:32:03 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
-<pre><code>## 09:32:03 Read 6520 rows and found 10 numeric columns</code></pre>
-<pre><code>## 09:32:03 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
-<pre><code>## 09:32:03 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 13:31:10 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 13:31:10 Read 6520 rows and found 10 numeric columns</code></pre>
+<pre><code>## 13:31:10 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 13:31:10 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 <pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
 <pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
 <pre><code>## **************************************************|
-## 09:32:03 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpgQSxGF/file9191bf991f8
-## 09:32:03 Searching Annoy index using 1 thread, search_k = 3000
-## 09:32:04 Annoy recall = 100%
-## 09:32:05 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
-## 09:32:06 Initializing from normalized Laplacian + noise (using RSpectra)
-## 09:32:06 Commencing optimization for 500 epochs, with 263094 positive edges
-## 09:32:06 Using rng type: pcg
-## 09:32:12 Optimization finished</code></pre>
+## 13:31:10 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpdWTlTe/file10909295766a4
+## 13:31:10 Searching Annoy index using 1 thread, search_k = 3000
+## 13:31:11 Annoy recall = 100%
+## 13:31:12 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 13:31:13 Initializing from normalized Laplacian + noise (using RSpectra)
+## 13:31:13 Commencing optimization for 500 epochs, with 263094 positive edges
+## 13:31:13 Using rng type: pcg
+## 13:31:19 Optimization finished</code></pre>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;)</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/umap_macrophage-3.png" width="672" /></p>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi.macrophages, reduction = &quot;umap&quot;, split.by = &quot;condition&quot;)</code></pre>
@@ -1097,7 +1101,8 @@ sains et ceux identifiés dans les PDAC.</p>
 <li>Représenter les gènes différentiellement exprimes sous forme de
 <strong>heatmap</strong>.</li>
 <li>Identifier <strong>les pathways GO surexprimés dans les
-PDAC</strong> avec <code>ClusterProfiler</code>.</li>
+PDAC</strong> avec <code>ClusterProfiler</code>. Utiliser la fonction
+<code>bitr</code>pour convertir les SYMBOL vers ENTREZID.</li>
 </ol>
 <div id="solution-5" class="section level3" number="1.11.1">
 <h3><span class="header-section-number">1.11.1</span> 1. Solution:</h3>
@@ -1267,13 +1272,14 @@ EnhancedVolcano(
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code># 1) Sélectionner les gènes up dans PDAC (log2FC &gt; 0, p.adj &lt; 0.05)
+<pre class="r"><code># 1) Sélectionner les gènes sur-exprimés dans PDAC (log2FC &gt; 0, p.adj &lt; 0.05)
 up_genes_pdac &lt;- de_pdac_vs_norm %&gt;%
   filter(avg_log2FC &gt; 0 &amp; p_val_adj &lt; 0.05) %&gt;%
   pull(gene) %&gt;%
   unique()
 
-# 2) Convertir SYMBOL → ENTREZID pour clusterProfiler
+# 2) Convertir SYMBOL vers ENTREZID pour clusterProfiler.
+# bitr = Biological ID Translator
 gene_map &lt;- bitr(up_genes_pdac, fromType = &quot;SYMBOL&quot;, toType = &quot;ENTREZID&quot;, OrgDb = org.Hs.eg.db)</code></pre>
 <pre><code>## &#39;select()&#39; returned 1:many mapping between keys and columns</code></pre>
 <pre class="r"><code>entrez_up &lt;- unique(gene_map$ENTREZID)
@@ -1395,11 +1401,27 @@ catabolic process</td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code># Barplot
-barplot(ego, showCategory = 20, title = &quot;GO BP – Up in PDAC (Macrophages)&quot;)</code></pre>
+<pre class="r"><code># Barplot. The theme is to reduce font size.
+p &lt;- barplot(ego, showCategory = 20, title = &quot;GO BP – Overexpressed in PDAC (Macrophages)&quot;) +
+  theme(
+    axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 6),
+    axis.title.x = element_text(size = 8),
+    axis.title.y = element_text(size = 8),
+    plot.title  = element_text(size = 10)
+  )
+p</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_macrophages_clusterprofiler-1.png" width="672" /></p>
-<pre class="r"><code># Dotplot (alternative)
-dotplot(ego, showCategory = 20, title = &quot;GO BP – Up in PDAC (Macrophages)&quot;)</code></pre>
+<pre class="r"><code># Dotplot (alternative). The theme is to reduce font size.
+p &lt;- dotplot(ego, showCategory = 20, title = &quot;GO BP – Overexpressed in PDAC (Macrophages)&quot;)  +
+  theme(
+    axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 6),
+    axis.title.x = element_text(size = 8),
+    axis.title.y = element_text(size = 8),
+    plot.title  = element_text(size = 10)
+  )
+p</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/de_macrophages_clusterprofiler-2.png" width="672" /></p>
 </div>
 </div>
@@ -1602,21 +1624,21 @@ seurat.norm.pdac.multi &lt;- ScaleData(
 ## Number of communities: 24
 ## Elapsed time: 1 seconds</code></pre>
 <pre class="r"><code>seurat.norm.pdac.multi &lt;- RunUMAP(seurat.norm.pdac.multi, dims = 1:20)</code></pre>
-<pre><code>## 09:37:45 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
-<pre><code>## 09:37:45 Read 14180 rows and found 20 numeric columns</code></pre>
-<pre><code>## 09:37:45 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
-<pre><code>## 09:37:45 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 13:36:57 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 13:36:57 Read 14180 rows and found 20 numeric columns</code></pre>
+<pre><code>## 13:36:57 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 13:36:57 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 <pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
 <pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
 <pre><code>## **************************************************|
-## 09:37:46 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpgQSxGF/file9191448c31aa
-## 09:37:46 Searching Annoy index using 1 thread, search_k = 3000
-## 09:37:49 Annoy recall = 100%
-## 09:37:50 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
-## 09:37:52 Initializing from normalized Laplacian + noise (using RSpectra)
-## 09:37:52 Commencing optimization for 200 epochs, with 601322 positive edges
-## 09:37:52 Using rng type: pcg
-## 09:37:58 Optimization finished</code></pre>
+## 13:36:58 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpdWTlTe/file10909387fbc00
+## 13:36:58 Searching Annoy index using 1 thread, search_k = 3000
+## 13:37:00 Annoy recall = 100%
+## 13:37:01 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 13:37:02 Initializing from normalized Laplacian + noise (using RSpectra)
+## 13:37:03 Commencing optimization for 200 epochs, with 601322 positive edges
+## 13:37:03 Using rng type: pcg
+## 13:37:09 Optimization finished</code></pre>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi, reduction = &quot;umap&quot;, group.by = &quot;Phase&quot;)</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/cc_scaledata-1.png" width="672" /></p>
 <pre class="r"><code># Après correction: on peut vérifier que le cycle cellulaire ne structure plus l&#39;UMAP avec les marqueurs du cyle **MKI67**, **TOP2A**, **PCNA** (`FeaturePlot`)
@@ -1691,21 +1713,21 @@ seurat.norm.pdac.multi.diffcompensated &lt;- ScaleData(seurat.norm.pdac.multi.di
 ## Number of communities: 24
 ## Elapsed time: 1 seconds</code></pre>
 <pre class="r"><code>seurat.norm.pdac.multi.diffcompensated &lt;- RunUMAP(seurat.norm.pdac.multi.diffcompensated, dims = 1:20)</code></pre>
-<pre><code>## 09:38:37 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
-<pre><code>## 09:38:37 Read 14180 rows and found 20 numeric columns</code></pre>
-<pre><code>## 09:38:37 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
-<pre><code>## 09:38:37 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>## 13:37:44 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>## 13:37:44 Read 14180 rows and found 20 numeric columns</code></pre>
+<pre><code>## 13:37:44 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>## 13:37:44 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 <pre><code>## 0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
 <pre><code>## [----|----|----|----|----|----|----|----|----|----|</code></pre>
 <pre><code>## **************************************************|
-## 09:38:38 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpgQSxGF/file91914085d359
-## 09:38:38 Searching Annoy index using 1 thread, search_k = 3000
-## 09:38:40 Annoy recall = 100%
-## 09:38:41 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
-## 09:38:42 Initializing from normalized Laplacian + noise (using RSpectra)
-## 09:38:43 Commencing optimization for 200 epochs, with 598440 positive edges
-## 09:38:43 Using rng type: pcg
-## 09:38:49 Optimization finished</code></pre>
+## 13:37:45 Writing NN index file to temp file /var/folders/91/6skgr68s5ls_dhqfdzs02_pm00013r/T//RtmpdWTlTe/file1090945473bea
+## 13:37:45 Searching Annoy index using 1 thread, search_k = 3000
+## 13:37:48 Annoy recall = 100%
+## 13:37:48 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+## 13:37:49 Initializing from normalized Laplacian + noise (using RSpectra)
+## 13:37:50 Commencing optimization for 200 epochs, with 598440 positive edges
+## 13:37:50 Using rng type: pcg
+## 13:37:56 Optimization finished</code></pre>
 <pre class="r"><code>DimPlot(seurat.norm.pdac.multi.diffcompensated, reduction = &quot;umap&quot;, group.by = &quot;Phase&quot;)</code></pre>
 <p><img src="TD_scRNA-seq_Seurat_Advanced_files/figure-html/cc_scaledata_diff-1.png" width="672" /></p>
 <pre class="r"><code># Après correction: on peut vérifier que le cycle cellulaire ne structure plus l&#39;UMAP avec les marqueurs du cyle **MKI67**, **TOP2A**, **PCNA** (`FeaturePlot`)
