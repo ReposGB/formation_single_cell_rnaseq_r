@@ -24,9 +24,9 @@ cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCel
 
 
 
-cp -p $HOME/CRCMBox/Cours/Formation_NGS_AMU_2025/Module2_Formation_R_SingleCellRNASeq/docs/*png .
-cp -p $HOME/CRCMBox/Cours/Formation_NGS_AMU_2025/Module2_Formation_R_SingleCellRNASeq/docs/*css .
-cp -rp $HOME/CRCMBox/Cours/Formation_NGS_AMU_2025/Module2_Formation_R_SingleCellRNASeq/docs/site_libs .
+cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/*png .
+cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/*css .
+cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/site_libs .
 
 git add *
 
