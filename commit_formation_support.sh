@@ -11,17 +11,16 @@ cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCe
 cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/TD_Introduction_R_RStudio.html .
 
 
-#cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/Analyse_scRNA-seq_Seurat.html .
-#cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/Analyse_scRNA-seq_Seurat_files  .
-#cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/figures-seurat .
-#cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/figures_RNA_seq  .
+cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/Analyse_scRNA-seq_Seurat.html .
+cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/Analyse_scRNA-seq_Seurat_files  .
+cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/figures-seurat .
+cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/figures_RNA_seq  .
 
-#cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat.html .
-#cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat_files .
+cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat.html .
+cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat_files .
 
 #cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat_Advanced.html .
 #cp -rp $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/TD_scRNA-seq_Seurat_Advanced_files .
-
 
 
 cp -p $HOME/crcmcloud/Cours/Formation_NGS_AMU_2026/Module2_Formation_R_SingleCellRNASeq/docs/*png .
