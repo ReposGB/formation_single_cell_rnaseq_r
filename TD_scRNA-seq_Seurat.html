@@ -326,9 +326,6 @@ div.tocify {
   <a href="Introduction_Formation.html">Introduction</a>
 </li>
 <li>
-  <a href="Introduction_R_RStudio.html">Introduction R/Rstudio</a>
-</li>
-<li>
   <a href="Analyse_scRNA-seq_Seurat.html">Analyse scRNA-seq sous Seurat</a>
 </li>
       </ul>
@@ -412,66 +409,6 @@ des données</h2>
 <td align="right">PDAC</td>
 </tr>
 <tr class="even">
-<td align="left">GSM4710692</td>
-<td align="right">PDAC_TISSUE_4</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="odd">
-<td align="left">GSM4710693</td>
-<td align="right">PDAC_TISSUE_5</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="even">
-<td align="left">GSM4710694</td>
-<td align="right">PDAC_TISSUE_6</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="odd">
-<td align="left">GSM4710695</td>
-<td align="right">PDAC_TISSUE_7</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="even">
-<td align="left">GSM4710696</td>
-<td align="right">PDAC_TISSUE_8</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="odd">
-<td align="left">GSM4710697</td>
-<td align="right">PDAC_TISSUE_9</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="even">
-<td align="left">GSM4710698</td>
-<td align="right">PDAC_TISSUE_10</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="odd">
-<td align="left">GSM4710699</td>
-<td align="right">PDAC_TISSUE_11A</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="even">
-<td align="left">GSM4710700</td>
-<td align="right">PDAC_TISSUE_11B</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="odd">
-<td align="left">GSM4710701</td>
-<td align="right">PDAC_TISSUE_12</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="even">
-<td align="left">GSM4710702</td>
-<td align="right">PDAC_TISSUE_13</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="odd">
-<td align="left">GSM4710704</td>
-<td align="right">PDAC_TISSUE_15</td>
-<td align="right">PDAC</td>
-</tr>
-<tr class="even">
 <td align="left">GSM4710706</td>
 <td align="right"><strong>AdjNorm_TISSUE_1</strong></td>
 <td align="right">Norm</td>
@@ -524,7 +461,7 @@ données de comptage</h2>
 number="3">
 <h1><span class="header-section-number">3</span> Analyse de
 l’échantillon PDAC 1</h1>
-<p>Dans cette première partie, nous allons analyse uniquemeent
+<p>Dans cette première partie, nous allons analyser uniquemeent
 l’échantillon <strong>PDAC_TISSUE_1</strong>.</p>
 <div id="charger-les-données-de-léchantillon-pdac-1-avec-seurat."
 class="section level2" number="3.1">
@@ -815,7 +752,8 @@ marqueurs différentiellement exprimés</h2>
 (désigné sous le nom de <code>ìdent.1 = 2</code>) et le reste des
 clusters.</li>
 <li>afficher les <strong>10 premiers</strong> marqueurs</li>
-<li>Identifier les marquers DE entre le <strong>cluster 2</strong> et le
+<li>Identifier les marquers Différentiellement Exprimés
+(<strong>DE</strong>) entre le <strong>cluster 2</strong> et le
 <strong>cluster 3</strong> et afficher les <strong>10</strong> premiers
 marqueurs.</li>
 <li>Identifier les marqueurs de différentiation pour l’ensemble des
@@ -910,15 +848,26 @@ caractérisant chaque cluster (appliquer les fonctions
 number="3.12">
 <h2><span class="header-section-number">3.12</span> Exemple
 d’utilisation de <code>AddmoduleScore</code></h2>
-<p>Calcul du score de la signature ‘TOP10’</p>
+<p><code>AddmoduleScore</code> calcule, pour chaque cellule, un
+<strong>score d’expression moyen</strong> des gènes d’une signature,
+ajusté en soustrayant l’expression moyenne de gènes témoins comparables.
+Dans Seurat, le score est <strong>ajouté aux métadonnées</strong> de
+l’objet et peut ensuite être visualisé avec <code>FeaturePlot()</code>
+ou <code>VlnPlot()</code>.</p>
+<p>Utilisons <code>AddmoduleScore</code> pour effectuer un calcul du
+score de la signature ‘TOP10’</p>
 <pre class="r"><code>activation_genes &lt;- top10
 
 pdac.seurat &lt;- AddModuleScore(
   pdac.seurat,
   features = list(activation_genes),
   name = &quot;TActivation&quot;
-)</code></pre>
-<p>Plot du score</p>
+)
+
+colnames(pdac.seurat@meta.data)</code></pre>
+<pre><code>## [1] &quot;orig.ident&quot;      &quot;nCount_RNA&quot;      &quot;nFeature_RNA&quot;    &quot;percent.mt&quot;     
+## [5] &quot;RNA_snn_res.0.5&quot; &quot;seurat_clusters&quot; &quot;TActivation1&quot;</code></pre>
+<p>Plot du score du module “TActivation”.</p>
 <pre class="r"><code>FeaturePlot(
   pdac.seurat,
   features = &quot;TActivation1&quot;,
